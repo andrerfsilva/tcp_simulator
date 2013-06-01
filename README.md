@@ -1,2 +1,4 @@
-tcp_simulator
+Simulador TCP
 =============
+
+Trabalho de Avaliação e Desempenho.
