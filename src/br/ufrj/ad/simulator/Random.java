@@ -25,7 +25,7 @@ public class Random extends java.util.Random {
 	 *            a taxa média do número de ocorrências por unidade de tempo
 	 * @return número exponencialmente distribuído com taxa = {@code rate}
 	 */
-	public double nextExponetial(double rate) {
+	public double nextExponential(double rate) {
 		double sample;
 		double u;
 
