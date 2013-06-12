@@ -1,4 +1,4 @@
 Simulador TCP
 =============
 
-Trabalho de Avaliação e Desempenho.
+Trabalho de AvaliaÃ§Ã£o e Desempenho.

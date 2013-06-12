@@ -1,10 +1,10 @@
 package br.ufrj.ad.simulator;
 
 /**
- * Estende a classe Random para gerar números das disribuições presentes na
- * simulação.
+ * Estende a classe Random para gerar nÃºmeros das disribuiÃ§Ãµes presentes na
+ * simulaÃ§Ã£o.
  * 
- * @author André Ramos
+ * @author AndrÃ© Ramos
  * 
  */
 public class Random extends java.util.Random {
@@ -18,41 +18,41 @@ public class Random extends java.util.Random {
 	}
 
 	/**
-	 * Gera um número exponencialmente distribído com taxa = {@code rate}. Isso
-	 * é feito através da inversa da c.d.f. da distribuição exponencial.
+	 * Gera um nÃºmero exponencialmente distribuÃ­do com taxa = {@code rate}. Isso
+	 * Ã© feito atravÃ©s da inversa da c.d.f. da distribuiÃ§Ã£o exponencial.
 	 * 
 	 * @param rate
-	 *            a taxa média do número de ocorrências por unidade de tempo
-	 * @return número exponencialmente distribído com taxa = {@code rate}
+	 *            a taxa mÃ©dia do nÃºmero de ocorrÃªncias por unidade de tempo
+	 * @return nÃºmero exponencialmente distribuÃ­do com taxa = {@code rate}
 	 */
 	public double nextExponetial(double rate) {
 		double result;
 		double u;
 
-		u = nextDouble(); // número uniforme entre (0, 1)
+		u = nextDouble(); // nÃºmero uniforme entre (0, 1)
 		result = -Math.log(1 - u) / rate; // inversa da c.d.f. da exponencial
 
 		return result;
 	}
 
-	// TODO: Esse método será deletado em breve. Escrevi só para ter o feeling
+	// TODO: Esse mÃ©todo serÃ¡ deletado em breve. Escrevi sÃ³ para ter o feeling
 	// da coisa.
 	public static void main(String args[]) {
 
 		/*
-		 * Gera várias amostas da distribuição exponecial e faz uma estimativa
-		 * da média real com IC com 90% de confiança. O objetivo é simplesmente
-		 * verificar se o gerador está gerando a distribuição que queremos.
+		 * Gera vÃ¡rias amostas da distribuiÃ§Ã£o exponecial e faz uma estimativa
+		 * da mÃ©dia real com IC com 90% de confianÃ§a. O objetivo Ã© simplesmente
+		 * verificar se o gerador se comportando de acordo com a distribuiÃ§Ã£o
+		 * que queremos.
 		 */
 		Random generator = new Random();
 		int numberOfSamples = 1000;
 		double rate = 0.1;
-		double mean = 0; // estimador da média
-		double variance = 0; // estimador da variância
+		double mean = 0; // estimador da mÃ©dia
+		double variance = 0; // estimador da variÃ¢ncia
 
-		// TODO: Para um número de armostras muito grande, o estimador dá
-		// overflow! Com 100.000 amostras já dá esse problema. Pensar em um
-		// algoritmo melhor.
+		// TODO: Para um nÃºmero de armostras muito grande ocorre overflow! Com
+		// 100.000 amostras jÃ¡ dÃ¡ esse problema. Pensar em um algoritmo melhor.
 		for (int i = 0; i < numberOfSamples; i++) {
 			double sample = generator.nextExponetial(rate);
 			mean += sample;
@@ -63,15 +63,15 @@ public class Random extends java.util.Random {
 		mean /= numberOfSamples;
 
 		/*
-		 * O percentil uzado para um IC com 90% de confiança é z0,95 = 1,645.
-		 * Lembrando que alpha = 10%. Estamos usando valores assintóticos pois o
-		 * número de amostras é muito grande.
+		 * O percentil uzado para um IC com 90% de confianÃ§a Ã© z0,95 = 1,645.
+		 * Lembrando que alpha = 10%. Estamos usando o percentil assintÃ³tico da
+		 * normal pois o nÃºmero de amostras Ã© muito grande.
 		 */
 		double icDistance = 1.645 * Math.sqrt(variance / numberOfSamples);
 
 		System.out.println("sample mean     = " + mean);
 		System.out.println("sample variance = " + variance);
-		System.out.println("mean estimate   = " + mean + " ± " + icDistance
+		System.out.println("mean estimate   = " + mean + " Â± " + icDistance
 				+ " (CI 90%)");
 	}
 }
