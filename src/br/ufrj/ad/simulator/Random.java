@@ -59,8 +59,11 @@ public class Random extends java.util.Random {
 		return sample;
 	}
 
-	// TODO: Esse método será deletado em breve. Escrevi só para ter o feeling
-	// da coisa.
+	/**
+	 * Exemplos de uso.
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
 
 		/*
