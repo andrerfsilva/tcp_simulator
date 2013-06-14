@@ -1,4 +1,3 @@
-
 /*
  * Class:        NormalDist
  * Description:  normal or Gaussian distribution
@@ -567,11 +566,13 @@ public class NormalDist extends ContinuousDistribution {
 	}
 
 	public static void main(String args[]) {
-		
+
 		double p = 0.95;
-		
-		System.out.println(p*100 + "%-percentil = " + NormalDist.inverseF01(p));
-		System.out.println(p*100 + "%-percentil = " + StudentDist.inverseF(100000, p));
+
+		System.out.println(p * 100 + "%-percentil = "
+				+ NormalDist.inverseF01(p));
+		System.out.println(p * 100 + "%-percentil = "
+				+ StudentDist.inverseF(100000, p));
 	}
 
 }
