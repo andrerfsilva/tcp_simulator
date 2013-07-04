@@ -8,4 +8,9 @@ package br.ufrj.ad.simulator;
  */
 public class RxTCP {
 
+	public void receberPacote(Pacote p) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

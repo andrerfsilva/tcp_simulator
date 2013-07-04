@@ -73,7 +73,7 @@ public class Random extends java.util.Random {
 		 * que queremos.
 		 */
 		Random generator = new Random();
-		int numberOfSamples = 10000;
+		int numberOfSamples = 100000;
 		double p = 0.1;
 		double mean = 0; // estimador da média
 		double variance = 0; // estimador da variância

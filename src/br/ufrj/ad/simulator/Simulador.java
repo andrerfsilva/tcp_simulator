@@ -20,6 +20,8 @@ public class Simulador {
 
 	public void simular() {
 
+		// TODO: agendar eventos iniciais!
+
 		// TODO: estimar fase transiente!
 
 		while (filaEventos.size() > 0 && !estatisticasSatisfatorias()) {
@@ -36,7 +38,8 @@ public class Simulador {
 	}
 
 	private void tratarEvento(Evento e) {
-		// TODO definir eventos e como eles alteram o estado do sistema
+		// TODO definir eventos, como eles alteram o estado do sistema, e
+		// agendar novos eventos!
 
 	}
 }

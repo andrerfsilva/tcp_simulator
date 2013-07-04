@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public abstract class Roteador {
 
 	private int tamanhoBuffer;
-	private ArrayList<Pacote> buffer;
+	protected ArrayList<Pacote> buffer;
 	private RxTCP[] receptores; // lista de RxTCP conectados ao roteador
 
 	public Roteador() {
@@ -36,11 +36,19 @@ public abstract class Roteador {
 	 * Envia próximo pacote ao seu destino e o remove do buffer do roteador.
 	 */
 	public void enviarProximoPacote() {
-		Pacote p = buffer.get(0);
-		if (p.getDestino >= 0) {
+		Pacote p = getProximoPacoteAEnviar();
+		if (p.getDestino() >= 0) { // trafego de fundo tem destino negativo.
 			receptores[p.getDestino()].receberPacote(p);
 		}
-		buffer.remove(0);
+		buffer.remove(p);
+	}
+
+	public Pacote getProximoPacoteAEnviar() {
+		return buffer.get(0);
+	}
+
+	public int getNumeroPacotes() {
+		return buffer.size();
 	}
 
 	public int getTamanhoBuffer() {

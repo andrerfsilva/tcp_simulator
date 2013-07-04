@@ -143,18 +143,8 @@ public class Estimador {
 			estimador.coletarAmostra(sample);
 		}
 
-		/*
-		 * O percentil uzado para um IC com 90% de confiança é z0,95 = 1,645.
-		 * Lembrando que alpha = 10%. Estamos usando o percentil assintótico da
-		 * normal pois o número de amostras é muito grande.
-		 */
-		double ciDistance = 1.645 * Math.sqrt(estimador.getVariancia()
-				/ numberOfSamples);
-
 		System.out.println("média amostral      = " + estimador.getMedia());
 		System.out.println("variância amostral  = " + estimador.getVariancia());
-		System.out.println("estimativa da média = " + estimador.getMedia() + " ± "
-				+ ciDistance + " (IC 90%) calculado com tabela");
 
 		/*
 		 * Testando se nossa função está calculando o percentil correto para 90%
