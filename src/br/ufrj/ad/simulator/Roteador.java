@@ -28,19 +28,40 @@ public abstract class Roteador {
 	 * 
 	 * @param p
 	 *            pacote que chegou ao roteador
+	 * 
+	 * @param tempoAtualSimulado
+	 *            representa o tempo onde o evento receber pacote ocorreu no
+	 *            universo simulado
+	 * 
 	 * @return se o pacote foi descartado ou não
 	 */
-	public abstract boolean receberPacote(Pacote p);
+	public abstract boolean receberPacote(Pacote p, double tempoAtualSimulado);
+
+	/**
+	 * Usado quando o tempo atual simulado é irrelevante. Roteador FIFO, por
+	 * exemplo.
+	 * 
+	 * @param p
+	 *            pacote que chegou ao roteador
+	 * @return se o pacote foi descartado ou não
+	 */
+	public boolean receberPacote(Pacote p) {
+		return receberPacote(p, 0);
+	}
 
 	/**
 	 * Envia próximo pacote ao seu destino e o remove do buffer do roteador.
 	 */
-	public void enviarProximoPacote() {
+	public void enviarProximoPacote(double tempoAtualSimulado) {
 		Pacote p = getProximoPacoteAEnviar();
 		if (p.getDestino() >= 0) { // trafego de fundo tem destino negativo.
 			receptores[p.getDestino()].receberPacote(p);
 		}
 		buffer.remove(p);
+	}
+
+	public void enviarProximoPacote() {
+		enviarProximoPacote(0);
 	}
 
 	public Pacote getProximoPacoteAEnviar() {

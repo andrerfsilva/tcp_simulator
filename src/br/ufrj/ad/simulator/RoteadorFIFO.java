@@ -9,7 +9,8 @@ package br.ufrj.ad.simulator;
 public class RoteadorFIFO extends Roteador {
 
 	@Override
-	public boolean receberPacote(Pacote pacote) {
+	public boolean receberPacote(Pacote pacote, double tempoAtual) {
+		// OBS: o tempo atual é irrelevante para FIFO!
 		if (buffer.size() < getTamanhoBuffer()) {
 			buffer.add(pacote);
 			return true;

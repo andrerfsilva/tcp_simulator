@@ -12,7 +12,7 @@ import br.ufrj.ad.simulator.RoteadorFIFO;
  * Casos de teste da classe RoteadorFIFO.
  * 
  * @author André Ramos, Felipe Teixeira, Wellington Mascena
- *
+ * 
  */
 public class TesteRoteadorFIFO {
 
@@ -46,6 +46,23 @@ public class TesteRoteadorFIFO {
 			roteador.receberPacote(new Pacote());
 		}
 		assertEquals(39, roteador.getNumeroPacotes());
+	}
+
+	@Test
+	public void testReceber3Pacotes() {
+		roteador.setTamanhoBuffer(2);
+		for (int i = 0; i < 2; i++) {
+			roteador.receberPacote(new Pacote());
+		}
+		boolean recebeuUltimo = roteador.receberPacote(new Pacote());
+		assertFalse(recebeuUltimo);
+	}
+	
+	@Test
+	public void testReceber1Pacote() {
+		roteador.setTamanhoBuffer(5);
+		boolean recebeu = roteador.receberPacote(new Pacote());
+		assertTrue(recebeu);
 	}
 
 	@Test

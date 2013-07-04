@@ -14,6 +14,8 @@ public class Simulador {
 	private Rede rede; // modelo do sistema a ser simulado
 	private PriorityQueue<Evento> filaEventos; // fila de eventos
 
+	private double tempoAtualSimulado;
+
 	public Simulador() {
 		rede = new Rede();
 	}
@@ -27,6 +29,9 @@ public class Simulador {
 		while (filaEventos.size() > 0 && !estatisticasSatisfatorias()) {
 			Evento e = filaEventos.poll();
 			tratarEvento(e);
+
+			tempoAtualSimulado += e.getTempo();
+
 		}
 
 		// TODO coletar estatísticas
