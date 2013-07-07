@@ -36,8 +36,8 @@ public class TesteEstimador {
 
 	@Test
 	public void testGetVariancia2AmostrasIguais() {
-		estimador.coletarAmostra(200);
-		estimador.coletarAmostra(200);
+		estimador.coletarAmostra(971);
+		estimador.coletarAmostra(971);
 		assertEquals(0, estimador.getVariancia(), 0);
 	}
 
@@ -46,28 +46,47 @@ public class TesteEstimador {
 		for (int i = 0; i < 100; i++) {
 			estimador.coletarAmostra(62);
 		}
-		System.out.println(estimador.getMedia());
+		assertEquals(0, estimador.getVariancia(), 0);
+	}
+	
+	@Test
+	public void testGetVariancia1000AmostrasIguais() {
+		for (int i = 0; i < 1000; i++) {
+			estimador.coletarAmostra(98);
+		}
 		assertEquals(0, estimador.getVariancia(), 0);
 	}
 
 	@Test
-	public void testGetDesvioPadrao() {
-		fail("Not yet implemented");
+	public void testGetDesvioPadrao300AmostrasIguais() {
+		for (int i = 0; i < 300; i++) {
+			estimador.coletarAmostra(731);
+		}
+		assertEquals(0, estimador.getDesvioPadrao(), 0);
 	}
 
 	@Test
-	public void testGetMaxICMedia() {
-		fail("Not yet implemented");
+	public void testGetMaxICMedia450AmostrasIguais() {
+		for (int i = 0; i < 450; i++) {
+			estimador.coletarAmostra(423);
+		}
+		assertEquals(423, estimador.getMaxICMedia(0.99), 0);
 	}
 
 	@Test
-	public void testGetInfICMedia() {
-		fail("Not yet implemented");
+	public void testGetInfICMedia10000AmostrasIguais() {
+		for (int i = 0; i < 10000; i++) {
+			estimador.coletarAmostra(999);
+		}
+		assertEquals(999, estimador.getInfICMedia(0.99), 0);
 	}
 
 	@Test
-	public void testGetDistanciaICMedia() {
-		fail("Not yet implemented");
+	public void testGetDistanciaICMedia250AmostrasIguais() {
+		for (int i = 0; i < 250; i++) {
+			estimador.coletarAmostra(-820);
+		}
+		assertEquals(0, estimador.getDistanciaICMedia(0.99), 0);
 	}
 
 }
