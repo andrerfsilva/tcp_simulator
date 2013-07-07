@@ -62,7 +62,7 @@ public class Estimador {
 	 */
 	public double getVariancia() {
 		if (numeroAmostras > 1) {
-			return (somaQuadradoAmostras / numeroAmostras)
+			return (somaQuadradoAmostras / (numeroAmostras - 1))
 					- (somaAmostras * somaAmostras / ((numeroAmostras - 1) * numeroAmostras));
 		} else {
 			return 0;

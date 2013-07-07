@@ -102,7 +102,7 @@ public class TesteRoteadorFIFO {
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGetProximoPacoteBufferVazio() {
 		roteador.setTamanhoBuffer(40);
-		Pacote p = roteador.getProximoPacoteAEnviar();
+		roteador.getProximoPacoteAEnviar();
 	}
 
 	@Test
