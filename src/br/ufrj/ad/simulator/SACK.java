@@ -21,7 +21,7 @@ public class SACK {
 		this.sequenciasRecebidasCorretamente = sequenciasRecebidasCorretamente;
 	}
 
-	public SACK(int proximoByteEsperado) {
+	public SACK(long proximoByteEsperado) {
 		this.proximoByteEsperado = proximoByteEsperado;
 		this.sequenciasRecebidasCorretamente = null;
 	}

@@ -51,7 +51,7 @@ public class Pacote {
 	public void setByteInicialEFinal(long byteInicial, long byteFinal)
 			throws InvalidPackageException {
 
-		if (byteInicial >= byteFinal) {
+		if (byteInicial > byteFinal) {
 			throw new InvalidPackageException();
 		}
 
