@@ -4,7 +4,7 @@ package br.ufrj.ad.simulator;
  * Informações relevantes de um pacote. Importante: todo pacote tem tamanho MSS
  * = 1500 bytes.
  * 
- * @author André Ramos
+ * @author André Ramos, Felipe Teixeira
  * 
  */
 public class Pacote {
@@ -14,12 +14,18 @@ public class Pacote {
 	/**
 	 * O número de sequência do primeiro byte do pacote.
 	 */
-	private int byteInicial;
+	private long byteInicial;
 
 	/**
 	 * O número de sequência do último byte do pacote.
 	 */
-	private int byteFinal;
+	private long byteFinal;
+
+	public Pacote() {
+		this.destino = -1;
+		this.byteInicial = 0;
+		this.byteFinal = 0;
+	}
 
 	/**
 	 * Destino representa qual dos RxTCP deve receber esse pacote. Para
@@ -37,25 +43,24 @@ public class Pacote {
 		return this.destino;
 
 	}
-	
-	public int getByteInicial() {
+
+	public long getByteInicial() {
 		return byteInicial;
 	}
 
-	public void setByteInicial(int byteInicial) {
+	public void setByteInicialEFinal(long byteInicial, long byteFinal)
+			throws InvalidPackageException {
+
+		if (byteInicial >= byteFinal) {
+			throw new InvalidPackageException();
+		}
+
 		this.byteInicial = byteInicial;
-	}
-
-	public int getByteFinal() {
-		return byteFinal;
-	}
-
-	public void setByteFinal(int byteFinal) {
 		this.byteFinal = byteFinal;
 	}
 
-	public Pacote() {
-		this.destino = -1;
+	public long getByteFinal() {
+		return byteFinal;
 	}
 
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class RxTCP {
 
-	private int proximoByteEsperado;
+	private long proximoByteEsperado;
 	private ArrayList<int[]> sequenciasRecebidasCorretamente;
 
 	public RxTCP() {
@@ -19,23 +19,9 @@ public class RxTCP {
 	}
 
 	public SACK receberPacote(Pacote p) {
+		
+		// TODO: Fazer!!!!!!
 		SACK sack = null;
-
-		if (p.getByteInicial() < proximoByteEsperado) {
-			//TODO: Fazer essa bagaça!
-			
-			int[][] sequencia = null;
-			sack = new SACK(proximoByteEsperado, sequencia);
-		}
-		else if (p.getByteInicial() == proximoByteEsperado) {
-			proximoByteEsperado = p.getByteFinal() + 1;
-		} else {
-
-		}
-
-		if (sequenciasRecebidasCorretamente.size() == 0) {
-			sack = new SACK(proximoByteEsperado);
-		}
 
 		return sack;
 	}
