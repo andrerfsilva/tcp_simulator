@@ -11,9 +11,15 @@ public class Pacote {
 
 	private int destino;
 
-	public Pacote() {
-		this.destino = -1;
-	}
+	/**
+	 * O número de sequência do primeiro byte do pacote.
+	 */
+	private int byteInicial;
+
+	/**
+	 * O número de sequência do último byte do pacote.
+	 */
+	private int byteFinal;
 
 	/**
 	 * Destino representa qual dos RxTCP deve receber esse pacote. Para
@@ -29,6 +35,27 @@ public class Pacote {
 
 	public int getDestino() {
 		return this.destino;
+
+	}
+	
+	public int getByteInicial() {
+		return byteInicial;
+	}
+
+	public void setByteInicial(int byteInicial) {
+		this.byteInicial = byteInicial;
+	}
+
+	public int getByteFinal() {
+		return byteFinal;
+	}
+
+	public void setByteFinal(int byteFinal) {
+		this.byteFinal = byteFinal;
+	}
+
+	public Pacote() {
+		this.destino = -1;
 	}
 
 }

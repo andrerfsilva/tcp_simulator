@@ -29,6 +29,28 @@ public class TesteEstimador {
 	}
 
 	@Test
+	public void testGetMediaDuasAmostrasIguais() {
+		estimador.coletarAmostra(543);
+		estimador.coletarAmostra(543);
+		assertEquals(543, estimador.getMedia(), 0);
+	}
+
+	@Test
+	public void testGetMediaDuasAmostras() {
+		estimador.coletarAmostra(10);
+		estimador.coletarAmostra(20);
+		assertEquals(15, estimador.getMedia(), 0);
+	}
+
+	@Test
+	public void testGetMedia100PrimeirosInteiros() {
+		for (int i = 1; i <= 100; i++) {
+			estimador.coletarAmostra(i);
+		}
+		assertEquals(5050.0/100, estimador.getMedia(), 0);
+	}
+
+	@Test
 	public void testGetVarianciaUmaAmostra() {
 		estimador.coletarAmostra(200);
 		assertEquals(0, estimador.getVariancia(), 0);
@@ -48,7 +70,7 @@ public class TesteEstimador {
 		}
 		assertEquals(0, estimador.getVariancia(), 0);
 	}
-	
+
 	@Test
 	public void testGetVariancia1000AmostrasIguais() {
 		for (int i = 0; i < 1000; i++) {

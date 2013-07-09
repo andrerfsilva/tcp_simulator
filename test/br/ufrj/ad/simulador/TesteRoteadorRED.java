@@ -8,6 +8,12 @@ import org.junit.Test;
 import br.ufrj.ad.simulator.Pacote;
 import br.ufrj.ad.simulator.RoteadorRED;
 
+/**
+ * Casos de teste para a classe RoteadorRED
+ * 
+ * @author André Ramos, Wellington Mascena
+ * 
+ */
 public class TesteRoteadorRED {
 
 	private RoteadorRED roteador;

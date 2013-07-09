@@ -36,7 +36,7 @@ public class Estimador {
 	 *            uma amostra da v.a. de interesse
 	 */
 	public void coletarAmostra(double amostra) {
-		// TODO: Para um número de armostras muito grande dá overflow! Com
+		// TODO: Para um número de amostras muito grande dá overflow! Com
 		// 100.000 amostras usando a distribuição exponencial ou a geométrica já
 		// pode ocorrer esse problema. Pensar em um algoritmo melhor.
 		somaAmostras += amostra;

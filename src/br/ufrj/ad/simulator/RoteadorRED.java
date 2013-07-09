@@ -8,26 +8,55 @@ package br.ufrj.ad.simulator;
  */
 public class RoteadorRED extends Roteador {
 
-	private int minth; // limite inferior
-	private int maxth; // limite superior
-	private int count; // número de pacotes não descartados desde o último
-						// descarte
-	private double maxp; // constante louca
-	private double wq; // peso
-	private long m; // estimativa do número de pacotes que poderiam ser
-					// transmitidos durante o período ocioso (período
-					// ocioso/tempo médio de transmição de pacote)
-	private double avg; // média
+	/**
+	 * Limite inferior.
+	 */
+	private int minth;
+
+	/**
+	 * Limite superior.
+	 */
+	private int maxth;
+
+	/**
+	 * Número de pacotes não descartados desde o último descarte.
+	 */
+	private int count;
+
+	/**
+	 * Constante louca. Ver descrição do trabalho!!!
+	 */
+	private double maxp;
+
+	/**
+	 * Peso.
+	 */
+	private double wq;
+
+	/**
+	 * Estimativa do número de pacotes que poderiam ser transmitidos durante o
+	 * período ocioso (período ocioso médio/tempo médio de transmição de
+	 * pacote).
+	 */
+	private long m;
+
+	/**
+	 * Média da ocupação da fila, ou seja, E[N].
+	 */
+	private double avg;
 
 	private Random gerador;
 	private Estimador estimadorPeriodoOcioso;
 	private double inicioPeriodoOcioso;
 	private double fimPeriodoOcioso;
 
-	private int mss; // MSS: maximum segment size, em bytes.
+	/**
+	 * MSS: maximum segment size, em bytes. Nesse trabalho é 1500 bytes, e todos
+	 * os pacotes tem tamanho MSS.
+	 */
+	private int mss;
 	private double taxaEnlaceDeSaida;
 
-	
 	public RoteadorRED() {
 		// dados de entrada do simulador
 		mss = 1500;
@@ -52,18 +81,17 @@ public class RoteadorRED extends Roteador {
 
 	@Override
 	public boolean receberPacote(Pacote p, double tempoAtualSimulado) {
-		atualizarAVG();
+		atualizarAvg();
 		atualizarM(tempoAtualSimulado);
-		
-		if(buffer.size() == getTamanhoBuffer()){
+
+		if (buffer.size() == getTamanhoBuffer()) {
 			count = 0;
 			return false;
-			
+
 		}
-		
+
 		/*
-		 * Politica de inserção no RED. 
-		 * Baseada na sessão 4 do trabalho.
+		 * Politica de inserção no RED. Baseada na sessão 4 do trabalho.
 		 */
 		if (avg < minth) {
 			buffer.add(p);
@@ -108,7 +136,7 @@ public class RoteadorRED extends Roteador {
 		}
 	}
 
-	private void atualizarAVG() {
+	private void atualizarAvg() {
 		if (getNumeroPacotes() > 0) {
 			avg = (1 - wq) * avg + wq * getNumeroPacotes();
 		} else {
