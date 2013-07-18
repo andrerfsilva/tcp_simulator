@@ -6,9 +6,9 @@ package br.ufrj.ad.simulator;
  * @author André Ramos
  * 
  */
-public abstract class Evento implements Comparable<Evento> {
+public class Evento implements Comparable<Evento> {
 
-	/*
+	/**
 	 * Representa quando o evento ocorre no tempo simulado.
 	 */
 	private final double tempo;
@@ -20,6 +20,8 @@ public abstract class Evento implements Comparable<Evento> {
 	/**
 	 * Usado para ordenar os eventos na lista de eventos do simulador em função
 	 * de quando eles devem ocorrer.
+	 * 
+	 * Atenção: Esse compração não é consistente com o método equals().
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

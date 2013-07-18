@@ -20,5 +20,14 @@ public class Rede {
 	private TxTCP[] transmissores;
 	private RxTCP[] receptores;
 	private Roteador roteador; // representa o gargalo da rede
+	
+	public Roteador getRoteador() {
+		return roteador;
+	}
+	public void setRoteador(Roteador roteador) {
+		this.roteador = roteador;
+	}
+	
+	
 
 }
