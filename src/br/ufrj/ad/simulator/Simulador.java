@@ -83,23 +83,65 @@ public class Simulador {
 		return (mss * 8 * tamanhoMedioRajada * 1E-3) / tempoMedioEntreRajadas;
 	}
 
+	/**
+	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
+	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
+	 * variável aleatória geométrica.
+	 * 
+	 * @return média do número de pacotes numa rajada de tráfego de fundo
+	 */
 	public long getTamanhoMedioRajada() {
 		return tamanhoMedioRajada;
 	}
 
+	/**
+	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
+	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
+	 * variável aleatória geométrica.
+	 * 
+	 * @param tamanhoMedioRajada
+	 *            média do número de pacotes numa rajada de tráfego de fundo
+	 */
 	public void setTamanhoMedioRajada(long tamanhoMedioRajada) {
 		this.tamanhoMedioRajada = tamanhoMedioRajada;
 	}
 
+	/**
+	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
+	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
+	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
+	 * 
+	 * @return tempo médio entre rajadas de tráfego de fundo (em milisegundos)
+	 */
 	public double getTempoMedioEntreRajadas() {
 		return tempoMedioEntreRajadas;
 	}
 
+	/**
+	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
+	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
+	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
+	 * 
+	 * @param tempoMedioEntreRajadas
+	 *            tempo médio entre rajadas de tráfego de fundo (em
+	 *            milisegundos)
+	 */
 	public void setTempoMedioEntreRajadas(double tempoMedioEntreRajadas) {
 		this.tempoMedioEntreRajadas = tempoMedioEntreRajadas;
 	}
 
-	public void simular() {
+	/**
+	 * Inicia o loop principal da simulação e retorna as estatísticas para todos
+	 * os cenários do trabalho.
+	 * 
+	 * @throws EventOutOfOrderException
+	 *             Quando a lista de eventos retornar um evento cujo tempo de
+	 *             ocorrência seja menor que o tempo atual simulado, ou seja,
+	 *             mostra que um evento deveria ter sido tratado antes, portanto
+	 *             há uma inconsistência nos dados da simulação e a simulação
+	 *             deve ser abortada.
+	 */
+	public void simular() throws EventOutOfOrderException {
 
 		/*
 		 * Agendar eventos iniciais!
@@ -113,6 +155,14 @@ public class Simulador {
 
 		while (filaEventos.size() > 0 && !estatisticasSatisfatorias()) {
 			Evento e = filaEventos.poll();
+
+			/*
+			 * Confere a consistência da ordem dos eventos no tempo.
+			 */
+			if (e.getTempo() < this.tempoAtualSimulado) {
+				throw new EventOutOfOrderException();
+			}
+
 			tempoAtualSimulado += e.getTempo();
 			tratarEvento(e);
 

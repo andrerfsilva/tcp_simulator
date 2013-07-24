@@ -36,6 +36,11 @@ public class Evento implements Comparable<Evento> {
 		return 0;
 	}
 
+	/**
+	 * Representa quando o evento ocorre no tempo simulado (em milisegundos).
+	 * 
+	 * @return
+	 */
 	public double getTempo() {
 		return tempo;
 	}
