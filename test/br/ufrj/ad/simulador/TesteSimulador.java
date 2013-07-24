@@ -43,4 +43,29 @@ public class TesteSimulador {
 		assertEquals(15, this.simulador.getTaxaTrafegoDeFundoEmMbps(), 0);
 	}
 
+	@Test
+	public void testTempoTransmissaoPacoteNoRoteador() {
+		simulador.setTaxaSaidaEnlaceDoRoteador(10E6);
+		assertEquals(1.2, simulador.tempoTransmissaoPacoteNoRoteador(1500), 0);
+	}
+
+	@Test
+	public void testTempoTransmissaoPacoteNoRoteador2() {
+		simulador.setTaxaSaidaEnlaceDoRoteador(10E6);
+		assertEquals(2.4, simulador.tempoTransmissaoPacoteNoRoteador(3000), 0);
+	}
+
+	@Test
+	public void testTempoTransmissaoPacoteNoRoteador3() {
+		simulador.setTaxaSaidaEnlaceDoRoteador(1E6);
+		assertEquals(12.0, simulador.tempoTransmissaoPacoteNoRoteador(1500), 0);
+	}
+
+	@Test
+	public void testTempoTransmissaoPacoteNoRoteador4() {
+		simulador.setTaxaSaidaEnlaceDoRoteador(10E9);
+		assertEquals(1.2E-3, simulador.tempoTransmissaoPacoteNoRoteador(1500),
+				0);
+	}
+
 }

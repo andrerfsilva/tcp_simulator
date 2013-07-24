@@ -9,7 +9,7 @@ package br.ufrj.ad.simulator;
 public class Evento implements Comparable<Evento> {
 
 	/**
-	 * Representa quando o evento ocorre no tempo simulado.
+	 * Representa quando o evento ocorre no tempo simulado (em milisegundos).
 	 */
 	private final double tempo;
 

@@ -34,9 +34,9 @@ public class Simulador {
 	private long tamanhoMedioRajada;
 
 	/**
-	 * Tempo médio entre as chegadas Poisson (em milisegundos). Lembrando que o
-	 * tempo entre as chegadas é uma variável aleatória exponencial com média =
-	 * 1/(taxa de chegada), ou seja, a taxa = 1/média.
+	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
+	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
+	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
 	 */
 	private double tempoMedioEntreRajadas;
 
@@ -170,7 +170,7 @@ public class Simulador {
 		 */
 		if (rede.getRoteador().getNumeroPacotes() == 0) {
 			Evento proximoEnvio = new EventoRoteadorEnviaPacote(
-					tempoAtualSimulado + mss / taxaSaidaEnlaceDoRoteador);
+					tempoAtualSimulado + tempoTransmissaoPacoteNoRoteador(mss));
 			filaEventos.add(proximoEnvio);
 		}
 
@@ -183,5 +183,49 @@ public class Simulador {
 		for (long i = 0; i < tamanhoRajada; i++) {
 			rede.getRoteador().receberPacote(new Pacote(), tempoAtualSimulado);
 		}
+	}
+
+	/**
+	 * Calcula o tempo de transmissão de um pacote no enlace de saída do
+	 * roteador (em milisegundos). O tempo é calculado em função da taxa do
+	 * enlace e do tamanho do pacote.
+	 * 
+	 * @param tamanhoPacote
+	 *            tamanho do pacote (em bytes)
+	 * @return tempo de transmissão do pacote no enlace de saída do roteador (em
+	 *         milisegundos)
+	 */
+	public double tempoTransmissaoPacoteNoRoteador(int tamanhoPacote) {
+		return (tamanhoPacote * 8 / taxaSaidaEnlaceDoRoteador) * 1E3;
+	}
+
+	/**
+	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
+	 * trabalho.
+	 * 
+	 * @return taxa de saída no enlace do rotedor (em bps)
+	 */
+	public double getTaxaSaidaEnlaceDoRoteador() {
+		return taxaSaidaEnlaceDoRoteador;
+	}
+
+	/**
+	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
+	 * trabalho.
+	 * 
+	 * @param taxaSaidaEnlaceDoRoteador
+	 *            taxa de saída no enlace do rotedor (em bps)
+	 */
+	public void setTaxaSaidaEnlaceDoRoteador(double taxaSaidaEnlaceDoRoteador) {
+		this.taxaSaidaEnlaceDoRoteador = taxaSaidaEnlaceDoRoteador;
+	}
+
+	/**
+	 * Maximum Segment Size. Nesse trabalho o valor de MSS = 1500 bytes.
+	 * 
+	 * @return MSS = 1500 bytes
+	 */
+	public int getMSS() {
+		return mss;
 	}
 }
