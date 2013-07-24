@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema
- * simulado e a coleta de estatísticas de interesse.
+ * simulado e a coleta de estatísticas de interesse da simulação.
  * 
  * @author André Ramos, Welligton Mascena
  * 
@@ -12,7 +12,7 @@ import java.util.PriorityQueue;
 public class Simulador {
 
 	/**
-	 * Modelo do sistema a ser simulado.
+	 * Modelo da rede do sistema a ser simulado.
 	 */
 	private Rede rede;
 
@@ -22,29 +22,32 @@ public class Simulador {
 	private PriorityQueue<Evento> filaEventos;
 
 	/**
-	 * Tempo atual simulado em milisegundos.
+	 * Tempo atual simulado (em milisegundos).
 	 */
 	private double tempoAtualSimulado;
 
 	/**
-	 * Número médio de pacotes que chegam em uma rajada de tamanho geométrico,
-	 * ou seja, o número de pacotes é uma variável aleatória geométrica.
+	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
+	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
+	 * variável aleatória geométrica.
 	 */
 	private long tamanhoMedioRajada;
 
 	/**
-	 * Tempo médio entre as chegadas Poisson. Lembrando que essa é uma variável
-	 * aleatória exponencial com média 1/(taxa de chegada).
+	 * Tempo médio entre as chegadas Poisson (em milisegundos). Lembrando que o
+	 * tempo entre as chegadas é uma variável aleatória exponencial com média =
+	 * 1/(taxa de chegada), ou seja, a taxa = 1/média.
 	 */
 	private double tempoMedioEntreRajadas;
 
 	/**
-	 * Usado para calcular as variáveis aleatórias da simulação.
+	 * Gerador de números aleatórios usado para calcular as variáveis aleatórias
+	 * da simulação.
 	 */
 	private Random geradorNumerosAleatorios;
 
 	/**
-	 * Taxa de saída no enlace do rotedor em bps. Parâmetro Cg na definição do
+	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
 	 * trabalho.
 	 */
 	private double taxaSaidaEnlaceDoRoteador;
@@ -65,6 +68,19 @@ public class Simulador {
 
 		// roteador default é FIFO
 		rede.setRoteador(new RoteadorFIFO());
+	}
+
+	/**
+	 * Calcula a taxa do tráfego de fundo em Mbps. Por exemplo: Se o tamanho
+	 * médio das rajadas é 10 pacotes e o intervalo médio entre chegadas for
+	 * 24ms, então a taxa média deste tráfego de fundo é (1500 x 8 x 10)/24ms =
+	 * 5 Mbps. Lembrando que todos os pacotes da rajada tem tamanho MSS = 1500
+	 * bytes.
+	 * 
+	 * @return taxa do tráfego de fundo em Mbps
+	 */
+	public double getTaxaTrafegoDeFundoEmMbps() {
+		return (mss * 8 * tamanhoMedioRajada * 1E-3) / tempoMedioEntreRajadas;
 	}
 
 	public long getTamanhoMedioRajada() {
@@ -110,6 +126,13 @@ public class Simulador {
 		return false;
 	}
 
+	/**
+	 * Método auxiliar usado para tratar o próximo evento da fila de eventos.
+	 * Cada evento é tratado de forma diferente dependendo do seu tipo.
+	 * 
+	 * @param e
+	 *            próximo evento da fila de eventos
+	 */
 	private void tratarEvento(Evento e) {
 		// TODO definir eventos, como eles alteram o estado do sistema, e
 		// agendar novos eventos!
@@ -122,6 +145,13 @@ public class Simulador {
 		}
 	}
 
+	/**
+	 * Método auxiliar usado para tratar o evento em que o roteador recebe
+	 * tráfego de fundo. Sempre que ocorre uma cegada de tráfego de fundo,
+	 * deve-se agendar a próxima chegada. O tempo entre as chegadas é uma
+	 * variável aleatória exponencial (a taxa é dada pelos parâmetros de
+	 * entrada).
+	 */
 	private void tratarEventoRoteadorRecebeTrafegoDeFundo() {
 		/*
 		 * Agenda a chegada do próximo tráfego de fundo.
