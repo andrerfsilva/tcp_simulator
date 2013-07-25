@@ -27,7 +27,16 @@ public class Rede {
 	public void setRoteador(Roteador roteador) {
 		this.roteador = roteador;
 	}
-	
-	
-
+	public TxTCP[] getTransmissores() {
+		return transmissores;
+	}
+	public void setTransmissores(TxTCP[] transmissores) {
+		this.transmissores = transmissores;
+	}
+	public RxTCP[] getReceptores() {
+		return receptores;
+	}
+	public void setReceptores(RxTCP[] receptores) {
+		this.receptores = receptores;
+	}
 }

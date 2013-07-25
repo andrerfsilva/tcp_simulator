@@ -52,12 +52,14 @@ public abstract class Roteador {
 	/**
 	 * Envia próximo pacote ao seu destino e o remove do buffer do roteador.
 	 */
-	public void enviarProximoPacote(double tempoAtualSimulado) {
+	public SACK enviarProximoPacote(double tempoAtualSimulado) {
 		Pacote p = getProximoPacoteAEnviar();
+		SACK sack = null;
 		if (p.getDestino() >= 0) { // trafego de fundo tem destino negativo.
-			receptores[p.getDestino()].receberPacote(p);
+			sack = receptores[p.getDestino()].receberPacote(p);
 		}
 		buffer.remove(p);
+		return sack;
 	}
 
 	public void enviarProximoPacote() {

@@ -13,8 +13,15 @@ public class Evento implements Comparable<Evento> {
 	 */
 	private final double tempoDeOcorrencia;
 
-	public Evento(double tempo) {
-		this.tempoDeOcorrencia = tempo;
+	/**
+	 * Construtor do Evento. O tempo de ocorrência deve ser passado como
+	 * parâmetro de construção, e não pode ser alterado depois.
+	 * 
+	 * @param tempoDeOcorrencia
+	 *            indica quando o evento ocorre no tempo simulado
+	 */
+	public Evento(double tempoDeOcorrencia) {
+		this.tempoDeOcorrencia = tempoDeOcorrencia;
 	}
 
 	/**

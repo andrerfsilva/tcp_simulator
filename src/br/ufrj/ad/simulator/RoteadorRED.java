@@ -144,11 +144,12 @@ public class RoteadorRED extends Roteador {
 		}
 	}
 
-	public void enviarProximoPacote(double tempoAtualSimulado) {
-		super.enviarProximoPacote(tempoAtualSimulado);
+	public SACK enviarProximoPacote(double tempoAtualSimulado) {
+		SACK sack = super.enviarProximoPacote(tempoAtualSimulado);
 		if (getNumeroPacotes() == 0) {
 			inicioPeriodoOcioso = tempoAtualSimulado;
 		}
+		return sack;
 	}
 
 	private double getPa() {

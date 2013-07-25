@@ -29,9 +29,10 @@ public class RxTCP {
 			if (this.sequencias.size() > 0) {
 				long[][] vetorSequencias = new long[this.sequencias.size()][2];
 				this.sequencias.toArray(vetorSequencias);
-				return new SACK(this.proximoByteEsperado, vetorSequencias);
+				return new SACK(p.getDestino(), this.proximoByteEsperado,
+						vetorSequencias);
 			} else {
-				return new SACK(this.proximoByteEsperado);
+				return new SACK(p.getDestino(), this.proximoByteEsperado);
 			}
 		}
 
@@ -40,7 +41,7 @@ public class RxTCP {
 			if (p.getByteInicial() == this.proximoByteEsperado) {
 
 				this.proximoByteEsperado = p.getByteFinal() + 1;
-				return new SACK(this.proximoByteEsperado);
+				return new SACK(p.getDestino(), this.proximoByteEsperado);
 
 			} else {
 				this.atualizaSequenciasRecebidas(p);
@@ -49,7 +50,7 @@ public class RxTCP {
 
 		}
 
-		return new SACK(this.proximoByteEsperado);
+		return new SACK(p.getDestino(), this.proximoByteEsperado);
 	}
 
 	/**

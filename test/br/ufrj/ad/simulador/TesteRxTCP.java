@@ -32,7 +32,7 @@ public class TesteRxTCP {
 		p.setDestino(0);
 		p.setByteInicialEFinal(0, 1499);
 
-		SACK sackEsperado = new SACK(1500);
+		SACK sackEsperado = new SACK(0, 1500);
 		assertEquals(sackEsperado, receptor.receberPacote(p));
 	}
 
@@ -63,7 +63,7 @@ public class TesteRxTCP {
 				+ tamanhoPacote - 1);
 		numeroDeSequencia += tamanhoPacote;
 
-		SACK sackEsperado = new SACK(numeroDeSequencia);
+		SACK sackEsperado = new SACK(0, numeroDeSequencia);
 		assertEquals(sackEsperado, receptor.receberPacote(p));
 	}
 
@@ -153,7 +153,7 @@ public class TesteRxTCP {
 		
 		receptor.receberPacote(p);
 
-		SACK sackEsperado = new SACK(1500);
+		SACK sackEsperado = new SACK(0, 1500);
 		assertEquals(sackEsperado, receptor.receberPacote(p));
 	}
 	
@@ -174,7 +174,7 @@ public class TesteRxTCP {
 		long[][] sequenciasEsperadas = new long[1][2];
 		sequenciasEsperadas[0][0] = 3000;
 		sequenciasEsperadas[0][1] = 4500;
-		SACK sackEsperado = new SACK(1500, sequenciasEsperadas);
+		SACK sackEsperado = new SACK(0, 1500, sequenciasEsperadas);
 		SACK sackRecebido = receptor.receberPacote(p1);
 				
 		assertEquals(sackEsperado, sackRecebido);

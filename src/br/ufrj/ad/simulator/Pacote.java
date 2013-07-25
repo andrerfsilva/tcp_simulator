@@ -63,4 +63,17 @@ public class Pacote {
 		return byteFinal;
 	}
 
+	/**
+	 * Informa se o pacote é tráfego de fundo.
+	 * 
+	 * @return se o pacote é tráfego de fundo
+	 */
+	public boolean isTrafegoDeFundo() {
+		return destino < 0;
+	}
+
+	public long getTamanho() {
+		return byteFinal - byteInicial + 1;
+	}
+
 }

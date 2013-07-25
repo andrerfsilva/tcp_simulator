@@ -8,7 +8,7 @@ import java.util.PriorityQueue;
  * usa abordagem integrada para coletar estatísticas e usa o modo Batch
  * considerando múltiplas rodadas.
  * 
- * @author André Ramos, Welligton Mascena
+ * @author André Ramos, Welligton Mascena featuring Vitor Maia
  * 
  */
 public class Simulador {
@@ -53,6 +53,16 @@ public class Simulador {
 	 * trabalho.
 	 */
 	private double taxaSaidaEnlaceDoRoteador;
+
+	/**
+	 * Tempo de propagação de retorno do ACK (em milisegundos) para o grupo 1.
+	 */
+	private double tempoPropagacaoRetornoACKGrupo1;
+
+	/**
+	 * Tempo de propagação de retorno do ACK (em milisegundos) para o grupo 2.
+	 */
+	private double tempoPropagacaoRetornoACKGrupo2;
 
 	/**
 	 * Maximum Segment Size = 1500 bytes.
@@ -174,12 +184,12 @@ public class Simulador {
 					throw new EventOutOfOrderException();
 				}
 
-				tempoAtualSimulado += e.getTempoDeOcorrencia();
+				tempoAtualSimulado = e.getTempoDeOcorrencia();
 				tratarEvento(e);
 
 			}
 
-			// TODO coletar estatísticas
+			// TODO coletar amostas
 		}
 
 		// TODO apresentar estatísticas e intervalo de confiança
@@ -210,9 +220,57 @@ public class Simulador {
 
 			tratarEventoRoteadorRecebeTrafegoDeFundo();
 
-		} else if (e instanceof EventoRoteadorEnviaPacote) {
-			// TODO: fazer esse evento.
+		} else if (e instanceof EventoRoteadorTerminaEnvio) {
+
+			tratarEventoRoteadorTerminaEnvio();
+
+		} else if (e instanceof EventoRoteadorRecebePacoteTxTCP) {
+			tratarEventoRoteadorRecebePacoteTxTCP();
 		}
+	}
+
+	private void tratarEventoRoteadorRecebePacoteTxTCP() {
+
+		// TODO: fazer isso!!!
+	}
+
+	private void tratarEventoRoteadorTerminaEnvio() {
+
+		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
+
+		/*
+		 * Se o SACK é nulo, então o pacote envia é tráfego de fundo. Caso
+		 * contrário, significa que o Rx já recebeu o pacote e preparou o SACK
+		 * para o Tx. Logo podemos agendar o recebimento do SACK no Tx.
+		 */
+		if (sack != null) {
+
+			Evento proximoSACK;
+			if (rede.getTransmissores()[sack.getDestino()].getGrupo() == 1) {
+				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
+						+ tempoPropagacaoRetornoACKGrupo1);
+			} else {
+				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
+						+ tempoPropagacaoRetornoACKGrupo2);
+			}
+
+			filaEventos.add(proximoSACK);
+		}
+
+		/*
+		 * Se ainda existirem pacotes no buffer do roteador, então podemos
+		 * agendar o próximo envio de pacotes.
+		 */
+		if (rede.getRoteador().getNumeroPacotes() > 0) {
+
+			Evento proximoEnvio = new EventoRoteadorTerminaEnvio(
+					tempoAtualSimulado
+							+ tempoTransmissaoPacoteNoRoteador(rede
+									.getRoteador().getProximoPacoteAEnviar()
+									.getTamanho()));
+			filaEventos.add(proximoEnvio);
+		}
+
 	}
 
 	/**
@@ -239,7 +297,7 @@ public class Simulador {
 		 * seja, não sabemos o quanto falta para terminar a próxima transição.
 		 */
 		if (rede.getRoteador().getNumeroPacotes() == 0) {
-			Evento proximoEnvio = new EventoRoteadorEnviaPacote(
+			Evento proximoEnvio = new EventoRoteadorTerminaEnvio(
 					tempoAtualSimulado + tempoTransmissaoPacoteNoRoteador(mss));
 			filaEventos.add(proximoEnvio);
 		}
@@ -265,7 +323,7 @@ public class Simulador {
 	 * @return tempo de transmissão do pacote no enlace de saída do roteador (em
 	 *         milisegundos)
 	 */
-	public double tempoTransmissaoPacoteNoRoteador(int tamanhoPacote) {
+	public double tempoTransmissaoPacoteNoRoteador(long tamanhoPacote) {
 		return (tamanhoPacote * 8 / taxaSaidaEnlaceDoRoteador) * 1E3;
 	}
 

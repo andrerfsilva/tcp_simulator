@@ -12,18 +12,29 @@ import com.sun.org.apache.xpath.internal.operations.Equals;
  */
 public class SACK {
 
+	private int destino;
 	private long proximoByteEsperado;
 	private long[][] sequenciasRecebidasCorretamente;
 
-	public SACK(long proximoByteEsperado,
+	public int getDestino() {
+		return destino;
+	}
+
+	public void setDestino(int destino) {
+		this.destino = destino;
+	}
+
+	public SACK(int destino, long proximoByteEsperado,
 			long[][] sequenciasRecebidasCorretamente) {
 		this.proximoByteEsperado = proximoByteEsperado;
 		this.sequenciasRecebidasCorretamente = sequenciasRecebidasCorretamente;
+		this.destino = destino;
 	}
 
-	public SACK(long proximoByteEsperado) {
+	public SACK(int destino, long proximoByteEsperado) {
 		this.proximoByteEsperado = proximoByteEsperado;
 		this.sequenciasRecebidasCorretamente = null;
+		this.destino = destino;
 	}
 
 	public long getProximoByteEsperado() {
@@ -37,7 +48,12 @@ public class SACK {
 	public boolean equals(Object o) {
 
 		if (o instanceof SACK) {
+
 			SACK osack = (SACK) o;
+
+			if (osack.getDestino() != this.getDestino()) {
+				return false;
+			}
 
 			// Se o próximo byte esperado for diferente, então os objetos são
 			// diferentes.
