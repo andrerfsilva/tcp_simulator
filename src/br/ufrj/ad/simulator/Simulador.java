@@ -4,7 +4,9 @@ import java.util.PriorityQueue;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema
- * simulado e a coleta de estatísticas de interesse da simulação.
+ * simulado e a coleta de estatísticas de interesse da simulação. Esse simulador
+ * usa abordagem integrada para coletar estatísticas e usa o modo Batch
+ * considerando múltiplas rodadas.
  * 
  * @author André Ramos, Welligton Mascena
  * 
@@ -132,7 +134,8 @@ public class Simulador {
 
 	/**
 	 * Inicia o loop principal da simulação e retorna as estatísticas para todos
-	 * os cenários do trabalho.
+	 * os cenários do trabalho. Usa abordagem integrada para coleta de
+	 * estatísticas e simulação Batch.
 	 * 
 	 * @throws EventOutOfOrderException
 	 *             Quando a lista de eventos retornar um evento cujo tempo de
@@ -153,22 +156,39 @@ public class Simulador {
 
 		// TODO: estimar fase transiente!
 
-		while (filaEventos.size() > 0 && !estatisticasSatisfatorias()) {
-			Evento e = filaEventos.poll();
+		/*
+		 * Cada rodada nesse loop representa uma rodada no plano de controle,
+		 * com esboçado no esqueleto nos slides de simulação. O número de
+		 * rodadas N será calculado em função do intervalo de confiança para as
+		 * estatísticas de interesse.
+		 */
+		while (!estatisticasSatisfatorias()) {
 
-			/*
-			 * Confere a consistência da ordem dos eventos no tempo.
-			 */
-			if (e.getTempo() < this.tempoAtualSimulado) {
-				throw new EventOutOfOrderException();
+			while (filaEventos.size() > 0 && !criterioParada()) {
+				Evento e = filaEventos.poll();
+
+				/*
+				 * Confere a consistência da ordem dos eventos no tempo.
+				 */
+				if (e.getTempoDeOcorrencia() < this.tempoAtualSimulado) {
+					throw new EventOutOfOrderException();
+				}
+
+				tempoAtualSimulado += e.getTempoDeOcorrencia();
+				tratarEvento(e);
+
 			}
 
-			tempoAtualSimulado += e.getTempo();
-			tratarEvento(e);
-
+			// TODO coletar estatísticas
 		}
 
-		// TODO coletar estatísticas
+		// TODO apresentar estatísticas e intervalo de confiança
+
+	}
+
+	private boolean criterioParada() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	private boolean estatisticasSatisfatorias() {

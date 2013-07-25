@@ -11,10 +11,10 @@ public class Evento implements Comparable<Evento> {
 	/**
 	 * Representa quando o evento ocorre no tempo simulado (em milisegundos).
 	 */
-	private final double tempo;
+	private final double tempoDeOcorrencia;
 
 	public Evento(double tempo) {
-		this.tempo = tempo;
+		this.tempoDeOcorrencia = tempo;
 	}
 
 	/**
@@ -27,9 +27,9 @@ public class Evento implements Comparable<Evento> {
 	 */
 	public int compareTo(Evento o) {
 
-		if (this.getTempo() < o.getTempo()) {
+		if (this.getTempoDeOcorrencia() < o.getTempoDeOcorrencia()) {
 			return -1;
-		} else if (this.getTempo() > o.getTempo()) {
+		} else if (this.getTempoDeOcorrencia() > o.getTempoDeOcorrencia()) {
 			return 1;
 		}
 
@@ -41,8 +41,8 @@ public class Evento implements Comparable<Evento> {
 	 * 
 	 * @return
 	 */
-	public double getTempo() {
-		return tempo;
+	public double getTempoDeOcorrencia() {
+		return tempoDeOcorrencia;
 	}
 
 }
