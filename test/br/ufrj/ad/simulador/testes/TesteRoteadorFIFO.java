@@ -1,12 +1,12 @@
-package br.ufrj.ad.simulador;
+package br.ufrj.ad.simulador.testes;
 
 import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import br.ufrj.ad.simulator.Pacote;
-import br.ufrj.ad.simulator.Roteador;
-import br.ufrj.ad.simulator.RoteadorFIFO;
+import br.ufrj.ad.simulator.model.Pacote;
+import br.ufrj.ad.simulator.model.Roteador;
+import br.ufrj.ad.simulator.model.RoteadorFIFO;
 
 /**
  * Casos de teste da classe RoteadorFIFO.

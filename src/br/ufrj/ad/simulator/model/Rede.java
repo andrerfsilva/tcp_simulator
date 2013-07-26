@@ -1,4 +1,6 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
+
+import br.ufrj.ad.simulator.estatistica.Random;
 
 /**
  * Essa classe representa todas as variáveis de estado da rede simulada, bem

@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.eventos;
 
 /**
  * Representa o momento quando chega um pacote no roteador vindo de um TxTCP.

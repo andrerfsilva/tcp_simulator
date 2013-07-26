@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
 
 import java.util.ArrayList;
 

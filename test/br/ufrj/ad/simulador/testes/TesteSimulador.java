@@ -1,11 +1,11 @@
-package br.ufrj.ad.simulador;
+package br.ufrj.ad.simulador.testes;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.Simulador;
+import br.ufrj.ad.simulator.model.Simulador;
 
 /**
  * Casos de teste para a classe Simulador.

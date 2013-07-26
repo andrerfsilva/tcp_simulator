@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.eventos;
 
 /**
  * Todos os eventos do sistema devem herdar dessa classe.

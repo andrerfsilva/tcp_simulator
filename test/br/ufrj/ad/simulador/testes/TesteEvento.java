@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulador;
+package br.ufrj.ad.simulador.testes;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.Evento;
+import br.ufrj.ad.simulator.eventos.Evento;
 
 /**
  * Casos de teste para a classe Evento.

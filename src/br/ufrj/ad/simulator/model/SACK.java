@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
 
 import com.sun.org.apache.xpath.internal.operations.Equals;
 

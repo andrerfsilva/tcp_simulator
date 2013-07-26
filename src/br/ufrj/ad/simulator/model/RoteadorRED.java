@@ -1,4 +1,7 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
+
+import br.ufrj.ad.simulator.estatistica.Estimador;
+import br.ufrj.ad.simulator.estatistica.Random;
 
 /**
  * Um roteador com disciplina RED.

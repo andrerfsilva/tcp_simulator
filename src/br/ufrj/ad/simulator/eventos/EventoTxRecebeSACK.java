@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.eventos;
 
 /**
  * Representa o momento em que o Tx recebe o SACK de um pacote enviado.

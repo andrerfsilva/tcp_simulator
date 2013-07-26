@@ -1,6 +1,13 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
 
 import java.util.PriorityQueue;
+
+import br.ufrj.ad.simulator.estatistica.Random;
+import br.ufrj.ad.simulator.eventos.Evento;
+import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
+import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
+import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
+import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema

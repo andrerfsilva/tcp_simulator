@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulador;
+package br.ufrj.ad.simulador.testes;
 
 import static org.junit.Assert.*;
 
@@ -7,9 +7,9 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.Pacote;
-import br.ufrj.ad.simulator.RxTCP;
-import br.ufrj.ad.simulator.SACK;
+import br.ufrj.ad.simulator.model.Pacote;
+import br.ufrj.ad.simulator.model.RxTCP;
+import br.ufrj.ad.simulator.model.SACK;
 
 /**
  * Casos de teste para a classe RxTCP.

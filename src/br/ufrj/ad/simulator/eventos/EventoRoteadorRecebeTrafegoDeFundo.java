@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.eventos;
 
 /**
  * Representa uma chegada Poisson no roteador.

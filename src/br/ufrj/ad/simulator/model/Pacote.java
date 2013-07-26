@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator;
+package br.ufrj.ad.simulator.model;
 
 /**
  * Informações relevantes de um pacote. Importante: todo pacote tem tamanho MSS
