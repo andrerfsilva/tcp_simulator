@@ -46,7 +46,6 @@ public class SACK {
 	}
 
 	public boolean equals(Object o) {
-
 		if (o instanceof SACK) {
 
 			SACK osack = (SACK) o;
@@ -60,14 +59,29 @@ public class SACK {
 			if (osack.getProximoByteEsperado() != this.getProximoByteEsperado()) {
 				return false;
 			}
-
+			
 			// Toma NullPointer!
 			if (osack.getSequenciasRecebidasCorretamente() == null
 					|| this.sequenciasRecebidasCorretamente == null) {
 
-				return osack.getSequenciasRecebidasCorretamente() == null
-						&& this.sequenciasRecebidasCorretamente == null;
+				if (osack.getSequenciasRecebidasCorretamente() == null
+						&& this.sequenciasRecebidasCorretamente == null)
+				{
+					return true;
+				}
+				
+				// Se eles tem o mesmo destino, e o mesmo próximo byte esperado, e um deles tem um vetor 
+				// de sequência de tamanho 0 e o outro é nulo, então eles também são iguais
+				if((osack.getSequenciasRecebidasCorretamente() == null && this.sequenciasRecebidasCorretamente.length == 0) ||
+						(this.sequenciasRecebidasCorretamente == null && osack.getSequenciasRecebidasCorretamente().length == 0)){
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
+			
 
 			// Se o vetor de sequÃªncia tiver tamanho diferente, entÃ£o os
 			// objetos
