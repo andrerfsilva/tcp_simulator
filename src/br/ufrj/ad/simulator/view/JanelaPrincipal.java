@@ -1,8 +1,6 @@
 package br.ufrj.ad.simulator.view;
 
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -63,7 +61,7 @@ public class JanelaPrincipal extends JFrame {
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				JFrame frame = new JanelaPrincipal();
+				new JanelaPrincipal();
 			}
 		});
 	}

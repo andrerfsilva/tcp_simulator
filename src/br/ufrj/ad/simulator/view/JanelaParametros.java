@@ -1,15 +1,11 @@
 package br.ufrj.ad.simulator.view;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
@@ -21,16 +17,23 @@ public class JanelaParametros extends JFrame {
 	}
 
 	private void iniciarComponetes() {
-		
-		this.setLayout(new GridLayout(0, 4));
+
+		this.setLayout(new GridLayout(0, 2));
 
 		/*
 		 * Inicializando componentes.
 		 */
+		this.add(new JLabel("Tamanho Buffer Roteador (pacotes):"));
+		this.add(new JTextField("40"));
+		this.add(new JLabel("Disciplina do Roteador:"));
+		String[] roteadores = new String[2];
+		roteadores[0] = "FIFO";
+		roteadores[1] = "RED";
+		this.add(new JComboBox<String>(roteadores));
 		this.add(new JLabel("Cs (bps):"));
-		this.add(new JTextField("1000000000"));
+		this.add(new JTextField("1E9"));
 		this.add(new JLabel("Cg (bps):"));
-		this.add(new JTextField("1000000"));
+		this.add(new JTextField("10E6"));
 		this.add(new JLabel("TP1 (ms):"));
 		this.add(new JTextField("100"));
 		this.add(new JLabel("TP2 (ms):"));
@@ -39,6 +42,12 @@ public class JanelaParametros extends JFrame {
 		this.add(new JTextField("10"));
 		this.add(new JLabel("Estações do Grupo 2:"));
 		this.add(new JTextField("50"));
+		this.add(new JLabel("Média de Pacotes/Rajada TF:"));
+		this.add(new JTextField("10"));
+		this.add(new JLabel("Tempo Médio Entre Rajadas TF (ms):"));
+		this.add(new JTextField("24"));
+		this.add(new JButton("Salvar"));
+		this.add(new JButton("Cancelar"));
 
 		// Display the window.
 		this.pack();
@@ -50,7 +59,7 @@ public class JanelaParametros extends JFrame {
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				JFrame frame = new JanelaParametros();
+				new JanelaParametros();
 			}
 		});
 	}
