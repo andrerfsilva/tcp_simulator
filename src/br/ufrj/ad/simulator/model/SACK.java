@@ -1,7 +1,5 @@
 package br.ufrj.ad.simulator.model;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
-
 /**
  * Armazena as informações do SACK, ou seja, o byte do próximo pacote esperado,
  * e os bytes recebidos corretamente fora de ordem.
@@ -59,33 +57,34 @@ public class SACK {
 			if (osack.getProximoByteEsperado() != this.getProximoByteEsperado()) {
 				return false;
 			}
-			
+
 			// Toma NullPointer!
 			if (osack.getSequenciasRecebidasCorretamente() == null
 					|| this.sequenciasRecebidasCorretamente == null) {
 
 				if (osack.getSequenciasRecebidasCorretamente() == null
-						&& this.sequenciasRecebidasCorretamente == null)
-				{
+						&& this.sequenciasRecebidasCorretamente == null) {
 					return true;
 				}
-				
-				// Se eles tem o mesmo destino, e o mesmo pr�ximo byte esperado, e um deles tem um vetor 
-				// de sequ�ncia de tamanho 0 e o outro � nulo, ent�o eles tamb�m s�o iguais
-				if((osack.getSequenciasRecebidasCorretamente() == null && this.sequenciasRecebidasCorretamente.length == 0) ||
-						(this.sequenciasRecebidasCorretamente == null && osack.getSequenciasRecebidasCorretamente().length == 0)){
+
+				/*
+				 * Se eles tem o mesmo destino, e o mesmo próximo byte esperado,
+				 * e um deles tem um vetor de sequência de tamanho 0 e o outro é
+				 * nulo, então eles também são iguais.
+				 */
+				if ((osack.getSequenciasRecebidasCorretamente() == null && this.sequenciasRecebidasCorretamente.length == 0)
+						|| (this.sequenciasRecebidasCorretamente == null && osack
+								.getSequenciasRecebidasCorretamente().length == 0)) {
 					return true;
-				}
-				else
-				{
+				} else {
 					return false;
 				}
 			}
-			
 
-			// Se o vetor de sequência tiver tamanho diferente, então os
-			// objetos
-			// são diferentes.
+			/*
+			 * Se o vetor de sequência tiver tamanho diferente, então os objetos
+			 * são diferentes.
+			 */
 			if (sequenciasRecebidasCorretamente.length != osack
 					.getSequenciasRecebidasCorretamente().length) {
 				return false;
