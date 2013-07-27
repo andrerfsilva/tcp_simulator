@@ -24,33 +24,28 @@ public class RxTCP {
 
 	public SACK receberPacote(Pacote p) {
 
-		if (p.getByteInicial() < this.proximoByteEsperado) {
-
-			if (this.sequencias.size() > 0) {
-				long[][] vetorSequencias = new long[this.sequencias.size()][2];
-				this.sequencias.toArray(vetorSequencias);
-				return new SACK(p.getDestino(), this.proximoByteEsperado,
-						vetorSequencias);
-			} else {
-				return new SACK(p.getDestino(), this.proximoByteEsperado);
-			}
+		if (p.getByteInicial() < this.proximoByteEsperado) {			
+			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
 		}
-
-		if (this.sequencias.size() == 0) {
-
-			if (p.getByteInicial() == this.proximoByteEsperado) {
-
-				this.proximoByteEsperado = p.getByteFinal() + 1;
-				return new SACK(p.getDestino(), this.proximoByteEsperado);
-
-			} else {
-				this.atualizaSequenciasRecebidas(p);
+		else if(p.getByteInicial() == this.proximoByteEsperado){
+			this.atualizaSequenciasRecebidas(p);
+			
+			long[] primeiraSequencia = this.sequencias.get(0);
+			
+			if(primeiraSequencia.length >= 2){
+				this.proximoByteEsperado = primeiraSequencia[1];
 			}
-		} else {
-
+			
+			this.sequencias.remove(0);
+			
+			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
 		}
-
-		return new SACK(p.getDestino(), this.proximoByteEsperado);
+		else
+		{
+			this.atualizaSequenciasRecebidas(p);
+			
+			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
+		}
 	}
 
 	/**
@@ -60,6 +55,23 @@ public class RxTCP {
 	 * @param p
 	 *            pacote recebido
 	 */
+	
+	private long[][] getArrayDeSequenciaParaMatriz(){
+		
+		if(this.sequencias.size() == 0 || this.sequencias == null){
+			return null;
+		}
+		
+		long[][] sequenciasSack = new long[this.sequencias.size()][2];
+		
+		for(int i = 0; i<sequenciasSack.length; i++){
+			sequenciasSack[i][0] = this.sequencias.get(i)[0];
+			sequenciasSack[i][1] = this.sequencias.get(i)[1];
+		}
+		
+		return sequenciasSack;
+	}
+	
 	private void atualizaSequenciasRecebidas(Pacote p) {
 		long limites[] = new long[2];
 
@@ -103,12 +115,13 @@ public class RxTCP {
 				 * influencia no desempenho e corretude do algoritmo!
 				 */
 
-				if (this.pacoteContidoNaSequência(p, i)) {
+				if (this.pacoteContidoNaSequencia(p, i)) {
 					return;
 				}
 
 				if (this.sequencias.get(i)[1] <= p.getByteInicial()) {
 					this.appendAdjacente(p, i);
+					return;
 				}
 			}
 		}
@@ -157,7 +170,7 @@ public class RxTCP {
 
 	}
 
-	private boolean pacoteContidoNaSequência(Pacote p, int sequencia) {
+	private boolean pacoteContidoNaSequencia(Pacote p, int sequencia) {
 		return this.sequencias.get(sequencia)[0] <= p.getByteInicial()
 				&& this.sequencias.get(sequencia)[1] > p.getByteFinal();
 	}

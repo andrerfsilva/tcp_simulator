@@ -124,5 +124,16 @@ public class TesteSACK {
 
 		assertNotSame(sack1, sack2);
 	}
+	
+	@Test
+	public void testVectorTam0VectorNull(){
+		long[][] sequencia1 = new long[0][2];
+		
+		sack1 = new SACK(10, 1500, sequencia1);
+		sack2 = new SACK(10, 1500);
+		
+		assertEquals(sack1, sack2);
+		
+	}
 
 }
