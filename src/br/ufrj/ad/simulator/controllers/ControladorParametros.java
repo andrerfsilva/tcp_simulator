@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import br.ufrj.ad.simulator.models.ParametrosSimulador;
+import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.views.JanelaParametros;
 
 /**
@@ -17,7 +17,7 @@ import br.ufrj.ad.simulator.views.JanelaParametros;
  */
 public class ControladorParametros implements ActionListener {
 
-	private ParametrosSimulador parametrosSimulador;
+	private Parametros parametros;
 	private JanelaParametros janelaParametros;
 
 	public ControladorParametros() throws IOException {
@@ -25,30 +25,26 @@ public class ControladorParametros implements ActionListener {
 		/*
 		 * Inicializando os parâmetros salvos no arquivo.
 		 */
-		parametrosSimulador = new ParametrosSimulador();
+		parametros = new Parametros();
 		janelaParametros = new JanelaParametros();
 
-		janelaParametros.getTextFieldCs().setText(
-				parametrosSimulador.getCsProperty());
-		janelaParametros.getTextFieldCg().setText(
-				parametrosSimulador.getCgProperty());
+		janelaParametros.getTextFieldCs().setText(parametros.getCsProperty());
+		janelaParametros.getTextFieldCg().setText(parametros.getCgProperty());
 		janelaParametros.getTextFieldEstacoesGrupo1().setText(
-				parametrosSimulador.getEstacoesGrupo1Property());
+				parametros.getEstacoesGrupo1Property());
 		janelaParametros.getTextFieldEstacoesGrupo2().setText(
-				parametrosSimulador.getEstacoesGrupo2Property());
+				parametros.getEstacoesGrupo2Property());
 		janelaParametros.getTextFieldMediaPacotesPorRajada().setText(
-				parametrosSimulador.getMediaPacotesPorRajadaProperty());
+				parametros.getMediaPacotesPorRajadaProperty());
 		janelaParametros.getTextFieldTamanhoBufferRoteador().setText(
-				parametrosSimulador.getTamanhoBufferRoteadorProperty());
+				parametros.getTamanhoBufferRoteadorProperty());
 		janelaParametros.getTextFieldTempoMedioEntreRajadas().setText(
-				parametrosSimulador.getTempoMedioEntreRajadasProperty());
-		janelaParametros.getTextFieldTP1().setText(
-				parametrosSimulador.getTP1Property());
-		janelaParametros.getTextFieldTP2().setText(
-				parametrosSimulador.getTP2Property());
+				parametros.getTempoMedioEntreRajadasProperty());
+		janelaParametros.getTextFieldTP1().setText(parametros.getTP1Property());
+		janelaParametros.getTextFieldTP2().setText(parametros.getTP2Property());
 
 		janelaParametros.getComboBoxTamanhoBufferRoteador().setSelectedItem(
-				parametrosSimulador.getDisciplinaRoteadorProperty());
+				parametros.getDisciplinaRoteadorProperty());
 
 		janelaParametros.getButtonSalvar().addActionListener(this);
 		janelaParametros.getButtonCancelar().addActionListener(this);
@@ -66,36 +62,34 @@ public class ControladorParametros implements ActionListener {
 		if ("Salvar".equals(e.getActionCommand())) {
 			try {
 
-				parametrosSimulador.setProperty("TamanhoBufferRoteador",
+				parametros.setProperty("TamanhoBufferRoteador",
 						janelaParametros.getTextFieldTamanhoBufferRoteador()
 								.getText());
-				parametrosSimulador.setProperty("DisciplinaRoteador",
+				parametros.setProperty("DisciplinaRoteador",
 						(String) janelaParametros
 								.getComboBoxTamanhoBufferRoteador()
 								.getSelectedItem());
-				parametrosSimulador.setProperty("Cs", janelaParametros
-						.getTextFieldCs().getText());
-				parametrosSimulador.setProperty("Cg", janelaParametros
-						.getTextFieldCg().getText());
-				parametrosSimulador.setProperty("TP1", janelaParametros
+				parametros.setProperty("Cs", janelaParametros.getTextFieldCs()
+						.getText());
+				parametros.setProperty("Cg", janelaParametros.getTextFieldCg()
+						.getText());
+				parametros.setProperty("TP1", janelaParametros
 						.getTextFieldTP1().getText());
-				parametrosSimulador.setProperty("TP2", janelaParametros
+				parametros.setProperty("TP2", janelaParametros
 						.getTextFieldTP2().getText());
-				parametrosSimulador
-						.setProperty("EstacoesGrupo1", janelaParametros
-								.getTextFieldEstacoesGrupo1().getText());
-				parametrosSimulador
-						.setProperty("EstacoesGrupo2", janelaParametros
-								.getTextFieldEstacoesGrupo2().getText());
-				parametrosSimulador.setProperty("MediaPacotesPorRajada",
+				parametros.setProperty("EstacoesGrupo1", janelaParametros
+						.getTextFieldEstacoesGrupo1().getText());
+				parametros.setProperty("EstacoesGrupo2", janelaParametros
+						.getTextFieldEstacoesGrupo2().getText());
+				parametros.setProperty("MediaPacotesPorRajada",
 						janelaParametros.getTextFieldMediaPacotesPorRajada()
 								.getText());
-				parametrosSimulador.setProperty("TempoMedioEntreRajadas",
+				parametros.setProperty("TempoMedioEntreRajadas",
 						janelaParametros.getTextFieldTempoMedioEntreRajadas()
 								.getText());
 
-				parametrosSimulador.salvar();
-				
+				parametros.salvar();
+
 				janelaParametros.close();
 
 			} catch (IOException e1) {

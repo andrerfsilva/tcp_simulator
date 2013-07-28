@@ -6,11 +6,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ParametrosSimulador extends Properties {
+/**
+ * Representa os parâmetros de entrada para a simulação definidos na página 10
+ * da especificação do trabalho.
+ * 
+ * @author André Ramos
+ * 
+ */
+public class Parametros extends Properties {
 
 	public final static String pathParametrosSimulador = "parametros.txt";
 
-	public ParametrosSimulador() throws IOException {
+	public Parametros() throws IOException {
 
 		/*
 		 * Inicializando os parâmetros salvos no arquivo.
@@ -68,7 +75,7 @@ public class ParametrosSimulador extends Properties {
 
 	public void salvar() throws IOException {
 		FileOutputStream out = new FileOutputStream(
-				ParametrosSimulador.pathParametrosSimulador);
+				Parametros.pathParametrosSimulador);
 
 		this.store(out, "---No Comment---");
 		out.close();
