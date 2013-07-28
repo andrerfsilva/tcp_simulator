@@ -94,11 +94,11 @@ public class Parametros extends Properties {
 		return this.getProperty("DisciplinaRoteador", "RED");
 	}
 
-	private String getTPACK1Property() {
+	public String getTPACK1Property() {
 		return getProperty("TPACK1", "100");
 	}
 
-	private String getTPACK2Property() {
+	public String getTPACK2Property() {
 		return getProperty("TPACK2", "50");
 	}
 

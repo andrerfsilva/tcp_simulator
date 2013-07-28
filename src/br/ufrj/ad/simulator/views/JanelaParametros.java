@@ -25,6 +25,8 @@ public class JanelaParametros extends JFrame {
 	private JTextField textFieldCg;
 	private JTextField textFieldTP1;
 	private JTextField textFieldTP2;
+	private JTextField textFieldTPACK1;
+	private JTextField textFieldTPACK2;
 	private JTextField textFieldEstacoesGrupo1;
 	private JTextField textFieldEstacoesGrupo2;
 	private JTextField textFieldMediaPacotesPorRajada;
@@ -70,6 +72,14 @@ public class JanelaParametros extends JFrame {
 		this.add(new JLabel("TP2 (ms):"));
 		this.textFieldTP2 = new JTextField();
 		this.add(textFieldTP2);
+		
+		this.add(new JLabel("TPACK1 (ms):"));
+		this.textFieldTPACK1 = new JTextField();
+		this.add(textFieldTPACK1);
+
+		this.add(new JLabel("TPACK2 (ms):"));
+		this.textFieldTPACK2 = new JTextField();
+		this.add(textFieldTPACK2);
 
 		this.add(new JLabel("Estações do Grupo 1:"));
 		this.textFieldEstacoesGrupo1 = new JTextField();
@@ -131,6 +141,14 @@ public class JanelaParametros extends JFrame {
 
 	public JTextField getTextFieldTP2() {
 		return textFieldTP2;
+	}
+	
+	public JTextField getTextFieldTPACK1() {
+		return textFieldTPACK1;
+	}
+
+	public JTextField getTextFieldTPACK2() {
+		return textFieldTPACK2;
 	}
 
 	public JTextField getTextFieldEstacoesGrupo1() {

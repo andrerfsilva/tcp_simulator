@@ -42,6 +42,10 @@ public class ControladorParametros implements ActionListener {
 				parametros.getTempoMedioEntreRajadasProperty());
 		janelaParametros.getTextFieldTP1().setText(parametros.getTP1Property());
 		janelaParametros.getTextFieldTP2().setText(parametros.getTP2Property());
+		janelaParametros.getTextFieldTPACK1().setText(
+				parametros.getTPACK1Property());
+		janelaParametros.getTextFieldTPACK2().setText(
+				parametros.getTPACK2Property());
 
 		janelaParametros.getComboBoxTamanhoBufferRoteador().setSelectedItem(
 				parametros.getDisciplinaRoteadorProperty());
@@ -71,6 +75,10 @@ public class ControladorParametros implements ActionListener {
 						.getTextFieldTP1().getText());
 				parametros.setProperty("TP2", janelaParametros
 						.getTextFieldTP2().getText());
+				parametros.setProperty("TPACK1", janelaParametros
+						.getTextFieldTPACK1().getText());
+				parametros.setProperty("TPACK2", janelaParametros
+						.getTextFieldTPACK2().getText());
 				parametros.setProperty("EstacoesGrupo1", janelaParametros
 						.getTextFieldEstacoesGrupo1().getText());
 				parametros.setProperty("EstacoesGrupo2", janelaParametros
