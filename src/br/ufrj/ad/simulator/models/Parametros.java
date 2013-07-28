@@ -190,4 +190,22 @@ public class Parametros extends Properties {
 	public double getTempoPropagacaoRetornoACKGrupo2() {
 		return Double.parseDouble(getTPACK2Property());
 	}
+
+	/**
+	 * Número de estações do grupo 1.
+	 * 
+	 * @return número de estações do grupo 1
+	 */
+	public int getEstacoesGrupo1() {
+		return Integer.parseInt(getEstacoesGrupo1Property());
+	}
+
+	/**
+	 * Número de estações do grupo 2.
+	 * 
+	 * @return número de estações do grupo 2
+	 */
+	public int getEstacoesGrupo2() {
+		return Integer.parseInt(getEstacoesGrupo2Property());
+	}
 }

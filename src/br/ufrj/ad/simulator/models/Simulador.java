@@ -48,16 +48,15 @@ public class Simulador {
 	private Parametros parametros;
 
 	public Simulador() throws IOException {
-		rede = new Rede();
-		geradorNumerosAleatorios = new Random();
-		parametros = new Parametros();
 		tempoAtualSimulado = 0;
 
-		if (parametros.getDisciplinaRoteadorProperty().equals("FIFO")) {
-			rede.setRoteador(new RoteadorFIFO());
-		} else {
-			rede.setRoteador(new RoteadorRED());
-		}
+		geradorNumerosAleatorios = new Random();
+		parametros = new Parametros();
+		
+		rede = new Rede(parametros.getEstacoesGrupo1(),
+				parametros.getEstacoesGrupo2(),
+				parametros.getDisciplinaRoteadorProperty());
+
 	}
 
 	/**
@@ -205,7 +204,8 @@ public class Simulador {
 		Evento proximaChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				tempoAtualSimulado
 						+ geradorNumerosAleatorios
-								.nextExponential(1 / parametros.getTempoMedioEntreRajadas()));
+								.nextExponential(1 / parametros
+										.getTempoMedioEntreRajadas()));
 		filaEventos.add(proximaChegadaTrafegoFundo);
 
 		/*
