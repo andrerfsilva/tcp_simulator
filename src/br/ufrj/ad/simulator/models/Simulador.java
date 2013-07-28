@@ -1,5 +1,6 @@
 package br.ufrj.ad.simulator.models;
 
+import java.io.IOException;
 import java.util.PriorityQueue;
 
 import br.ufrj.ad.simulator.estatistica.Random;
@@ -21,6 +22,12 @@ import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 public class Simulador {
 
 	/**
+	 * Gerador de números aleatórios usado para calcular as variáveis aleatórias
+	 * da simulação.
+	 */
+	private Random geradorNumerosAleatorios;
+
+	/**
 	 * Modelo da rede do sistema a ser simulado.
 	 */
 	private Rede rede;
@@ -36,117 +43,21 @@ public class Simulador {
 	private double tempoAtualSimulado;
 
 	/**
-	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
-	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
-	 * variável aleatória geométrica.
+	 * Armazena todos os parâmetros de entrada da simulação.
 	 */
-	private long tamanhoMedioRajada;
+	private Parametros parametros;
 
-	/**
-	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
-	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
-	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
-	 */
-	private double tempoMedioEntreRajadas;
-
-	/**
-	 * Gerador de números aleatórios usado para calcular as variáveis aleatórias
-	 * da simulação.
-	 */
-	private Random geradorNumerosAleatorios;
-
-	/**
-	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
-	 * trabalho.
-	 */
-	private double taxaSaidaEnlaceDoRoteador;
-
-	/**
-	 * Tempo de propagação de retorno do ACK (em milisegundos) para o grupo 1.
-	 */
-	private double tempoPropagacaoRetornoACKGrupo1;
-
-	/**
-	 * Tempo de propagação de retorno do ACK (em milisegundos) para o grupo 2.
-	 */
-	private double tempoPropagacaoRetornoACKGrupo2;
-
-	/**
-	 * Maximum Segment Size = 1500 bytes.
-	 */
-	private final int mss = 1500;
-
-	public Simulador() {
+	public Simulador() throws IOException {
 		rede = new Rede();
-		tempoAtualSimulado = 0;
 		geradorNumerosAleatorios = new Random();
+		parametros = new Parametros();
+		tempoAtualSimulado = 0;
 
-		// valores default
-		tempoMedioEntreRajadas = 24.0;
-		tamanhoMedioRajada = 10;
-
-		// roteador default é FIFO
-		rede.setRoteador(new RoteadorFIFO());
-	}
-
-	/**
-	 * Calcula a taxa do tráfego de fundo em Mbps. Por exemplo: Se o tamanho
-	 * médio das rajadas é 10 pacotes e o intervalo médio entre chegadas for
-	 * 24ms, então a taxa média deste tráfego de fundo é (1500 x 8 x 10)/24ms =
-	 * 5 Mbps. Lembrando que todos os pacotes da rajada tem tamanho MSS = 1500
-	 * bytes.
-	 * 
-	 * @return taxa do tráfego de fundo em Mbps
-	 */
-	public double getTaxaTrafegoDeFundoEmMbps() {
-		return (mss * 8 * tamanhoMedioRajada * 1E-3) / tempoMedioEntreRajadas;
-	}
-
-	/**
-	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
-	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
-	 * variável aleatória geométrica.
-	 * 
-	 * @return média do número de pacotes numa rajada de tráfego de fundo
-	 */
-	public long getTamanhoMedioRajada() {
-		return tamanhoMedioRajada;
-	}
-
-	/**
-	 * Número médio de pacotes que chegam em uma rajada de tráfego de fundo. A
-	 * rajada ten tamanho geométrico, ou seja, o número de pacotes é uma
-	 * variável aleatória geométrica.
-	 * 
-	 * @param tamanhoMedioRajada
-	 *            média do número de pacotes numa rajada de tráfego de fundo
-	 */
-	public void setTamanhoMedioRajada(long tamanhoMedioRajada) {
-		this.tamanhoMedioRajada = tamanhoMedioRajada;
-	}
-
-	/**
-	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
-	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
-	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
-	 * 
-	 * @return tempo médio entre rajadas de tráfego de fundo (em milisegundos)
-	 */
-	public double getTempoMedioEntreRajadas() {
-		return tempoMedioEntreRajadas;
-	}
-
-	/**
-	 * Tempo médio entre as rajadas do tráfego de fundo (em milisegundos).
-	 * Lembrando que o tempo entre as chegadas é uma variável aleatória
-	 * exponencial com média = 1/(taxa de chegada), ou seja, a taxa = 1/média.
-	 * 
-	 * @param tempoMedioEntreRajadas
-	 *            tempo médio entre rajadas de tráfego de fundo (em
-	 *            milisegundos)
-	 */
-	public void setTempoMedioEntreRajadas(double tempoMedioEntreRajadas) {
-		this.tempoMedioEntreRajadas = tempoMedioEntreRajadas;
+		if (parametros.getDisciplinaRoteadorProperty().equals("FIFO")) {
+			rede.setRoteador(new RoteadorFIFO());
+		} else {
+			rede.setRoteador(new RoteadorRED());
+		}
 	}
 
 	/**
@@ -167,8 +78,8 @@ public class Simulador {
 		 * Agendar eventos iniciais!
 		 */
 		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
-				geradorNumerosAleatorios
-						.nextExponential(1 / tempoMedioEntreRajadas));
+				geradorNumerosAleatorios.nextExponential(1 / parametros
+						.getTempoMedioEntreRajadas()));
 		filaEventos.add(primeiraChegadaTrafegoFundo);
 
 		// TODO: estimar fase transiente!
@@ -255,10 +166,10 @@ public class Simulador {
 			Evento proximoSACK;
 			if (rede.getTransmissores()[sack.getDestino()].getGrupo() == 1) {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ tempoPropagacaoRetornoACKGrupo1);
+						+ parametros.getTempoPropagacaoRetornoACKGrupo1());
 			} else {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ tempoPropagacaoRetornoACKGrupo2);
+						+ parametros.getTempoPropagacaoRetornoACKGrupo2());
 			}
 
 			filaEventos.add(proximoSACK);
@@ -272,7 +183,7 @@ public class Simulador {
 
 			Evento proximoEnvio = new EventoRoteadorTerminaEnvio(
 					tempoAtualSimulado
-							+ tempoTransmissaoPacoteNoRoteador(rede
+							+ parametros.tempoTransmissaoPacoteNoRoteador(rede
 									.getRoteador().getProximoPacoteAEnviar()
 									.getTamanho()));
 			filaEventos.add(proximoEnvio);
@@ -294,7 +205,7 @@ public class Simulador {
 		Evento proximaChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				tempoAtualSimulado
 						+ geradorNumerosAleatorios
-								.nextExponential(1 / tempoMedioEntreRajadas));
+								.nextExponential(1 / parametros.getTempoMedioEntreRajadas()));
 		filaEventos.add(proximaChegadaTrafegoFundo);
 
 		/*
@@ -305,7 +216,9 @@ public class Simulador {
 		 */
 		if (rede.getRoteador().getNumeroPacotes() == 0) {
 			Evento proximoEnvio = new EventoRoteadorTerminaEnvio(
-					tempoAtualSimulado + tempoTransmissaoPacoteNoRoteador(mss));
+					tempoAtualSimulado
+							+ parametros
+									.tempoTransmissaoPacoteNoRoteador(Parametros.mss));
 			filaEventos.add(proximoEnvio);
 		}
 
@@ -313,54 +226,10 @@ public class Simulador {
 		 * Calcula o número de pacotes na rajada e coloca um por um no roteador.
 		 */
 		long tamanhoRajada = (long) geradorNumerosAleatorios
-				.nextGeometric(1 / tamanhoMedioRajada);
+				.nextGeometric(1 / parametros.getMediaPacotesPorRajada());
 
 		for (long i = 0; i < tamanhoRajada; i++) {
 			rede.getRoteador().receberPacote(new Pacote(), tempoAtualSimulado);
 		}
-	}
-
-	/**
-	 * Calcula o tempo de transmissão de um pacote no enlace de saída do
-	 * roteador (em milisegundos). O tempo é calculado em função da taxa do
-	 * enlace e do tamanho do pacote.
-	 * 
-	 * @param tamanhoPacote
-	 *            tamanho do pacote (em bytes)
-	 * @return tempo de transmissão do pacote no enlace de saída do roteador (em
-	 *         milisegundos)
-	 */
-	public double tempoTransmissaoPacoteNoRoteador(long tamanhoPacote) {
-		return (tamanhoPacote * 8 / taxaSaidaEnlaceDoRoteador) * 1E3;
-	}
-
-	/**
-	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
-	 * trabalho.
-	 * 
-	 * @return taxa de saída no enlace do rotedor (em bps)
-	 */
-	public double getTaxaSaidaEnlaceDoRoteador() {
-		return taxaSaidaEnlaceDoRoteador;
-	}
-
-	/**
-	 * Taxa de saída no enlace do rotedor (em bps). Parâmetro Cg na definição do
-	 * trabalho.
-	 * 
-	 * @param taxaSaidaEnlaceDoRoteador
-	 *            taxa de saída no enlace do rotedor (em bps)
-	 */
-	public void setTaxaSaidaEnlaceDoRoteador(double taxaSaidaEnlaceDoRoteador) {
-		this.taxaSaidaEnlaceDoRoteador = taxaSaidaEnlaceDoRoteador;
-	}
-
-	/**
-	 * Maximum Segment Size. Nesse trabalho o valor de MSS = 1500 bytes.
-	 * 
-	 * @return MSS = 1500 bytes
-	 */
-	public int getMSS() {
-		return mss;
 	}
 }
