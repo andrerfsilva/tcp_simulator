@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.model;
+package br.ufrj.ad.simulator.models;
 
 /**
  * Representa o lado transmissor de uma sessão TCP.

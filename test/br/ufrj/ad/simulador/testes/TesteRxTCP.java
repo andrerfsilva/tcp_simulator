@@ -7,9 +7,9 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.model.Pacote;
-import br.ufrj.ad.simulator.model.RxTCP;
-import br.ufrj.ad.simulator.model.SACK;
+import br.ufrj.ad.simulator.models.Pacote;
+import br.ufrj.ad.simulator.models.RxTCP;
+import br.ufrj.ad.simulator.models.SACK;
 
 /**
  * Casos de teste para a classe RxTCP.

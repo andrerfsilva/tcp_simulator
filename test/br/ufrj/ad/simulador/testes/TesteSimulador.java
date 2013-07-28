@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.model.Simulador;
+import br.ufrj.ad.simulator.models.Simulador;
 
 /**
  * Casos de teste para a classe Simulador.

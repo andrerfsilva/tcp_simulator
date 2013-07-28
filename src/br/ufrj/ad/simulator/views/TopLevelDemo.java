@@ -29,28 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
-/**
- * This example, like all Swing examples, exists in a package:
- * in this case, the "start" package.
- * If you are using an IDE, such as NetBeans, this should work 
- * seamlessly.  If you are compiling and running the examples
- * from the command-line, this may be confusing if you aren't
- * used to using named packages.  In most cases,
- * the quick and dirty solution is to delete or comment out
- * the "package" line from all the source files and the code
- * should work as expected.  For an explanation of how to
- * use the Swing examples as-is from the command line, see
- * http://docs.oracle.com/javase/javatutorials/tutorial/uiswing/start/compile.html#package
- */
+package br.ufrj.ad.simulator.views;
 
-package br.ufrj.ad.simulator.view;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
-/*
- * HelloWorldSwing.java requires no other files. 
- */
-import javax.swing.*;        
-
-public class HelloWorldSwing {
+/* TopLevelDemo.java requires no other files. */
+public class TopLevelDemo {
     /**
      * Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
@@ -58,12 +44,24 @@ public class HelloWorldSwing {
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
+        JFrame frame = new JFrame("TopLevelDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Add the ubiquitous "Hello World" label.
-        JLabel label = new JLabel("LOL!");
-        frame.getContentPane().add(label);
+        //Create the menu bar.  Make it have a green background.
+        JMenuBar greenMenuBar = new JMenuBar();
+        greenMenuBar.setOpaque(true);
+        greenMenuBar.setBackground(new Color(154, 165, 127));
+        greenMenuBar.setPreferredSize(new Dimension(200, 20));
+
+        //Create a yellow label to put in the content pane.
+        JLabel yellowLabel = new JLabel();
+        yellowLabel.setOpaque(true);
+        yellowLabel.setBackground(new Color(248, 213, 131));
+        yellowLabel.setPreferredSize(new Dimension(200, 180));
+
+        //Set the menu bar and add the label to the content pane.
+        frame.setJMenuBar(greenMenuBar);
+        frame.getContentPane().add(yellowLabel, BorderLayout.CENTER);
 
         //Display the window.
         frame.pack();

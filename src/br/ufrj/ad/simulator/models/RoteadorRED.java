@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.model;
+package br.ufrj.ad.simulator.models;
 
 import br.ufrj.ad.simulator.estatistica.Estimador;
 import br.ufrj.ad.simulator.estatistica.Random;

@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
-package br.ufrj.ad.simulator.view;
+package br.ufrj.ad.simulator.views;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import br.ufrj.ad.simulator.model.Pacote;
-import br.ufrj.ad.simulator.model.Roteador;
-import br.ufrj.ad.simulator.model.RoteadorFIFO;
+import br.ufrj.ad.simulator.models.Pacote;
+import br.ufrj.ad.simulator.models.Roteador;
+import br.ufrj.ad.simulator.models.RoteadorFIFO;
 
 /**
  * Casos de teste da classe RoteadorFIFO.

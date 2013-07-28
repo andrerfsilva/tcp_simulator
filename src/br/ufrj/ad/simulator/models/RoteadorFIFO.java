@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.model;
+package br.ufrj.ad.simulator.models;
 
 /**
  * Um rotedoador com disciplina First Come First Served!

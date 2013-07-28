@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.model.Pacote;
-import br.ufrj.ad.simulator.model.RoteadorRED;
+import br.ufrj.ad.simulator.models.Pacote;
+import br.ufrj.ad.simulator.models.RoteadorRED;
 
 /**
  * Casos de teste para a classe RoteadorRED

@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.model;
+package br.ufrj.ad.simulator.models;
 
 /**
  * Armazena as informações do SACK, ou seja, o byte do próximo pacote esperado,

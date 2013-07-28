@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.view;
+package br.ufrj.ad.simulator.views;
 
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;

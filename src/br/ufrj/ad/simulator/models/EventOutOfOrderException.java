@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.model;
+package br.ufrj.ad.simulator.models;
 
 /**
  * Essa exceção é usada para garantir se os eventos do simulador estão ocorrendo

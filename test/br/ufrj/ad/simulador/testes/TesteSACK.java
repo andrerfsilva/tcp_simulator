@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotSame;
 
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.model.SACK;
+import br.ufrj.ad.simulator.models.SACK;
 
 /**
  * Casos de teste para a classe SACK.
