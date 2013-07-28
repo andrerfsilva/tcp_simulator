@@ -2,7 +2,6 @@ package br.ufrj.ad.simulator.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JFrame;
