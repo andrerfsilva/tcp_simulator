@@ -51,12 +51,6 @@ public class ControladorParametros implements ActionListener {
 
 	}
 
-	public static void main(String args[]) throws IOException {
-		ControladorParametros controlador = new ControladorParametros();
-		controlador.janelaParametros
-				.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if ("Salvar".equals(e.getActionCommand())) {
@@ -98,6 +92,11 @@ public class ControladorParametros implements ActionListener {
 		} else if ("Cancelar".equals(e.getActionCommand())) {
 			janelaParametros.close();
 		}
+	}
 
+	public static void main(String args[]) throws IOException {
+		ControladorParametros controlador = new ControladorParametros();
+		controlador.janelaParametros
+				.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

@@ -1,30 +1,41 @@
 package br.ufrj.ad.simulator.views;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+/**
+ * Menu principal do simulador.
+ * 
+ * @author André Ramos
+ * 
+ */
 @SuppressWarnings("serial")
 public class JanelaPrincipal extends JFrame {
 
-	public JanelaPrincipal(){
+	private JMenuBar menuBar;
+	private JMenu menu;
+	private JMenuItem menuItemConfigurarParametrosSimulacao;
+	private JMenuItem menuItemIniciarSimulacao;
+	private JMenuItem menuItemSair;
+
+	public JanelaPrincipal() {
 		super("Simulador TCP - 2013/1");
-		iniciarComponetes();
+		iniciarComponentes();
 	}
 
-	private void iniciarComponetes() {
+	private void iniciarComponentes() {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setExtendedState(MAXIMIZED_BOTH);
 
 		// Create the menu bar.
-		JMenuBar menuBar;
-		JMenu menu;
-		JMenuItem menuItemParametrosSimulacao, menuItemIniciarSimulacao, menuItemSair;
 
 		menuBar = new JMenuBar();
 
@@ -32,19 +43,22 @@ public class JanelaPrincipal extends JFrame {
 		menu.setMnemonic(KeyEvent.VK_M);
 		menuBar.add(menu);
 
-		menuItemParametrosSimulacao = new JMenuItem(
-				"Parâmetros de Entrada da Simulação", KeyEvent.VK_P);
-		menu.add(menuItemParametrosSimulacao);
+		menuItemConfigurarParametrosSimulacao = new JMenuItem(
+				"Configurar Parâmetros da Simulação", KeyEvent.VK_P);
+		menuItemConfigurarParametrosSimulacao
+				.setActionCommand("ConfigurarParametros");
+		menu.add(menuItemConfigurarParametrosSimulacao);
 
 		menuItemIniciarSimulacao = new JMenuItem("Iniciar Simulação",
 				KeyEvent.VK_S);
+		menuItemIniciarSimulacao.setActionCommand("IniciarSimulacao");
 		menu.add(menuItemIniciarSimulacao);
-		
+
 		menu.addSeparator();
-		
-		menuItemSair =  new JMenuItem("Sair");
+
+		menuItemSair = new JMenuItem("Sair");
+		menuItemSair.setActionCommand("Sair");
 		menu.add(menuItemSair);
-		
 
 		menuBar.setOpaque(true);
 		this.setJMenuBar(menuBar);
@@ -54,6 +68,27 @@ public class JanelaPrincipal extends JFrame {
 		// Display the window.
 		this.pack();
 		this.setVisible(true);
+	}
+
+	public void close() {
+
+		WindowEvent winClosingEvent = new WindowEvent(this,
+				WindowEvent.WINDOW_CLOSING);
+		Toolkit.getDefaultToolkit().getSystemEventQueue()
+				.postEvent(winClosingEvent);
+
+	}
+
+	public JMenuItem getMenuItemConfigurarParametrosSimulacao() {
+		return menuItemConfigurarParametrosSimulacao;
+	}
+
+	public JMenuItem getMenuItemIniciarSimulacao() {
+		return menuItemIniciarSimulacao;
+	}
+
+	public JMenuItem getMenuItemSair() {
+		return menuItemSair;
 	}
 
 	public static void main(String[] args) {
