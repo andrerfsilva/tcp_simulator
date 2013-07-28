@@ -8,6 +8,7 @@ import br.ufrj.ad.simulator.eventos.Evento;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
+import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 
 /**
@@ -43,6 +44,11 @@ public class Simulador {
 	private double tempoAtualSimulado;
 
 	/**
+	 * Número de eventos por rodada de simulação. O default é 1000.
+	 */
+	private int numeroEventosPorRodada;
+
+	/**
 	 * Armazena todos os parâmetros de entrada da simulação.
 	 */
 	private Parametros parametros;
@@ -50,9 +56,11 @@ public class Simulador {
 	public Simulador() throws IOException {
 		tempoAtualSimulado = 0;
 
+		numeroEventosPorRodada = 1000;
+
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
-		
+
 		rede = new Rede(parametros.getEstacoesGrupo1(),
 				parametros.getEstacoesGrupo2(),
 				parametros.getDisciplinaRoteadorProperty());
@@ -91,7 +99,9 @@ public class Simulador {
 		 */
 		while (!estatisticasSatisfatorias()) {
 
-			while (filaEventos.size() > 0 && !criterioParada()) {
+			for (int i = 0; i < numeroEventosPorRodada
+					&& filaEventos.size() > 0; i++) {
+
 				Evento e = filaEventos.poll();
 
 				/*
@@ -113,9 +123,22 @@ public class Simulador {
 
 	}
 
-	private boolean criterioParada() {
-		// TODO Auto-generated method stub
-		return false;
+	/**
+	 * Número de eventos por rodada de simulação. O default é 1000.
+	 * 
+	 * @return número de eventos por rodada de simulação
+	 */
+	public int getNumeroEventosPorRodada() {
+		return numeroEventosPorRodada;
+	}
+
+	/**
+	 * Número de eventos por rodada de simulação.
+	 * 
+	 * @param numeroEventosPorRodada
+	 */
+	public void setNumeroEventosPorRodada(int numeroEventosPorRodada) {
+		this.numeroEventosPorRodada = numeroEventosPorRodada;
 	}
 
 	private boolean estatisticasSatisfatorias() {
@@ -131,19 +154,25 @@ public class Simulador {
 	 *            próximo evento da fila de eventos
 	 */
 	private void tratarEvento(Evento e) {
-		// TODO definir eventos, como eles alteram o estado do sistema, e
-		// agendar novos eventos!
 		if (e instanceof EventoRoteadorRecebeTrafegoDeFundo) {
-
 			tratarEventoRoteadorRecebeTrafegoDeFundo();
-
 		} else if (e instanceof EventoRoteadorTerminaEnvio) {
-
 			tratarEventoRoteadorTerminaEnvio();
-
 		} else if (e instanceof EventoRoteadorRecebePacoteTxTCP) {
 			tratarEventoRoteadorRecebePacoteTxTCP();
+		} else if (e instanceof EventoTxRecebeSACK) {
+			tratarEventoTxRecebeSACK();
+		} else if (e instanceof EventoTimeOut) {
+			tratarEventoTimeOut();
 		}
+	}
+
+	private void tratarEventoTimeOut() {
+		// TODO FAZER!!
+	}
+
+	private void tratarEventoTxRecebeSACK() {
+		// TODO FAZER!!!
 	}
 
 	private void tratarEventoRoteadorRecebePacoteTxTCP() {
