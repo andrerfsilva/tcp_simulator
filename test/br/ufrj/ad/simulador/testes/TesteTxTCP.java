@@ -27,15 +27,115 @@ public class TesteTxTCP {
 	}
 
 	@Test
-	public void testEstadoInicial() {
+	public void testEstadoInicialCwnd() {
 		assertEquals(Parametros.mss, tx.getCwnd());
 	}
 
 	@Test
-	public void testReceberSACK() {
+	public void testEstadoInicialThreshold() {
+		assertEquals(65535, tx.getThreshold());
+	}
+
+	@Test
+	public void testReceberSACK1() {
 		tx.enviarPacote();
 		tx.receberSACK(new SACK(0, Parametros.mss));
 		assertEquals(2 * Parametros.mss, tx.getCwnd());
+	}
+
+	@Test
+	public void testReceberSACK2() {
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		assertEquals(Parametros.mss, tx.getProximoPacoteAEnviar());
+	}
+
+	@Test
+	public void testReceberSACK3() {
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		assertEquals(Parametros.mss, tx.getPacoteMaisAntigoSemACK());
+	}
+
+	@Test
+	public void testCwnd1() {
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		assertEquals(2 * Parametros.mss, tx.getCwnd());
+	}
+
+	@Test
+	public void testCwnd2() {
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		assertEquals(3 * Parametros.mss, tx.getCwnd());
+	}
+
+	/**
+	 * Testa quantos RTTs o TxTCP demora para entrar em Congestion Avoidance.
+	 * Assumindo que não haverá perda no caminho, em i RTTs teremos <br/>
+	 * <br/>
+	 * cwnd = (2^i)*MSS <br/>
+	 * <br/>
+	 * 
+	 * Durante essa fase estaremos em Slow Start. Para cwnd < threshold, teremos <br/>
+	 * <br/>
+	 * (2^i)*MSS < threshold <br/>
+	 * i + log(MSS) < log(threshold) <br/>
+	 * i < log(threshold) - log(MSS) <br/>
+	 * <br/>
+	 * 
+	 * Ou seja, em 5 RTTs ainda estaremos em Slow Start, e do 6 em diante será
+	 * Congestion Avoidance.
+	 */
+	@Test
+	public void testSlowStart() {
+
+		int rtts = 0;
+		while (tx.getCwnd() < tx.getThreshold()) {
+			// envia o máximo de pacotes que a cwnd permite
+			long max = tx.getCwnd() / Parametros.mss;
+			for (int i = 0; i < max; i++) {
+				tx.enviarPacote();
+				tx.receberSACK(new SACK(0, tx.getProximoPacoteAEnviar()));
+			}
+			rtts++;
+		}
+		assertEquals(6, rtts);
+	}
+
+	/**
+	 * Em 5 RTTs a cwnd ainda estará crescendo exponencialmente.
+	 */
+	@Test
+	public void testSlowStart2() {
+		for (int rtts = 0; rtts < 5; rtts++) {
+			// envia o máximo de pacotes que a cwnd permite
+			long max = tx.getCwnd() / Parametros.mss;
+			for (int i = 0; i < max; i++) {
+				tx.enviarPacote();
+				tx.receberSACK(new SACK(0, tx.getProximoPacoteAEnviar()));
+			}
+		}
+		assertEquals(Math.pow(2, 5) * Parametros.mss, tx.getCwnd(), 0);
+	}
+	
+	/**
+	 * Em 3 RTTs a cwnd ainda estará crescendo exponencialmente.
+	 */
+	@Test
+	public void testSlowStart3() {
+		for (int rtts = 0; rtts < 3; rtts++) {
+			// envia o máximo de pacotes que a cwnd permite
+			long max = tx.getCwnd() / Parametros.mss;
+			for (int i = 0; i < max; i++) {
+				tx.enviarPacote();
+				tx.receberSACK(new SACK(0, tx.getProximoPacoteAEnviar()));
+			}
+		}
+		assertEquals(Math.pow(2, 3) * Parametros.mss, tx.getCwnd(), 0);
 	}
 
 	/**
