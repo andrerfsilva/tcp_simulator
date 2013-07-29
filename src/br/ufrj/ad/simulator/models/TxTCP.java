@@ -43,13 +43,36 @@ public class TxTCP {
 		proximoPacoteAEnviar = 0;
 	}
 
+	/**
+	 * Recebe SACK e atualiza as variáveis de estado do Tx em função do SACK
+	 * recebido.
+	 * 
+	 * @param sack
+	 *            um objeto do tipo SACK
+	 */
 	public void receberSACK(SACK sack) {
 		// TODO FAZER!
 	}
 
+	/**
+	 * Prepara o próximo pacote pronto para ser enviado e atualiza as variáveis
+	 * de estado em função desse novo envio.
+	 * 
+	 * @return pacote enviado
+	 */
 	public Pacote enviarPacote() {
-		// TODO fazer!
+		// TODO FAZER!
 		return null;
+	}
+
+	/**
+	 * Indica se o Tx pode transmitir mais um pacote dependendo do tamanho da
+	 * janena de congestionamento.
+	 * 
+	 * @return
+	 */
+	public boolean prontoParaTransmitir() {
+		return proximoPacoteAEnviar < pacoteMaisAntigoSemACK + cwnd;
 	}
 
 	public int getGrupo() {

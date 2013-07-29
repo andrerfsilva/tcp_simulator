@@ -146,6 +146,8 @@ public class Simulador {
 		/*
 		 * Primeiras transmissões TCP.
 		 */
+
+		// TODO fazer, fazer, fazer!!!
 	}
 
 	/**
