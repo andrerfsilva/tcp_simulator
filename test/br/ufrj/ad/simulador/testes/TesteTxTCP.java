@@ -8,6 +8,7 @@ import org.junit.Test;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
+import br.ufrj.ad.simulator.models.SACK;
 import br.ufrj.ad.simulator.models.TxTCP;
 
 /**
@@ -37,6 +38,26 @@ public class TesteTxTCP {
 	public void testEnviarPacote() {
 		Pacote pEsperado = new Pacote();
 		pEsperado.setByteInicialEFinal(0, Parametros.mss - 1);
+		pEsperado.setDestino(0);
+
+		Pacote pEnviado = tx.enviarPacote();
+		pEnviado.setDestino(0);
+
+		assertEquals(pEsperado, pEnviado);
+	}
+
+	/**
+	 * O segundo pacote a ser enviado é o <1500, 2999>, porém ele só poderá ser
+	 * transmitido depois de receber o SACK do primeiro pacote.
+	 */
+	@Test
+	public void testEnviarPacote2() {
+		
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		
+		Pacote pEsperado = new Pacote();
+		pEsperado.setByteInicialEFinal(Parametros.mss, 2 * Parametros.mss - 1);
 		pEsperado.setDestino(0);
 
 		Pacote pEnviado = tx.enviarPacote();

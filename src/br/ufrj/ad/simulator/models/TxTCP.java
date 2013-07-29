@@ -19,24 +19,24 @@ public class TxTCP {
 	 * Janela de congestionamento (em bytes). Indica quantos pacotes podem ser
 	 * transmitidos no pipeline e ficar aguardando ACK.
 	 */
-	private int cwnd;
+	private long cwnd;
 
 	/**
 	 * Threshold (em bytes).
 	 */
-	private int threshold;
+	private long threshold;
 
 	/**
-	 * Ponteiro para o primeiro byte do pacote mais antigo que foi transmitido,
-	 * mas ainda não recebeu o ACK.
+	 * Ponteiro para o primeiro byte do pacote mais antigo que ainda não recebeu
+	 * o ACK.
 	 */
-	private int pacoteMaisAntigoSemACK;
+	private long pacoteMaisAntigoSemACK;
 
 	/**
 	 * Ponteiro para o primeiro byte do próximo pacote a ser enviado no buffer
 	 * de transmissão.
 	 */
-	private int proximoPacoteAEnviar;
+	private long proximoPacoteAEnviar;
 
 	public TxTCP() {
 		cwnd = Parametros.mss;
@@ -53,7 +53,19 @@ public class TxTCP {
 	 *            um objeto do tipo SACK
 	 */
 	public void receberSACK(SACK sack) {
-		// TODO FAZER!
+
+		if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
+
+			pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+
+			// TODO Atualizar cwnd em função do estado do Tx!
+
+		} else {
+
+			// TODO Tratamento de ACK duplicado!
+
+		}
+
 	}
 
 	/**
@@ -74,8 +86,10 @@ public class TxTCP {
 			throw new TxTCPNotReadyToSendException();
 		}
 
+		// Cria um pacote com tamanho = MSS.
 		Pacote p = new Pacote();
-		p.setByteInicialEFinal(proximoPacoteAEnviar, Parametros.mss - 1);
+		p.setByteInicialEFinal(proximoPacoteAEnviar, proximoPacoteAEnviar
+				+ Parametros.mss - 1);
 		proximoPacoteAEnviar += Parametros.mss;
 
 		return p;

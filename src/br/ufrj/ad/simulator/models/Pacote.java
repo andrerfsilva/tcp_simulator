@@ -1,7 +1,5 @@
 package br.ufrj.ad.simulator.models;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
-
 import br.ufrj.ad.simulator.exceptions.InvalidPackageException;
 
 /**
