@@ -14,7 +14,7 @@ import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema
  * simulado e a coleta de estatísticas de interesse da simulação. Esse simulador
- * usa abordagem integrada para coletar estatísticas e usa o modo Batch
+ * usa abordagem integrada para coletar estatísticas e usa o modo Replicativo
  * considerando múltiplas rodadas.
  * 
  * @author André Ramos, Welligton Mascena featuring Vitor Maia
@@ -54,42 +54,42 @@ public class Simulador {
 	private Parametros parametros;
 
 	public Simulador() throws IOException {
-		tempoAtualSimulado = 0;
 
 		numeroEventosPorRodada = 1000;
-
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
+
+		setarEstadoInicialDeSimulacao();
+	}
+
+	/**
+	 * Cria uma nova lista de eventos vazia, seta o tempo atual simulado para
+	 * zero e reinicia as variáveis de estado da rede. Como usaremos o método
+	 * replicativo, esse método deve ser chamado no início de cada rodada.
+	 */
+	private void setarEstadoInicialDeSimulacao() {
+		filaEventos = new PriorityQueue<Evento>();
+
+		tempoAtualSimulado = 0;
 
 		rede = new Rede(parametros.getEstacoesGrupo1(),
 				parametros.getEstacoesGrupo2(),
 				parametros.getDisciplinaRoteadorProperty());
-
 	}
 
 	/**
 	 * Inicia o loop principal da simulação e retorna as estatísticas para todos
 	 * os cenários do trabalho. Usa abordagem integrada para coleta de
-	 * estatísticas e simulação Batch.
+	 * estatísticas e simulação usando método Replicativo.
 	 * 
 	 * @throws EventOutOfOrderException
 	 *             Quando a lista de eventos retornar um evento cujo tempo de
 	 *             ocorrência seja menor que o tempo atual simulado, ou seja,
 	 *             mostra que um evento deveria ter sido tratado antes, portanto
-	 *             há uma inconsistência nos dados da simulação e a simulação
-	 *             deve ser abortada.
+	 *             há uma inconsistência nos dados e a simulação deve ser
+	 *             abortada.
 	 */
 	public void simular() throws EventOutOfOrderException {
-
-		/*
-		 * Agendar eventos iniciais!
-		 */
-		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
-				geradorNumerosAleatorios.nextExponential(1 / parametros
-						.getTempoMedioEntreRajadas()));
-		filaEventos.add(primeiraChegadaTrafegoFundo);
-
-		// TODO: estimar fase transiente!
 
 		/*
 		 * Cada rodada nesse loop representa uma rodada no plano de controle,
@@ -98,6 +98,11 @@ public class Simulador {
 		 * estatísticas de interesse.
 		 */
 		while (!estatisticasSatisfatorias()) {
+
+			setarEstadoInicialDeSimulacao();
+			agendarEventosIniciais();
+
+			// TODO: estimar fase transiente!
 
 			for (int i = 0; i < numeroEventosPorRodada
 					&& filaEventos.size() > 0; i++) {
@@ -121,6 +126,26 @@ public class Simulador {
 
 		// TODO apresentar estatísticas e intervalo de confiança
 
+	}
+
+	/**
+	 * Agenda os eventos iniciais da simulação, os quais são a primeira chegada
+	 * de tráfego de fundo (v.a. exponencial) e as primeiras transmissões TCP
+	 * (v.a. uniforme).
+	 */
+	private void agendarEventosIniciais() {
+
+		/*
+		 * Primeira chegada de tráfego de fundo.
+		 */
+		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
+				geradorNumerosAleatorios.nextExponential(1 / parametros
+						.getTempoMedioEntreRajadas()));
+		filaEventos.add(primeiraChegadaTrafegoFundo);
+
+		/*
+		 * Primeiras transmissões TCP.
+		 */
 	}
 
 	/**
