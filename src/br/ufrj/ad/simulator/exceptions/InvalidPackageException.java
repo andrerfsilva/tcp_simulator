@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.models;
+package br.ufrj.ad.simulator.exceptions;
 
 public class InvalidPackageException extends RuntimeException {
 

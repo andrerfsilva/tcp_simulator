@@ -1,5 +1,7 @@
 package br.ufrj.ad.simulator.models;
 
+import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
+
 /**
  * Representa o lado transmissor de uma sessão TCP.
  * 
@@ -59,10 +61,24 @@ public class TxTCP {
 	 * de estado em função desse novo envio.
 	 * 
 	 * @return pacote enviado
+	 * 
+	 * @throws TxTCPNotReadyToSendException
+	 *             Se o TxTCP não estiver pronto para transmitir, ou seja, todos
+	 *             os pacotes da janela de congestionamento já foram
+	 *             transmitidos, então essa exceção será lançada. Tomar cuidado
+	 *             para não enviar pacotes fora da janela de congestionamento.
 	 */
-	public Pacote enviarPacote() {
-		// TODO FAZER!
-		return null;
+	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
+
+		if (!prontoParaTransmitir()) {
+			throw new TxTCPNotReadyToSendException();
+		}
+
+		Pacote p = new Pacote();
+		p.setByteInicialEFinal(proximoPacoteAEnviar, Parametros.mss - 1);
+		proximoPacoteAEnviar += Parametros.mss;
+
+		return p;
 	}
 
 	/**

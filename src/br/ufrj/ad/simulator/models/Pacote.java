@@ -1,5 +1,9 @@
 package br.ufrj.ad.simulator.models;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
+
+import br.ufrj.ad.simulator.exceptions.InvalidPackageException;
+
 /**
  * Informações relevantes de um pacote. Importante: todo pacote tem tamanho MSS
  * = 1500 bytes.
@@ -25,6 +29,23 @@ public class Pacote {
 		this.destino = -1;
 		this.byteInicial = 0;
 		this.byteFinal = 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object o) {
+
+		if (o instanceof Pacote) {
+			Pacote opacote = (Pacote) o;
+			return (this.byteInicial == opacote.byteInicial)
+					&& (this.byteFinal == opacote.byteFinal)
+					&& (this.destino == opacote.destino);
+		}
+
+		return false;
 	}
 
 	/**
