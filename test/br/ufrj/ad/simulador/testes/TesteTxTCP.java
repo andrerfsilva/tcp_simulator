@@ -27,8 +27,15 @@ public class TesteTxTCP {
 	}
 
 	@Test
+	public void testEstadoInicial() {
+		assertEquals(Parametros.mss, tx.getCwnd());
+	}
+
+	@Test
 	public void testReceberSACK() {
-		fail("Not yet implemented");
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+		assertEquals(2 * Parametros.mss, tx.getCwnd());
 	}
 
 	/**
@@ -52,10 +59,10 @@ public class TesteTxTCP {
 	 */
 	@Test
 	public void testEnviarPacote2() {
-		
+
 		tx.enviarPacote();
 		tx.receberSACK(new SACK(0, Parametros.mss));
-		
+
 		Pacote pEsperado = new Pacote();
 		pEsperado.setByteInicialEFinal(Parametros.mss, 2 * Parametros.mss - 1);
 		pEsperado.setDestino(0);

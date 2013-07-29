@@ -38,11 +38,19 @@ public class TxTCP {
 	 */
 	private long proximoPacoteAEnviar;
 
+	/**
+	 * Número de bytes recebidos OK desde o último incremento no cwnd. Essa
+	 * variável só é usada quando o TxTCP está em Congestion Avoidance.
+	 */
+	private long bytesRecebidosDesdeUltimoIncremento;
+
 	public TxTCP() {
 		cwnd = Parametros.mss;
 		threshold = 65535;
 		pacoteMaisAntigoSemACK = 0;
 		proximoPacoteAEnviar = 0;
+
+		bytesRecebidosDesdeUltimoIncremento = 0;
 	}
 
 	/**
@@ -56,9 +64,31 @@ public class TxTCP {
 
 		if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
 
+			long bytesRecebidosOK = sack.getProximoByteEsperado()
+					- pacoteMaisAntigoSemACK;
+
 			pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
 
 			// TODO Atualizar cwnd em função do estado do Tx!
+
+			if (cwnd < threshold) {
+				/*
+				 * Estamos em Slow Start, portando a cwnd deve crescer 1MSS por
+				 * pacote recebido OK no receptor.
+				 */
+				cwnd += bytesRecebidosOK;
+			} else {
+				/*
+				 * Estamos em Congestion Avoidance, portanto a cwnd deve esperar
+				 * o recebimento de cwnd bytes para então aumentar em 1MSS.
+				 */
+
+				bytesRecebidosDesdeUltimoIncremento += bytesRecebidosOK;
+				if (bytesRecebidosDesdeUltimoIncremento >= cwnd) {
+					bytesRecebidosDesdeUltimoIncremento -= cwnd;
+					cwnd += Parametros.mss;
+				}
+			}
 
 		} else {
 
@@ -111,6 +141,22 @@ public class TxTCP {
 
 	public void setGrupo(int grupo) {
 		this.grupo = grupo;
+	}
+
+	public long getCwnd() {
+		return cwnd;
+	}
+
+	public long getThreshold() {
+		return threshold;
+	}
+
+	public long getPacoteMaisAntigoSemACK() {
+		return pacoteMaisAntigoSemACK;
+	}
+
+	public long getProximoPacoteAEnviar() {
+		return proximoPacoteAEnviar;
 	}
 
 }
