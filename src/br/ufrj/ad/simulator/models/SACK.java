@@ -10,8 +10,19 @@ package br.ufrj.ad.simulator.models;
  */
 public class SACK {
 
+	/**
+	 * Destino do SACK no índice de pares Tx/Rx.
+	 */
 	private int destino;
+
+	/**
+	 * Número de sequência do primeiro byte do próximo pacote esperado.
+	 */
 	private long proximoByteEsperado;
+
+	/**
+	 * Pacotes que foram recebidos fora de ordem no Rx.
+	 */
 	private long[][] sequenciasRecebidasCorretamente;
 
 	public int getDestino() {

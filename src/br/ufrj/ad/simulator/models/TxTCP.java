@@ -44,6 +44,24 @@ public class TxTCP {
 	 */
 	private long bytesRecebidosDesdeUltimoIncremento;
 
+	/**
+	 * Pacotes que foram recebidos fora de ordem no Rx. Essa informação é obtida
+	 * através do último SACK e é usada durante a fase de Fast Retransmit para
+	 * reenviar somente os pacotes ainda não recebidos no Rx.
+	 */
+	private long[][] sequenciasRecebidasCorretamente;
+
+	/**
+	 * Contador de ACKs duplicados. Usado para entrar em Fast Retransmit.
+	 */
+	private int contadorACKsDuplicados;
+
+	/**
+	 * Próximo byte esperado do último byte duplicado. Se esse ACK for duplicado
+	 * 3 vezes, então entraremos em Fast Retransmit.
+	 */
+	private long ultimoACKDuplicado;
+
 	public TxTCP() {
 		cwnd = Parametros.mss;
 		threshold = 65535;
@@ -51,6 +69,8 @@ public class TxTCP {
 		proximoPacoteAEnviar = 0;
 
 		bytesRecebidosDesdeUltimoIncremento = 0;
+		contadorACKsDuplicados = 0;
+		ultimoACKDuplicado = -1;
 	}
 
 	/**
@@ -68,6 +88,8 @@ public class TxTCP {
 					- pacoteMaisAntigoSemACK;
 
 			pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+			sequenciasRecebidasCorretamente = sack
+					.getSequenciasRecebidasCorretamente();
 
 			// TODO Atualizar cwnd em função do estado do Tx!
 
@@ -92,7 +114,23 @@ public class TxTCP {
 
 		} else {
 
-			// TODO Tratamento de ACK duplicado!
+			/*
+			 * Atualiza a lista de sequências recebidas corretamentes no Rx com
+			 * os dados do último SACK.
+			 */
+			sequenciasRecebidasCorretamente = sack
+					.getSequenciasRecebidasCorretamente();
+
+			if (ultimoACKDuplicado == sack.getProximoByteEsperado()) {
+
+				contadorACKsDuplicados++;
+				if (contadorACKsDuplicados == 3) {
+					// TODO Entrar em Fast Retransmit!
+				}
+			} else {
+				ultimoACKDuplicado = sack.getProximoByteEsperado();
+				contadorACKsDuplicados = 1;
+			}
 
 		}
 
@@ -125,6 +163,9 @@ public class TxTCP {
 	 */
 	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
 
+		// TODO Considerar caso de retransmissão e evitar enviar pacotes
+		// repetidos para o Rx em função das sequências recebidas corretamente!
+		
 		if (!prontoParaTransmitir()) {
 			throw new TxTCPNotReadyToSendException();
 		}
