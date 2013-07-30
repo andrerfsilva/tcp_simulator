@@ -99,6 +99,19 @@ public class TxTCP {
 	}
 
 	/**
+	 * Esse método deve ser chamado quando ocorrer um evento de time-out. O
+	 * threshold será reduzido para a metade da cwnd no momento do time-out, o
+	 * cwnd voltará para 1MSS (entraremos em modo Slow Start) e todos os pacotes
+	 * sem ACK serão reenviados (atualiza o ponteiro do proximo pacote a ser
+	 * enviado para o pacote mais antigo sem ACK).
+	 */
+	public void reagirTimeOut() {
+		threshold = cwnd / 2;
+		cwnd = Parametros.mss;
+		proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
+	}
+
+	/**
 	 * Prepara o próximo pacote pronto para ser enviado e atualiza as variáveis
 	 * de estado em função desse novo envio.
 	 * 

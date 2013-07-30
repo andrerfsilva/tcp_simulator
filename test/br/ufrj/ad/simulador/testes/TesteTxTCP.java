@@ -121,7 +121,7 @@ public class TesteTxTCP {
 		}
 		assertEquals(Math.pow(2, 5) * Parametros.mss, tx.getCwnd(), 0);
 	}
-	
+
 	/**
 	 * Em 3 RTTs a cwnd ainda estará crescendo exponencialmente.
 	 */
@@ -136,6 +136,33 @@ public class TesteTxTCP {
 			}
 		}
 		assertEquals(Math.pow(2, 3) * Parametros.mss, tx.getCwnd(), 0);
+	}
+
+	/**
+	 * Causa um time-out e testa reação do TxTCP.
+	 */
+	@Test
+	public void testTimeOut() {
+
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote();
+		tx.enviarPacote();
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		Pacote pEsperado = tx.enviarPacote(); // Esse deve ser o próximo pacote
+												// enviado depois do time-out
+		tx.enviarPacote();
+		tx.enviarPacote();
+		tx.enviarPacote();
+
+		tx.reagirTimeOut();
+
+		assertTrue((tx.getThreshold() == 2 * Parametros.mss)
+				&& (tx.getCwnd() == Parametros.mss)
+				&& (pEsperado.equals(tx.enviarPacote())));
 	}
 
 	/**
