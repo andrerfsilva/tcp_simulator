@@ -57,10 +57,22 @@ public class TxTCP {
 	private int contadorACKsDuplicados;
 
 	/**
-	 * Próximo byte esperado do último byte duplicado. Se esse ACK for duplicado
+	 * Próximo byte esperado do último ACK duplicado. Se esse ACK for duplicado
 	 * 3 vezes, então entraremos em Fast Retransmit.
 	 */
 	private long ultimoACKDuplicado;
+
+	/**
+	 * Indica se o TxTCP está em estado de Fast Retransmit.
+	 */
+	private boolean isFastRetransmit;
+
+	/**
+	 * Janela de recuperação. O TxTCP só sairá do estado de Fast Retransmit
+	 * quando todos os bytes menores ou iguais a recwnd chegarem em ordem no
+	 * RxTCP.
+	 */
+	private long recwnd;
 
 	public TxTCP() {
 		cwnd = Parametros.mss;
@@ -69,8 +81,11 @@ public class TxTCP {
 		proximoPacoteAEnviar = 0;
 
 		bytesRecebidosDesdeUltimoIncremento = 0;
+
 		contadorACKsDuplicados = 0;
 		ultimoACKDuplicado = -1;
+		isFastRetransmit = false;
+		recwnd = -1;
 	}
 
 	/**
@@ -82,56 +97,103 @@ public class TxTCP {
 	 */
 	public void receberSACK(SACK sack) {
 
-		if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
+		/*
+		 * A primeira coisa a ser feita (independentemente do estado do TxTCP) é
+		 * atualizar a lista de sequências recebidas corretamente com as
+		 * informações do SACK mais recente.
+		 */
+		sequenciasRecebidasCorretamente = sack
+				.getSequenciasRecebidasCorretamente();
 
-			long bytesRecebidosOK = sack.getProximoByteEsperado()
-					- pacoteMaisAntigoSemACK;
+		if (!isFastRetransmit) {
+			/*
+			 * Se o TxTCP não estiver em estado de Fast Retransmit, devemos
+			 * conferir so o SACK é duplicado.
+			 */
+			if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
 
-			pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
-			sequenciasRecebidasCorretamente = sack
-					.getSequenciasRecebidasCorretamente();
-
-			// TODO Atualizar cwnd em função do estado do Tx!
-
-			if (cwnd < threshold) {
 				/*
-				 * Estamos em Slow Start, portando a cwnd deve crescer 1MSS por
-				 * pacote recebido OK no receptor.
-				 */
-				cwnd += bytesRecebidosOK;
-			} else {
-				/*
-				 * Estamos em Congestion Avoidance, portanto a cwnd deve esperar
-				 * o recebimento de cwnd bytes para então aumentar em 1MSS.
+				 * Se o SACK não é duplicado, prosseguimos normalmente
+				 * aumentando a cwnd dependendo do estado de Slow Start ou
+				 * Congestion Avoidance.
 				 */
 
-				bytesRecebidosDesdeUltimoIncremento += bytesRecebidosOK;
-				if (bytesRecebidosDesdeUltimoIncremento >= cwnd) {
-					bytesRecebidosDesdeUltimoIncremento -= cwnd;
-					cwnd += Parametros.mss;
+				long bytesRecebidosOK = sack.getProximoByteEsperado()
+						- pacoteMaisAntigoSemACK;
+
+				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+
+				if (cwnd < threshold) {
+					/*
+					 * Estamos em Slow Start, portando a cwnd deve crescer 1MSS
+					 * por pacote recebido OK no receptor.
+					 */
+					cwnd += bytesRecebidosOK;
+				} else {
+					/*
+					 * Estamos em Congestion Avoidance, portanto a cwnd deve
+					 * esperar o recebimento de cwnd bytes para então aumentar
+					 * em 1MSS.
+					 */
+
+					bytesRecebidosDesdeUltimoIncremento += bytesRecebidosOK;
+					if (bytesRecebidosDesdeUltimoIncremento >= cwnd) {
+						bytesRecebidosDesdeUltimoIncremento -= cwnd;
+						cwnd += Parametros.mss;
+					}
 				}
-			}
 
+			} else {
+
+				/*
+				 * Recebemos um SACK duplicado.
+				 */
+
+				if (ultimoACKDuplicado == sack.getProximoByteEsperado()) {
+
+					contadorACKsDuplicados++;
+					if (contadorACKsDuplicados == 3) {
+						threshold = cwnd / 2;
+						cwnd = threshold + 3 * Parametros.mss;
+						isFastRetransmit = true;
+						/*
+						 * Enquanto o ACK de todos os pacotes dentro da janela
+						 * de recuperação não chegarem, o Tx permanece no estado
+						 * de Fast Retransmit. Todos os "gaps" dentro da recwnd
+						 * serão retransmitidos.
+						 */
+						recwnd = sack.getSequenciasRecebidasCorretamente()[sack
+								.getSequenciasRecebidasCorretamente().length - 1][1];
+
+						proximoPacoteAEnviar = sack.getProximoByteEsperado();
+					}
+				} else {
+					ultimoACKDuplicado = sack.getProximoByteEsperado();
+					contadorACKsDuplicados = 1;
+				}
+
+			}
 		} else {
+			/*
+			 * Nesse caso estamos recebendo um ACK no estado de Fast Retransmit,
+			 * portando a cwnd deve aumentar em 1 MSS.
+			 */
+			cwnd += Parametros.mss;
+
+			// Atualiza ponteiro para o pacote mais antigo sem SACK.
+			if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
+				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+			}
 
 			/*
-			 * Atualiza a lista de sequências recebidas corretamentes no Rx com
-			 * os dados do último SACK.
+			 * Confere se todos os pacotes da janela de recuperação foram
+			 * recebidos corretametne no RxTCP.
 			 */
-			sequenciasRecebidasCorretamente = sack
-					.getSequenciasRecebidasCorretamente();
-
-			if (ultimoACKDuplicado == sack.getProximoByteEsperado()) {
-
-				contadorACKsDuplicados++;
-				if (contadorACKsDuplicados == 3) {
-					// TODO Entrar em Fast Retransmit!
-				}
-			} else {
-				ultimoACKDuplicado = sack.getProximoByteEsperado();
-				contadorACKsDuplicados = 1;
+			if (sack.getProximoByteEsperado() >= recwnd) {
+				isFastRetransmit = false;
+				contadorACKsDuplicados = 0;
+				cwnd = threshold; // Entramos em Congestion Avoidance.
 			}
-
 		}
 
 	}
@@ -165,7 +227,7 @@ public class TxTCP {
 
 		// TODO Considerar caso de retransmissão e evitar enviar pacotes
 		// repetidos para o Rx em função das sequências recebidas corretamente!
-		
+
 		if (!prontoParaTransmitir()) {
 			throw new TxTCPNotReadyToSendException();
 		}
