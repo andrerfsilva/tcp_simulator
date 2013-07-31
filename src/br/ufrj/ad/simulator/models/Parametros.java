@@ -208,4 +208,24 @@ public class Parametros extends Properties {
 	public int getEstacoesGrupo2() {
 		return Integer.parseInt(getEstacoesGrupo2Property());
 	}
+
+	/**
+	 * Tempo de propagação entre o servidor e o rotador para as conexões do
+	 * grupo 1 (em milisegundos).
+	 * 
+	 * @return tempo de propagação para o grupo 1 (em milisegundos)
+	 */
+	public double getTP1() {
+		return Double.parseDouble(getTP1Property());
+	}
+
+	/**
+	 * Tempo de propagação entre o servidor e o rotador para as conexões do
+	 * grupo 2 (em milisegundos).
+	 * 
+	 * @return tempo de propagação para o grupo 2 (em milisegundos)
+	 */
+	public double getTP2() {
+		return Double.parseDouble(getTP2Property());
+	}
 }

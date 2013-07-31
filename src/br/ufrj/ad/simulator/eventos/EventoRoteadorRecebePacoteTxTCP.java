@@ -8,8 +8,20 @@ package br.ufrj.ad.simulator.eventos;
  */
 public class EventoRoteadorRecebePacoteTxTCP extends Evento {
 
-	public EventoRoteadorRecebePacoteTxTCP(double tempoDeOcorrencia) {
+	private int txTCP;
+
+	public EventoRoteadorRecebePacoteTxTCP(double tempoDeOcorrencia, int txTCP) {
 		super(tempoDeOcorrencia);
+		this.txTCP = txTCP;
+	}
+
+	/**
+	 * Retorna o número da conexão TCP que originou o evento.
+	 * 
+	 * @return o número da conexão TCP que originou o evento
+	 */
+	public int getTxTCP() {
+		return this.txTCP;
 	}
 
 }

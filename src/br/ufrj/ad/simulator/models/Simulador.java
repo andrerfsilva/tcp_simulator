@@ -45,7 +45,7 @@ public class Simulador {
 	private double tempoAtualSimulado;
 
 	/**
-	 * Número de eventos por rodada de simulação. O default é 1000.
+	 * Número de eventos por rodada de simulação.
 	 */
 	private int numeroEventosPorRodada;
 
@@ -56,7 +56,7 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
-		numeroEventosPorRodada = 1000;
+		numeroEventosPorRodada = 10000;
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
@@ -147,12 +147,35 @@ public class Simulador {
 		/*
 		 * Primeiras transmissões TCP.
 		 */
+		for (int i = 0; i < rede.getTransmissores().length; i++) {
 
-		// TODO fazer, fazer, fazer!!!
+			/*
+			 * Calcula o tempo de propagação e transmissão baseado nos
+			 * parâmetros de entrada.
+			 */
+			double tempoTransmissao = Parametros.mss / parametros.getCs();
+			double tempoPropagacao = (rede.getTransmissores()[i].getGrupo() == 1 ? parametros
+					.getTP1() : parametros.getTP2());
+
+			/*
+			 * Para que as conexões iniciem de forma assíncrona, o início da
+			 * primeira transmissão é será uma variável aleatória uniforme (0,
+			 * 100) ms.
+			 */
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
+
+			/*
+			 * Cria o evento e insere na fila de eventos.
+			 */
+			Evento primeiraChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+					inicioAssincrono + tempoPropagacao + tempoTransmissao, i);
+
+			filaEventos.add(primeiraChegadaTCP);
+		}
 	}
 
 	/**
-	 * Número de eventos por rodada de simulação. O default é 1000.
+	 * Número de eventos por rodada de simulação.
 	 * 
 	 * @return número de eventos por rodada de simulação
 	 */
