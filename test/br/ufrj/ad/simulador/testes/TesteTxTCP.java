@@ -175,6 +175,7 @@ public class TesteTxTCP {
 
 	}
 	
+	@Test
 	public void testSlowStart5() {
 
 		tx.enviarPacote(); // P0
@@ -199,6 +200,34 @@ public class TesteTxTCP {
 						6 * Parametros.mss } }));
 
 		assertEquals(6*Parametros.mss, tx.getCwnd());
+
+	}
+	
+	@Test
+	public void testSlowStart6() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (chegará fora de ordem no Rx)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		assertEquals(3*Parametros.mss, tx.getPacoteMaisAntigoSemACK());
 
 	}
 
