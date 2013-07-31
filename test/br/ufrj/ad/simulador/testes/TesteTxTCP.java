@@ -171,10 +171,10 @@ public class TesteTxTCP {
 
 		tx.receberSACK(new SACK(0, 7 * Parametros.mss));
 
-		assertEquals(8*Parametros.mss, tx.getCwnd());
+		assertEquals(8 * Parametros.mss, tx.getCwnd());
 
 	}
-	
+
 	@Test
 	public void testSlowStart5() {
 
@@ -199,10 +199,10 @@ public class TesteTxTCP {
 				new long[][] { new long[] { 4 * Parametros.mss,
 						6 * Parametros.mss } }));
 
-		assertEquals(6*Parametros.mss, tx.getCwnd());
+		assertEquals(6 * Parametros.mss, tx.getCwnd());
 
 	}
-	
+
 	@Test
 	public void testSlowStart6() {
 
@@ -227,7 +227,7 @@ public class TesteTxTCP {
 				new long[][] { new long[] { 4 * Parametros.mss,
 						6 * Parametros.mss } }));
 
-		assertEquals(3*Parametros.mss, tx.getPacoteMaisAntigoSemACK());
+		assertEquals(3 * Parametros.mss, tx.getPacoteMaisAntigoSemACK());
 
 	}
 
@@ -336,6 +336,71 @@ public class TesteTxTCP {
 
 		assertTrue((!tx.isFastRetransmit())
 				&& (tx.getCwnd() == tx.getThreshold()));
+
+	}
+
+	@Test
+	public void testFastRetransmit3() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (será descartado)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						7 * Parametros.mss } }));
+
+		assertEquals(3 * Parametros.mss, tx.getProximoPacoteAEnviar());
+
+	}
+
+	@Test
+	public void testFastRetransmit4() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (será descartado)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						7 * Parametros.mss } }));
+
+		tx.enviarPacote();
+		assertEquals(7 * Parametros.mss, tx.getProximoPacoteAEnviar());
 
 	}
 

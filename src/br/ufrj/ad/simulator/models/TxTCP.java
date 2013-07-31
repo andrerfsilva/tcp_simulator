@@ -39,7 +39,7 @@ public class TxTCP {
 	private long proximoPacoteAEnviar;
 
 	/**
-	 * Número de bytes recebidos OK desde o último incremento no cwnd. Essa
+	 * Número de SACKs recebidos desde o último incremento no cwnd. Essa
 	 * variável só é usada quando o TxTCP está em Congestion Avoidance.
 	 */
 	private long nSACKSRecebidosDesdeUltimoIncremento;
