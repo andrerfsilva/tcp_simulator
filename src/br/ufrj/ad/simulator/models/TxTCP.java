@@ -42,7 +42,7 @@ public class TxTCP {
 	 * Número de bytes recebidos OK desde o último incremento no cwnd. Essa
 	 * variável só é usada quando o TxTCP está em Congestion Avoidance.
 	 */
-	private long bytesRecebidosDesdeUltimoIncremento;
+	private long nSACKSRecebidosDesdeUltimoIncremento;
 
 	/**
 	 * Pacotes que foram recebidos fora de ordem no Rx. Essa informação é obtida
@@ -77,10 +77,10 @@ public class TxTCP {
 	public TxTCP() {
 		cwnd = Parametros.mss;
 		threshold = 65535;
-		pacoteMaisAntigoSemACK = 0;
+		pacoteMaisAntigoSemACK = -1;
 		proximoPacoteAEnviar = 0;
 
-		bytesRecebidosDesdeUltimoIncremento = 0;
+		nSACKSRecebidosDesdeUltimoIncremento = 0;
 
 		contadorACKsDuplicados = 0;
 		ultimoACKDuplicado = -1;
@@ -107,46 +107,36 @@ public class TxTCP {
 
 		if (!isFastRetransmit) {
 			/*
-			 * Se o TxTCP não estiver em estado de Fast Retransmit, devemos
-			 * conferir so o SACK é duplicado.
+			 * Se o TxTCP não estiver em estado de Fast Retransmit, prosseguimos
+			 * normalmente aumentando a cwnd dependendo do estado de Slow Start
+			 * ou Congestion Avoidance.
 			 */
-			if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
 
+			if (cwnd < threshold) {
 				/*
-				 * Se o SACK não é duplicado, prosseguimos normalmente
-				 * aumentando a cwnd dependendo do estado de Slow Start ou
-				 * Congestion Avoidance.
+				 * Estamos em Slow Start, portando a cwnd deve crescer 1MSS por
+				 * pacote recebido OK no receptor.
+				 */
+				cwnd += Parametros.mss;
+			} else {
+				/*
+				 * Estamos em Congestion Avoidance, portanto a cwnd deve esperar
+				 * o recebimento de cwnd/MSS ACKs para então aumentar em 1MSS.
 				 */
 
-				long bytesRecebidosOK = sack.getProximoByteEsperado()
-						- pacoteMaisAntigoSemACK;
-
-				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
-
-				if (cwnd < threshold) {
-					/*
-					 * Estamos em Slow Start, portando a cwnd deve crescer 1MSS
-					 * por pacote recebido OK no receptor.
-					 */
-					cwnd += bytesRecebidosOK;
-				} else {
-					/*
-					 * Estamos em Congestion Avoidance, portanto a cwnd deve
-					 * esperar o recebimento de cwnd bytes para então aumentar
-					 * em 1MSS.
-					 */
-
-					bytesRecebidosDesdeUltimoIncremento += bytesRecebidosOK;
-					if (bytesRecebidosDesdeUltimoIncremento >= cwnd) {
-						bytesRecebidosDesdeUltimoIncremento -= cwnd;
-						cwnd += Parametros.mss;
-					}
+				nSACKSRecebidosDesdeUltimoIncremento++;
+				if (nSACKSRecebidosDesdeUltimoIncremento * Parametros.mss == cwnd) {
+					nSACKSRecebidosDesdeUltimoIncremento = 0;
+					cwnd += Parametros.mss;
 				}
+			}
 
-			} else {
+			if (sack.getProximoByteEsperado() <= pacoteMaisAntigoSemACK) {
 
 				/*
-				 * Recebemos um SACK duplicado.
+				 * Recebemos um SACK duplicado. Devemos checar o contador de
+				 * SACKs ducplicados para saber se vamos entrar em Fast
+				 * Retransmit.
 				 */
 
 				if (ultimoACKDuplicado == sack.getProximoByteEsperado()) {
@@ -171,6 +161,12 @@ public class TxTCP {
 					ultimoACKDuplicado = sack.getProximoByteEsperado();
 					contadorACKsDuplicados = 1;
 				}
+			} else {
+				/*
+				 * O SACK não é suplicado, logo atualizamos o ponteiro de pacote
+				 * mais antigo sem ACK normalmente.
+				 */
+				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
 			}
 
 		} else {
@@ -193,6 +189,7 @@ public class TxTCP {
 				isFastRetransmit = false;
 				contadorACKsDuplicados = 0;
 				cwnd = threshold; // Entramos em Congestion Avoidance.
+				nSACKSRecebidosDesdeUltimoIncremento = 0;
 			}
 		}
 
@@ -211,6 +208,7 @@ public class TxTCP {
 		proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 		isFastRetransmit = false;
 		contadorACKsDuplicados = 0;
+		nSACKSRecebidosDesdeUltimoIncremento = 0;
 	}
 
 	/**
