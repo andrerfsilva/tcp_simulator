@@ -281,8 +281,8 @@ public class TxTCP {
 	}
 
 	/**
-	 * Indica se o Tx pode transmitir mais um pacote dependendo do tamanho da
-	 * janena de congestionamento.
+	 * Indica se o TxTCP pode transmitir mais um pacote dependendo do tamanho da
+	 * janela de congestionamento.
 	 * 
 	 * @return
 	 */

@@ -210,7 +210,7 @@ public class Simulador {
 		} else if (e instanceof EventoRoteadorTerminaEnvio) {
 			tratarEventoRoteadorTerminaEnvio();
 		} else if (e instanceof EventoRoteadorRecebePacoteTxTCP) {
-			tratarEventoRoteadorRecebePacoteTxTCP();
+			tratarEventoRoteadorRecebePacoteTxTCP(e);
 		} else if (e instanceof EventoTxRecebeSACK) {
 			tratarEventoTxRecebeSACK();
 		} else if (e instanceof EventoTimeOut) {
@@ -226,9 +226,41 @@ public class Simulador {
 		// TODO FAZER!!!
 	}
 
-	private void tratarEventoRoteadorRecebePacoteTxTCP() {
+	/**
+	 * Faz o roteador receber o pacote proveniente da conexão TCP. Se o TxTCP
+	 * ainda puder transmitir mais pacotes (dependendo da sua janela de
+	 * congestionamento), então agendamos a próxima chega TCP.
+	 * 
+	 * @param e
+	 *            evento de origem
+	 */
+	private void tratarEventoRoteadorRecebePacoteTxTCP(Evento e) {
 
-		// TODO: fazer isso!!!
+		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
+
+		/*
+		 * Faz o roteador receber o pacote do TxTCP correspondente.
+		 */
+		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
+		Pacote p = tx.enviarPacote();
+		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
+
+		/*
+		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada
+		 * do próximo pacote TCP.
+		 */
+		if (tx.prontoParaTransmitir()) {
+
+			double tempoTransmissao = Parametros.mss / parametros.getCs();
+			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
+					: parametros.getTP2());
+
+			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
+					etcp.getTxTCP());
+
+			filaEventos.add(proximaChegadaTCP);
+		}
 	}
 
 	private void tratarEventoRoteadorTerminaEnvio() {
