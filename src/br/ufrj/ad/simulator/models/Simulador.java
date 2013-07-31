@@ -214,12 +214,42 @@ public class Simulador {
 		} else if (e instanceof EventoTxRecebeSACK) {
 			tratarEventoTxRecebeSACK();
 		} else if (e instanceof EventoTimeOut) {
-			tratarEventoTimeOut();
+			tratarEventoTimeOut(e);
 		}
 	}
 
-	private void tratarEventoTimeOut() {
-		// TODO FAZER!!
+	/**
+	 * Faz o TxTCP entrar no estado de reação a time-out e agenda o primeiro
+	 * reenvio de pacotes.
+	 * 
+	 * @param e
+	 */
+	private void tratarEventoTimeOut(Evento e) {
+
+		/*
+		 * Faz o TxTCP reagir ao time-out.
+		 */
+		EventoTimeOut eto = (EventoTimeOut) e;
+		TxTCP tx = rede.getTransmissores()[eto.getTxTCP()];
+
+		tx.reagirTimeOut();
+
+		/*
+		 * Agenda o reenvio de pacotes.
+		 */
+
+		// TODO: CONSIDERAR QUE O TIME-OUT PODE ACONTECER DURANTE O ENVIO DE UM
+		// PACOTE!!!
+		
+		double tempoTransmissao = Parametros.mss / parametros.getCs();
+		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
+				: parametros.getTP2());
+
+		EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+				tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
+				eto.getTxTCP());
+
+		filaEventos.add(proximaChegadaTCP);
 	}
 
 	private void tratarEventoTxRecebeSACK() {
@@ -261,6 +291,8 @@ public class Simulador {
 
 			filaEventos.add(proximaChegadaTCP);
 		}
+
+		// TODO: AGENDAR TIME-OUT!!!
 	}
 
 	private void tratarEventoRoteadorTerminaEnvio() {
