@@ -171,8 +171,8 @@ public class TxTCP {
 					ultimoACKDuplicado = sack.getProximoByteEsperado();
 					contadorACKsDuplicados = 1;
 				}
-
 			}
+
 		} else {
 			/*
 			 * Nesse caso estamos recebendo um ACK no estado de Fast Retransmit,
@@ -314,6 +314,15 @@ public class TxTCP {
 
 	public long getProximoPacoteAEnviar() {
 		return proximoPacoteAEnviar;
+	}
+
+	/**
+	 * Indica se o TxTCP está no estado de Fast Retransmit.
+	 * 
+	 * @return se o TxTCP está em Fast Retransmit
+	 */
+	public boolean isFastRetransmit() {
+		return isFastRetransmit;
 	}
 
 }

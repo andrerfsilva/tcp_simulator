@@ -139,6 +139,70 @@ public class TesteTxTCP {
 	}
 
 	/**
+	 * Testa se a janela está crescendo como esperado mesmo em caso de SACKs
+	 * duplicados.
+	 */
+	@Test
+	public void testSlowStart4() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (chegará fora de ordem no Rx)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 6 * Parametros.mss)); // P3 chegou fora de
+															// ordem
+
+		tx.receberSACK(new SACK(0, 7 * Parametros.mss));
+
+		assertEquals(8*Parametros.mss, tx.getCwnd());
+
+	}
+	
+	public void testSlowStart5() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (chegará fora de ordem no Rx)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		assertEquals(6*Parametros.mss, tx.getCwnd());
+
+	}
+
+	/**
 	 * Causa um time-out e testa reação do TxTCP.
 	 */
 	@Test
@@ -163,6 +227,87 @@ public class TesteTxTCP {
 		assertTrue((tx.getThreshold() == 2 * Parametros.mss)
 				&& (tx.getCwnd() == Parametros.mss)
 				&& (pEsperado.equals(tx.enviarPacote())));
+	}
+
+	/**
+	 * Descarta um pacote e testa o comportamento do TxTCP no Fast Retransmit.
+	 */
+	@Test
+	public void testFastRetransmit() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (será descartado)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						7 * Parametros.mss } }));
+
+		assertTrue(tx.isFastRetransmit());
+
+	}
+
+	/**
+	 * Força o TxTCP a entrar em Fast Retransmit, e depois recupera a perda.
+	 * Testa se as variáveis de estado são atualizadas corretamente depois da
+	 * recuperação.
+	 */
+	@Test
+	public void testFastRetransmit2() {
+
+		tx.enviarPacote(); // P0
+		tx.receberSACK(new SACK(0, Parametros.mss));
+
+		tx.enviarPacote(); // P1
+		tx.enviarPacote(); // P2
+		tx.receberSACK(new SACK(0, 2 * Parametros.mss));
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss));
+
+		tx.enviarPacote(); // P3 (será descartado)
+		tx.enviarPacote(); // P4
+		tx.enviarPacote(); // P5
+		tx.enviarPacote(); // P6
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						5 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						6 * Parametros.mss } }));
+
+		tx.receberSACK(new SACK(0, 3 * Parametros.mss,
+				new long[][] { new long[] { 4 * Parametros.mss,
+						7 * Parametros.mss } }));
+
+		/*
+		 * Ao receber 3 SACKs repetidos entraremos em Fast Retransmit. Portanto,
+		 * se enviarmos o SACK faltando, o TxTCP deve sair de Fast Retransmit e
+		 * entrar em Congestion Avoidance.
+		 */
+
+		tx.receberSACK(new SACK(0, 7 * Parametros.mss));
+
+		assertTrue((!tx.isFastRetransmit())
+				&& (tx.getCwnd() == tx.getThreshold()));
+
 	}
 
 	/**
