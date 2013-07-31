@@ -209,6 +209,8 @@ public class TxTCP {
 		threshold = cwnd / 2;
 		cwnd = Parametros.mss;
 		proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
+		isFastRetransmit = false;
+		contadorACKsDuplicados = 0;
 	}
 
 	/**
@@ -225,18 +227,57 @@ public class TxTCP {
 	 */
 	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
 
-		// TODO Considerar caso de retransmissão e evitar enviar pacotes
-		// repetidos para o Rx em função das sequências recebidas corretamente!
-
 		if (!prontoParaTransmitir()) {
 			throw new TxTCPNotReadyToSendException();
 		}
 
 		// Cria um pacote com tamanho = MSS.
 		Pacote p = new Pacote();
-		p.setByteInicialEFinal(proximoPacoteAEnviar, proximoPacoteAEnviar
-				+ Parametros.mss - 1);
-		proximoPacoteAEnviar += Parametros.mss;
+
+		if (sequenciasRecebidasCorretamente == null
+				|| sequenciasRecebidasCorretamente.length == 0) {
+			/*
+			 * Se o vetor de sequências for vazio, então prosseguimos a
+			 * transmissão normalmente.
+			 */
+			p.setByteInicialEFinal(proximoPacoteAEnviar, proximoPacoteAEnviar
+					+ Parametros.mss - 1);
+			proximoPacoteAEnviar += Parametros.mss;
+
+		} else {
+			/*
+			 * Se o vetor de sequências tiver elementos, então temos que tomar
+			 * cuidado para não retransmitir pacotes desnecessários.
+			 */
+			if (sequenciasRecebidasCorretamente[sequenciasRecebidasCorretamente.length - 1][1] < proximoPacoteAEnviar) {
+				/*
+				 * Nesse caso estamos não estamos retransmitindo, portanto
+				 * podemos criar o pacote normalmente.
+				 */
+				p.setByteInicialEFinal(proximoPacoteAEnviar,
+						proximoPacoteAEnviar + Parametros.mss - 1);
+				proximoPacoteAEnviar += Parametros.mss;
+			} else {
+				/*
+				 * Estamos retransmitindo. Todo cuidado nessa hora para
+				 * atualizar os ponteiros corretamente.
+				 */
+				for (int i = 0; i < sequenciasRecebidasCorretamente.length; i++) {
+					/*
+					 * Testa se o próximo pacote está antes da i-ésima
+					 * sequência.
+					 */
+					if (proximoPacoteAEnviar < sequenciasRecebidasCorretamente[i][0]) {
+						p.setByteInicialEFinal(proximoPacoteAEnviar,
+								proximoPacoteAEnviar + Parametros.mss - 1);
+						proximoPacoteAEnviar += Parametros.mss;
+						if (proximoPacoteAEnviar == sequenciasRecebidasCorretamente[i][0]) {
+							proximoPacoteAEnviar = sequenciasRecebidasCorretamente[i][1];
+						}
+					}
+				}
+			}
+		}
 
 		return p;
 	}
