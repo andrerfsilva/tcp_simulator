@@ -174,4 +174,8 @@ public class RxTCP {
 		return this.sequencias.get(sequencia)[0] <= p.getByteInicial()
 				&& this.sequencias.get(sequencia)[1] > p.getByteFinal();
 	}
+
+	public long getProximoByteEsperado() {
+		return proximoByteEsperado;
+	}
 }

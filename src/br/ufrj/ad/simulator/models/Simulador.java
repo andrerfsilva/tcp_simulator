@@ -3,6 +3,7 @@ package br.ufrj.ad.simulator.models;
 import java.io.IOException;
 import java.util.PriorityQueue;
 
+import br.ufrj.ad.simulator.estatistica.Estimador;
 import br.ufrj.ad.simulator.estatistica.Random;
 import br.ufrj.ad.simulator.eventos.Evento;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
@@ -54,6 +55,11 @@ public class Simulador {
 	 */
 	private Parametros parametros;
 
+	/**
+	 * Estimadores da vazão TCP para cada conexão.
+	 */
+	private Estimador[] estimadoresDeVazaoTCP;
+
 	public Simulador() throws IOException {
 
 		numeroEventosPorRodada = 10000;
@@ -76,6 +82,9 @@ public class Simulador {
 		rede = new Rede(parametros.getEstacoesGrupo1(),
 				parametros.getEstacoesGrupo2(),
 				parametros.getDisciplinaRoteadorProperty());
+
+		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
+				+ parametros.getEstacoesGrupo2()];
 	}
 
 	/**
@@ -111,7 +120,14 @@ public class Simulador {
 				tratarProximoEvento();
 			}
 
-			// TODO coletar amostas
+			/*
+			 * Coleta a vazão para cada sessão TCP e armazena nos seus
+			 * estimadores correspondentes.
+			 */
+			for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
+				estimadoresDeVazaoTCP[i].coletarAmostra(rede.getReceptores()[i]
+						.getProximoByteEsperado() / tempoAtualSimulado);
+			}
 		}
 
 		// TODO apresentar estatísticas e intervalo de confiança
