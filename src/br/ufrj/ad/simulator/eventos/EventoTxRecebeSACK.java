@@ -1,5 +1,7 @@
 package br.ufrj.ad.simulator.eventos;
 
+import br.ufrj.ad.simulator.models.SACK;
+
 /**
  * Representa o momento em que o Tx recebe o SACK de um pacote enviado.
  * 
@@ -8,8 +10,16 @@ package br.ufrj.ad.simulator.eventos;
  */
 public class EventoTxRecebeSACK extends Evento {
 
-	public EventoTxRecebeSACK(double tempoDeOcorrencia) {
+	private SACK sack;
+
+	public EventoTxRecebeSACK(double tempoDeOcorrencia, SACK sack) {
 		super(tempoDeOcorrencia);
+
+		this.sack = sack;
+	}
+
+	public SACK getSACK() {
+		return sack;
 	}
 
 }

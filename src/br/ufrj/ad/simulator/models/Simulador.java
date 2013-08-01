@@ -212,7 +212,7 @@ public class Simulador {
 		} else if (e instanceof EventoRoteadorRecebePacoteTxTCP) {
 			tratarEventoRoteadorRecebePacoteTxTCP(e);
 		} else if (e instanceof EventoTxRecebeSACK) {
-			tratarEventoTxRecebeSACK();
+			tratarEventoTxRecebeSACK(e);
 		} else if (e instanceof EventoTimeOut) {
 			tratarEventoTimeOut(e);
 		}
@@ -240,7 +240,7 @@ public class Simulador {
 
 		// TODO: CONSIDERAR QUE O TIME-OUT PODE ACONTECER DURANTE O ENVIO DE UM
 		// PACOTE!!!
-		
+
 		double tempoTransmissao = Parametros.mss / parametros.getCs();
 		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
 				: parametros.getTP2());
@@ -252,8 +252,20 @@ public class Simulador {
 		filaEventos.add(proximaChegadaTCP);
 	}
 
-	private void tratarEventoTxRecebeSACK() {
-		// TODO FAZER!!!
+	/**
+	 * Fax o TxTCP de destino receber o SACK e cancela o evento de time-out
+	 * correspondente a esse pacote.
+	 * 
+	 * @param e
+	 *            evento de recebimento de SACK
+	 */
+	private void tratarEventoTxRecebeSACK(Evento e) {
+
+		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
+		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
+		tx.receberSACK(esack.getSACK());
+
+		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!
 	}
 
 	/**
@@ -309,10 +321,10 @@ public class Simulador {
 			Evento proximoSACK;
 			if (rede.getTransmissores()[sack.getDestino()].getGrupo() == 1) {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ parametros.getTempoPropagacaoRetornoACKGrupo1());
+						+ parametros.getTempoPropagacaoRetornoACKGrupo1(), sack);
 			} else {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ parametros.getTempoPropagacaoRetornoACKGrupo2());
+						+ parametros.getTempoPropagacaoRetornoACKGrupo2(), sack);
 			}
 
 			filaEventos.add(proximoSACK);
