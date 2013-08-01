@@ -29,12 +29,12 @@ public class Rede {
 
 		int i = 0;
 		while (i < numTxGrupo1) {
-			transmissores[i] = new TxTCP();
+			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(1);
 			i++;
 		}
 		while (i < numTxGrupo1 + numTxGrupo2) {
-			transmissores[i] = new TxTCP();
+			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(2);
 			i++;
 		}

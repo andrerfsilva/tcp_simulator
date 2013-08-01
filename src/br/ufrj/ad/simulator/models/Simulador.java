@@ -266,6 +266,8 @@ public class Simulador {
 		tx.receberSACK(esack.getSACK());
 
 		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!
+
+		filaEventos.remove(esack.getSACK().getEventoTimeOut());
 	}
 
 	/**
@@ -305,6 +307,11 @@ public class Simulador {
 		}
 
 		// TODO: AGENDAR TIME-OUT!!!
+		EventoTimeOut eTimeOut = new EventoTimeOut(tx.getRTO(), etcp.getTxTCP());
+		filaEventos.add(eTimeOut);
+		p.setEventoTimeOut(eTimeOut); // Usado para facilitar a exclusão do
+										// time-out quando o SACK correspondente
+										// chegar.
 	}
 
 	private void tratarEventoRoteadorTerminaEnvio() {

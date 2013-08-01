@@ -1,5 +1,6 @@
 package br.ufrj.ad.simulator.models;
 
+import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.exceptions.InvalidPackageException;
 
 /**
@@ -22,6 +23,8 @@ public class Pacote {
 	 * O número de sequência do último byte do pacote.
 	 */
 	private long byteFinal;
+
+	private EventoTimeOut eventoTimeOut;
 
 	public Pacote() {
 		this.destino = -1;
@@ -93,6 +96,14 @@ public class Pacote {
 
 	public long getTamanho() {
 		return byteFinal - byteInicial + 1;
+	}
+
+	public void setEventoTimeOut(EventoTimeOut eTimeOut) {
+		this.eventoTimeOut = eTimeOut;
+	}
+
+	public EventoTimeOut getEventoTimeOut() {
+		return eventoTimeOut;
 	}
 
 }

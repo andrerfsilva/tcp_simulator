@@ -74,7 +74,15 @@ public class TxTCP {
 	 */
 	private long recwnd;
 
-	public TxTCP() {
+	/**
+	 * Número que indentifica um par Tx/Rx no simulador. Essa variável é usada
+	 * para gerar o endereço de destino dos pacotes.
+	 */
+	private int numeroConexao;
+
+	public TxTCP(int numeroConexao) {
+		this.numeroConexao = numeroConexao;
+
 		cwnd = Parametros.mss;
 		threshold = 65535;
 		pacoteMaisAntigoSemACK = -1;
@@ -232,6 +240,8 @@ public class TxTCP {
 		// Cria um pacote com tamanho = MSS.
 		Pacote p = new Pacote();
 
+		p.setDestino(numeroConexao);
+
 		if (sequenciasRecebidasCorretamente == null
 				|| sequenciasRecebidasCorretamente.length == 0) {
 			/*
@@ -312,6 +322,16 @@ public class TxTCP {
 
 	public long getProximoPacoteAEnviar() {
 		return proximoPacoteAEnviar;
+	}
+
+	/**
+	 * Estimativa do RTO usada no tempo de time-out (em milisegundos).
+	 * 
+	 * @return estimativa do RTO
+	 */
+	public double getRTO() {
+		// TODO: IMPLEMENTAR ESTIMADOR DE RTT E RTO!!!
+		return 0;
 	}
 
 	/**

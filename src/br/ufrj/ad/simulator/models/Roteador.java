@@ -57,6 +57,7 @@ public abstract class Roteador {
 		SACK sack = null;
 		if (p.getDestino() >= 0) { // trafego de fundo tem destino negativo.
 			sack = receptores[p.getDestino()].receberPacote(p);
+			sack.setEventoTimeOut(p.getEventoTimeOut());
 		}
 		buffer.remove(p);
 		return sack;

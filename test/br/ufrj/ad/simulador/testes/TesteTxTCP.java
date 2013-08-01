@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.ufrj.ad.simulator.estatistica.Random;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
@@ -23,7 +24,7 @@ public class TesteTxTCP {
 
 	@Before
 	public void setUp() throws Exception {
-		tx = new TxTCP();
+		tx = new TxTCP(new Random().nextInt(30));
 	}
 
 	@Test

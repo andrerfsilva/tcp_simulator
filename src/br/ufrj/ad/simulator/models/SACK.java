@@ -1,5 +1,7 @@
 package br.ufrj.ad.simulator.models;
 
+import br.ufrj.ad.simulator.eventos.EventoTimeOut;
+
 /**
  * Armazena as informações do SACK, ou seja, o byte do próximo pacote esperado,
  * e os bytes recebidos corretamente fora de ordem.
@@ -24,6 +26,8 @@ public class SACK {
 	 * Pacotes que foram recebidos fora de ordem no Rx.
 	 */
 	private long[][] sequenciasRecebidasCorretamente;
+
+	private EventoTimeOut eventoTimeOut;
 
 	public int getDestino() {
 		return destino;
@@ -130,6 +134,14 @@ public class SACK {
 
 		// Se não são instâncias de SACK, não há conversa!
 		return false;
+	}
+
+	public EventoTimeOut getEventoTimeOut() {
+		return eventoTimeOut;
+	}
+
+	public void setEventoTimeOut(EventoTimeOut e) {
+		this.eventoTimeOut = e;
 	}
 
 }
