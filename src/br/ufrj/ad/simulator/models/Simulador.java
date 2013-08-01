@@ -66,6 +66,15 @@ public class Simulador {
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
+		/* Inicializa estimadores */
+		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
+				+ parametros.getEstacoesGrupo2()];
+
+		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
+			estimadoresDeVazaoTCP[i] = new Estimador();
+		}
+
+		/* Estado inicial de simulação */
 		setarEstadoInicialDeSimulacao();
 	}
 
@@ -82,13 +91,6 @@ public class Simulador {
 		rede = new Rede(parametros.getEstacoesGrupo1(),
 				parametros.getEstacoesGrupo2(),
 				parametros.getDisciplinaRoteadorProperty());
-
-		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
-				+ parametros.getEstacoesGrupo2()];
-		
-		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
-			estimadoresDeVazaoTCP[i] = new Estimador();
-		}
 	}
 
 	/**
