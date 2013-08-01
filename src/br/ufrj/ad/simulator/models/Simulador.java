@@ -108,18 +108,7 @@ public class Simulador {
 			for (int i = 0; i < numeroEventosPorRodada
 					&& filaEventos.size() > 0; i++) {
 
-				Evento e = filaEventos.poll();
-
-				/*
-				 * Confere a consistência da ordem dos eventos no tempo.
-				 */
-				if (e.getTempoDeOcorrencia() < this.tempoAtualSimulado) {
-					throw new EventOutOfOrderException();
-				}
-
-				tempoAtualSimulado = e.getTempoDeOcorrencia();
-				tratarEvento(e);
-
+				tratarProximoEvento();
 			}
 
 			// TODO coletar amostas
@@ -127,6 +116,29 @@ public class Simulador {
 
 		// TODO apresentar estatísticas e intervalo de confiança
 
+	}
+
+	/**
+	 * Esse método trata o próximo evento da fila de enventos.
+	 * 
+	 * @throws EventOutOfOrderException
+	 *             Se o tempo de ocorrência do próximo evento for antes do tempo
+	 *             atual simulado, então temos uma inconsistência grave no nosso
+	 *             simulador e a simulação deve ser abortada.
+	 */
+	public void tratarProximoEvento() throws EventOutOfOrderException {
+
+		Evento e = filaEventos.poll();
+
+		/*
+		 * Confere a consistência da ordem dos eventos no tempo.
+		 */
+		if (e.getTempoDeOcorrencia() < this.tempoAtualSimulado) {
+			throw new EventOutOfOrderException();
+		}
+
+		tempoAtualSimulado = e.getTempoDeOcorrencia();
+		tratarEvento(e);
 	}
 
 	/**
@@ -159,7 +171,7 @@ public class Simulador {
 
 			/*
 			 * Para que as conexões iniciem de forma assíncrona, o início da
-			 * primeira transmissão é será uma variável aleatória uniforme (0,
+			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms.
 			 */
 			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
@@ -283,6 +295,20 @@ public class Simulador {
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
 
 		/*
+		 * Se o pacote TCP encontrar o roteador vazio, então podemos agendar o
+		 * próximo envio. Caso contrário, não podemos, pois provavelmente
+		 * chegamos no meio de uma transmissão de um pacote mais antigo, ou
+		 * seja, não sabemos o quanto falta para terminar a próxima transição.
+		 */
+		if (rede.getRoteador().getNumeroPacotes() == 0) {
+			Evento proximoEnvio = new EventoRoteadorTerminaEnvio(
+					tempoAtualSimulado
+							+ parametros
+									.tempoTransmissaoPacoteNoRoteador(Parametros.mss));
+			filaEventos.add(proximoEnvio);
+		}
+
+		/*
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
@@ -306,14 +332,24 @@ public class Simulador {
 			filaEventos.add(proximaChegadaTCP);
 		}
 
-		// TODO: AGENDAR TIME-OUT!!!
-		EventoTimeOut eTimeOut = new EventoTimeOut(tx.getRTO(), etcp.getTxTCP());
+		/*
+		 * Agendamos o time-out do pacote que acabou de ser enviado. Para
+		 * facilitar a remoção do evento de time-out quando o SACK
+		 * correspondente chegar, também armazenamos o evento no pacote.
+		 */
+		EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
+				+ tx.getRTO(), etcp.getTxTCP());
 		filaEventos.add(eTimeOut);
 		p.setEventoTimeOut(eTimeOut); // Usado para facilitar a exclusão do
 										// time-out quando o SACK correspondente
 										// chegar.
 	}
 
+	/**
+	 * Esse evento ocorre quando o roteador termina de enviar o pacote no
+	 * serviço. Portanto o pacote chegou ao seu destino (Rx ou tráfego de fundo)
+	 * e podemos remvê-lo do buffer o roteador e iniciar a próxima transmissão.
+	 */
 	private void tratarEventoRoteadorTerminaEnvio() {
 
 		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
@@ -395,4 +431,17 @@ public class Simulador {
 			rede.getRoteador().receberPacote(new Pacote(), tempoAtualSimulado);
 		}
 	}
+
+	public PriorityQueue<Evento> getFilaEventos() {
+		return filaEventos;
+	}
+
+	public double getTempoAtualSimulado() {
+		return tempoAtualSimulado;
+	}
+
+	public Parametros getParametros() {
+		return parametros;
+	}
+
 }

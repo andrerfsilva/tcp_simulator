@@ -54,6 +54,12 @@ public class Parametros extends Properties {
 		return this.getProperty("Cs", "1E9");
 	}
 
+	/**
+	 * Taxa de transmissão entre os TxTCP e o roteador (em bps). Cada TxTCP
+	 * possui um link exclusivo com taxa Cs.
+	 * 
+	 * @return taxa de transmissão entre TxTCP e roteador
+	 */
 	public double getCs() {
 		return Double.parseDouble(this.getProperty("Cs", "1E9"));
 	}

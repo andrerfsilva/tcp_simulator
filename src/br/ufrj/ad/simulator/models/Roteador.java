@@ -67,6 +67,11 @@ public abstract class Roteador {
 		enviarProximoPacote(0);
 	}
 
+	/**
+	 * Informa qual o próximo pacote a ser enviado, mas não o remove da fila.
+	 * 
+	 * @return próximo pacote a ser enviado
+	 */
 	public Pacote getProximoPacoteAEnviar() {
 		return buffer.get(0);
 	}
