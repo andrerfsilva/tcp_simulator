@@ -85,6 +85,10 @@ public class Simulador {
 
 		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
 				+ parametros.getEstacoesGrupo2()];
+		
+		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
+			estimadoresDeVazaoTCP[i] = new Estimador();
+		}
 	}
 
 	/**
