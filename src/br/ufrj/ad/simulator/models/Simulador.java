@@ -311,6 +311,9 @@ public class Simulador {
 
 		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
+
+		System.out.println(esack.getSACK().toString());// TODO: tirar isso!
+
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
 		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!

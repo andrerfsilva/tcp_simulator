@@ -154,4 +154,20 @@ public class SACK {
 		this.tempoDeEnvioPacoteOriginal = tempoDeEnvioPacoteOriginal;
 	}
 
+	public String toString() {
+		String ret = "ACK " + this.proximoByteEsperado;
+
+		if (sequenciasRecebidasCorretamente != null
+				&& sequenciasRecebidasCorretamente.length > 0) {
+			ret += " SACK = ";
+			for (int i = 0; i < sequenciasRecebidasCorretamente.length; i++) {
+				ret += "[left=" + sequenciasRecebidasCorretamente[i][0]
+						+ ", right=" + sequenciasRecebidasCorretamente[i][1]
+						+ "], ";
+			}
+		}
+
+		return ret;
+	}
+
 }

@@ -170,6 +170,7 @@ public class TxTCP {
 						threshold = cwnd / 2;
 						cwnd = threshold + 3 * Parametros.mss;
 						isFastRetransmit = true;
+						
 						/*
 						 * Enquanto o ACK de todos os pacotes dentro da janela
 						 * de recuperação não chegarem, o Tx permanece no estado
