@@ -72,7 +72,7 @@ public class TxTCP {
 	 * quando todos os bytes menores ou iguais a recwnd chegarem em ordem no
 	 * RxTCP.
 	 */
-	private long recwnd;
+	private long retransmitwnd;
 
 	/**
 	 * Número que indentifica um par Tx/Rx no simulador. Essa variável é usada
@@ -103,9 +103,11 @@ public class TxTCP {
 		contadorACKsDuplicados = 0;
 		ultimoACKDuplicado = -1;
 		isFastRetransmit = false;
-		recwnd = 1500;
+		retransmitwnd = 1500;
 
 		// TODO: ESTIMAR VALOR INICIAL DO RTO!!!
+		rtt = 100 + 1500 * 8 * 1E3 / 1E9 + 100;
+		desvioMedio = 0.5 * rtt;
 	}
 
 	/**
@@ -149,7 +151,7 @@ public class TxTCP {
 				 */
 
 				nSACKSRecebidosDesdeUltimoIncremento++;
-				if (nSACKSRecebidosDesdeUltimoIncremento * Parametros.mss == cwnd) {
+				if (nSACKSRecebidosDesdeUltimoIncremento * Parametros.mss >= cwnd) {
 					nSACKSRecebidosDesdeUltimoIncremento = 0;
 					cwnd += Parametros.mss;
 				}
@@ -177,7 +179,7 @@ public class TxTCP {
 						 * de Fast Retransmit. Todos os "gaps" dentro da recwnd
 						 * serão retransmitidos.
 						 */
-						recwnd = sack.getSequenciasRecebidasCorretamente()[sack
+						retransmitwnd = sack.getSequenciasRecebidasCorretamente()[sack
 								.getSequenciasRecebidasCorretamente().length - 1][1];
 
 						proximoPacoteAEnviar = sack.getProximoByteEsperado();
@@ -222,7 +224,7 @@ public class TxTCP {
 			 * Confere se todos os pacotes da janela de recuperação foram
 			 * recebidos corretametne no RxTCP.
 			 */
-			if (sack.getProximoByteEsperado() >= recwnd) {
+			if (sack.getProximoByteEsperado() >= retransmitwnd) {
 				isFastRetransmit = false;
 				contadorACKsDuplicados = 0;
 				cwnd = threshold; // Entramos em Congestion Avoidance.

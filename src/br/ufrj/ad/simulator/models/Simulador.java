@@ -132,8 +132,10 @@ public class Simulador {
 			 * estimadores correspondentes.
 			 */
 			for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
-				estimadoresDeVazaoTCP[i].coletarAmostra(rede.getReceptores()[i]
-						.getProximoByteEsperado() / tempoAtualSimulado);
+				double vazaoEmBps = (rede.getReceptores()[i]
+						.getProximoByteEsperado() * 8)
+						/ (tempoAtualSimulado * 1E-3);
+				estimadoresDeVazaoTCP[i].coletarAmostra(vazaoEmBps);
 			}
 		}
 	}
