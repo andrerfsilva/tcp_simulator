@@ -33,7 +33,8 @@ public abstract class Roteador {
 	 *            representa o tempo onde o evento receber pacote ocorreu no
 	 *            universo simulado
 	 * 
-	 * @return se o pacote foi descartado ou não
+	 * @return true se o pacote foi recebido normalmente, false caso foi
+	 *         descartado
 	 */
 	public abstract boolean receberPacote(Pacote p, double tempoAtualSimulado);
 

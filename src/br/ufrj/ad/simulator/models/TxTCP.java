@@ -95,7 +95,7 @@ public class TxTCP {
 
 		cwnd = Parametros.mss;
 		threshold = 65535;
-		pacoteMaisAntigoSemACK = -1;
+		pacoteMaisAntigoSemACK = 0;
 		proximoPacoteAEnviar = 0;
 
 		nSACKSRecebidosDesdeUltimoIncremento = 0;
@@ -103,7 +103,7 @@ public class TxTCP {
 		contadorACKsDuplicados = 0;
 		ultimoACKDuplicado = -1;
 		isFastRetransmit = false;
-		recwnd = -1;
+		recwnd = 1500;
 
 		// TODO: ESTIMAR VALOR INICIAL DO RTO!!!
 	}
@@ -170,7 +170,7 @@ public class TxTCP {
 						threshold = cwnd / 2;
 						cwnd = threshold + 3 * Parametros.mss;
 						isFastRetransmit = true;
-						
+
 						/*
 						 * Enquanto o ACK de todos os pacotes dentro da janela
 						 * de recuperação não chegarem, o Tx permanece no estado
@@ -404,6 +404,17 @@ public class TxTCP {
 	 */
 	public boolean isFastRetransmit() {
 		return isFastRetransmit;
+	}
+
+	/**
+	 * 
+	 * Número que indentifica um par Tx/Rx no simulador. Essa variável é usada
+	 * para gerar o endereço de destino dos pacotes.
+	 * 
+	 * @return índice (endereço) do TxTCP no vetor de transmissoes
+	 */
+	public int getNumeroConexao() {
+		return numeroConexao;
 	}
 
 }

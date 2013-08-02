@@ -133,4 +133,8 @@ public class Pacote {
 		this.tempoDeEnvio = tempoDeEnvio;
 	}
 
+	public String toString() {
+		return "P" + byteInicial / Parametros.mss + "," + destino + " <"
+				+ byteInicial + ", " + byteFinal + ">";
+	}
 }

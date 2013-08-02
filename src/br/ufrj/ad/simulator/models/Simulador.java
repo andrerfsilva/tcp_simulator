@@ -353,7 +353,10 @@ public class Simulador {
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
 		Pacote p = tx.enviarPacote(tempoAtualSimulado); // TODO: erro grave
 														// aqui!
-		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
+		boolean recebeu = rede.getRoteador().receberPacote(p,
+				tempoAtualSimulado);
+
+		System.out.println(p.toString() + (recebeu ? " OK" : " DESCARTADO"));
 
 		/*
 		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada

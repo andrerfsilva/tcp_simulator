@@ -259,6 +259,24 @@ public class TesteTxTCP {
 				&& (pEsperado.equals(tx.enviarPacote())));
 	}
 
+	@Test
+	public void testTimeOut2() {
+
+		tx.enviarPacote();
+
+		/*
+		 * Induz reação ao time-out para recriar bug do ponteiro inicial do
+		 * próximo pacote a enviar.
+		 */
+		tx.reagirTimeOut();
+
+		Pacote pEsperado = new Pacote();
+		pEsperado.setByteInicialEFinal(0, 1499);
+		pEsperado.setDestino(tx.getNumeroConexao());
+
+		assertEquals(pEsperado, tx.enviarPacote());
+	}
+
 	/**
 	 * Descarta um pacote e testa o comportamento do TxTCP no Fast Retransmit.
 	 */
