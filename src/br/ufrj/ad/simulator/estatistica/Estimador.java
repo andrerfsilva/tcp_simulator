@@ -108,14 +108,22 @@ public class Estimador {
 	 * @param confianca
 	 *            probabilidade da média real estar entre U(α) e L(α)
 	 * @return distância entre a média amostral e U(α) = distância entre média
-	 *         amostal e L(α)
+	 *         amostal e L(α), ou NaN se existir apenas uma amostra
 	 */
 	public double getDistanciaICMedia(double confianca) {
-		double alpha = 1 - confianca;
-		double percentil = StudentDist.inverseF(numeroAmostras - 1,
-				1 - alpha / 2);
+		if (numeroAmostras > 1) {
+			double alpha = 1 - confianca;
+			double percentil = StudentDist.inverseF(numeroAmostras - 1,
+					1 - alpha / 2);
 
-		return percentil * Math.sqrt(getVariancia() / numeroAmostras);
+			return percentil * Math.sqrt(getVariancia() / numeroAmostras);
+		} else {
+			return Double.NaN;
+		}
+	}
+
+	public int getNumeroAmostras() {
+		return numeroAmostras;
 	}
 
 	/**

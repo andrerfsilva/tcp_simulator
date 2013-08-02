@@ -20,6 +20,11 @@ public abstract class Roteador {
 		tamanhoBuffer = 0;
 		buffer = new ArrayList<Pacote>();
 	}
+	
+	public Roteador(int tamanhoBuffer) {
+		this.tamanhoBuffer = tamanhoBuffer;
+		buffer = new ArrayList<Pacote>();
+	}
 
 	/**
 	 * Subclasses devem implementar esse método. Adiciona pacote ao buffer do

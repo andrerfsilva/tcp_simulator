@@ -129,8 +129,8 @@ public class Parametros extends Properties {
 	 * 
 	 * @return média do número de pacotes numa rajada de tráfego de fundo
 	 */
-	public long getMediaPacotesPorRajada() {
-		return Long.parseLong(getMediaPacotesPorRajadaProperty());
+	public double getMediaPacotesPorRajada() {
+		return Double.parseDouble(getMediaPacotesPorRajadaProperty());
 	}
 
 	/**
@@ -233,5 +233,14 @@ public class Parametros extends Properties {
 	 */
 	public double getTP2() {
 		return Double.parseDouble(getTP2Property());
+	}
+
+	/**
+	 * Numero máximo de pacotes que o roteador consegue armazenar.
+	 * 
+	 * @return tamanho do buffer do roteador
+	 */
+	public int getTamanhoBufferRoteador() {
+		return Integer.parseInt(getTamanhoBufferRoteadorProperty());
 	}
 }

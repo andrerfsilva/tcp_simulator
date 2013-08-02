@@ -23,7 +23,12 @@ public class Rede {
 	 * @param disciplinaRoteador
 	 *            disciplina de atendimento do roteador (RED ou FIFO)
 	 */
-	public Rede(int numTxGrupo1, int numTxGrupo2, String disciplinaRoteador) {
+	public Rede(Parametros parametros) {
+
+		int numTxGrupo1 = parametros.getEstacoesGrupo1();
+		int numTxGrupo2 = parametros.getEstacoesGrupo2();
+		String disciplinaRoteador = parametros.getDisciplinaRoteadorProperty();
+
 		transmissores = new TxTCP[numTxGrupo1 + numTxGrupo2];
 		receptores = new RxTCP[numTxGrupo1 + numTxGrupo2];
 
@@ -44,6 +49,8 @@ public class Rede {
 		} else {
 			roteador = new RoteadorRED();
 		}
+
+		roteador.setTamanhoBuffer(parametros.getTamanhoBufferRoteador());
 	}
 
 	public Roteador getRoteador() {

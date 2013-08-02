@@ -88,9 +88,7 @@ public class Simulador {
 
 		tempoAtualSimulado = 0;
 
-		rede = new Rede(parametros.getEstacoesGrupo1(),
-				parametros.getEstacoesGrupo2(),
-				parametros.getDisciplinaRoteadorProperty());
+		rede = new Rede(parametros);
 	}
 
 	/**
@@ -123,6 +121,9 @@ public class Simulador {
 			for (int i = 0; i < numeroEventosPorRodada
 					&& filaEventos.size() > 0; i++) {
 
+				System.out.println("Nº eventos OK = " + i); // TODO: tira essa
+															// porra!
+
 				tratarProximoEvento();
 			}
 
@@ -135,9 +136,6 @@ public class Simulador {
 						.getProximoByteEsperado() / tempoAtualSimulado);
 			}
 		}
-
-		// TODO apresentar estatísticas e intervalo de confiança
-
 	}
 
 	/**
@@ -151,6 +149,8 @@ public class Simulador {
 	public void tratarProximoEvento() throws EventOutOfOrderException {
 
 		Evento e = filaEventos.poll();
+
+		System.out.println(e.getClass().toString()); // TODO: tira essa porra!
 
 		/*
 		 * Confere a consistência da ordem dos eventos no tempo.
@@ -226,9 +226,23 @@ public class Simulador {
 		this.numeroEventosPorRodada = numeroEventosPorRodada;
 	}
 
+	/**
+	 * Avalia se intervalo de confiança é aceitável.
+	 * 
+	 * @return true se intervalo de confiança é aceitável, false caso contrário
+	 */
 	private boolean estatisticasSatisfatorias() {
-		// TODO escrever a condição de parada do loop de simulação
-		return false;
+
+		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
+
+			if ((estimadoresDeVazaoTCP[i].getNumeroAmostras() <= 1)
+					|| (2 * estimadoresDeVazaoTCP[i].getDistanciaICMedia(0.9) > 0.1 * estimadoresDeVazaoTCP[i]
+							.getMedia())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -316,6 +330,7 @@ public class Simulador {
 
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
 
+		// int pacotesNoRoteadorNoMomentoDaChegada
 		/*
 		 * Se o pacote TCP encontrar o roteador vazio, então podemos agendar o
 		 * próximo envio. Caso contrário, não podemos, pois provavelmente
@@ -448,7 +463,7 @@ public class Simulador {
 		 * Calcula o número de pacotes na rajada e coloca um por um no roteador.
 		 */
 		long tamanhoRajada = (long) geradorNumerosAleatorios
-				.nextGeometric(1 / parametros.getMediaPacotesPorRajada());
+				.nextGeometric(1.0 / parametros.getMediaPacotesPorRajada());
 
 		for (long i = 0; i < tamanhoRajada; i++) {
 			rede.getRoteador().receberPacote(new Pacote(), tempoAtualSimulado);
@@ -467,4 +482,36 @@ public class Simulador {
 		return parametros;
 	}
 
+	/**
+	 * Executa o simulador e apresenta as estatísticas da vazão TCP para cada
+	 * par Tx/Rx e a vazão média das conexões como um todo.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		Simulador simulador = new Simulador();
+		simulador.simular();
+
+		System.out.println("VAZÃO MÉDIA POR CONEXÃO:");
+		for (int i = 0; i < simulador.estimadoresDeVazaoTCP.length; i++) {
+			System.out.println("\tTx"
+					+ i
+					+ ":\t"
+					+ simulador.estimadoresDeVazaoTCP[i].getMedia()
+					+ "±"
+					+ simulador.estimadoresDeVazaoTCP[i]
+							.getDistanciaICMedia(0.9));
+		}
+
+		System.out.println("VAZÃO MÉDIA GLOBAL:");
+		Estimador estimadorVazaoMediaGlobal = new Estimador();
+		for (int i = 0; i < simulador.estimadoresDeVazaoTCP.length; i++) {
+			estimadorVazaoMediaGlobal
+					.coletarAmostra(simulador.estimadoresDeVazaoTCP[i]
+							.getMedia());
+		}
+		System.out.println("\t\t" + estimadorVazaoMediaGlobal.getMedia() + "±"
+				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
+	}
 }
