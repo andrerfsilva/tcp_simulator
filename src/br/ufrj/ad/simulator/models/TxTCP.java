@@ -106,8 +106,8 @@ public class TxTCP {
 		retransmitwnd = 1500;
 
 		// TODO: ESTIMAR VALOR INICIAL DO RTO!!!
-		rtt = 100 + 1500 * 8 * 1E3 / 1E9 + 100;
-		desvioMedio = 0.5 * rtt;
+		rtt = 100;
+		desvioMedio = 1;
 	}
 
 	/**

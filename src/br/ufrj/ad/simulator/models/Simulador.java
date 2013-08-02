@@ -62,7 +62,7 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
-		numeroEventosPorRodada = 100000;
+		numeroEventosPorRodada = 1000000;
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
@@ -279,13 +279,6 @@ public class Simulador {
 		TxTCP tx = rede.getTransmissores()[eto.getTxTCP()];
 
 		/*
-		 * Agenda o reenvio de pacotes.
-		 */
-
-		// TODO: CONSIDERAR QUE O TIME-OUT PODE ACONTECER DURANTE O ENVIO DE UM
-		// PACOTE!!!
-
-		/*
 		 * Se o TxTCP não estiver enviando no momento do time-out, então podemos
 		 * agendar o próximo envio, pois o TxTCP começará enviar imediatamente.
 		 */
@@ -303,6 +296,9 @@ public class Simulador {
 		} else {
 			tx.reagirTimeOut();
 		}
+
+		System.out.println(e.getClass());
+		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
 	}
 
 	/**
@@ -319,9 +315,12 @@ public class Simulador {
 
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
-		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!
-
+		/* Cancela evento de time-out do pacote correspondente. */
 		filaEventos.remove(esack.getSACK().getEventoTimeOut());
+
+		System.out.println(e.getClass());
+		System.out.println(esack.getSACK());
+		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
 	}
 
 	/**
@@ -332,9 +331,15 @@ public class Simulador {
 	 * @param e
 	 *            evento de origem
 	 */
+	/**
+	 * @param e
+	 */
 	private void tratarEventoRoteadorRecebePacoteTxTCP(Evento e) {
 
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
+		
+		System.out.println(e.getClass());
+		System.out.println(etcp.getPacote());
 
 		/*
 		 * Se o pacote TCP encontrar o roteador vazio, então podemos agendar o
@@ -354,8 +359,7 @@ public class Simulador {
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
-		Pacote p = etcp.getPacote();
-		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
+		rede.getRoteador().receberPacote(etcp.getPacote(), tempoAtualSimulado);
 
 		/*
 		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada
@@ -363,28 +367,28 @@ public class Simulador {
 		 */
 		if (tx.prontoParaTransmitir()) {
 
+			Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
+
 			double tempoTransmissao = Parametros.mss / parametros.getCs();
 			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
 					: parametros.getTP2());
 
 			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
 					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
-					tx.enviarPacote(tempoAtualSimulado));
+					proximoPacoteAEnviar);
 
 			filaEventos.add(proximaChegadaTCP);
-		}
 
-		/*
-		 * Agendamos o time-out do pacote que acabou de ser enviado. Para
-		 * facilitar a remoção do evento de time-out quando o SACK
-		 * correspondente chegar, também armazenamos o evento no pacote.
-		 */
-		EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
-				+ tx.getRTO(), etcp.getTxTCP());
-		filaEventos.add(eTimeOut);
-		p.setEventoTimeOut(eTimeOut); // Usado para facilitar a exclusão do
-										// time-out quando o SACK correspondente
-										// chegar.
+			/*
+			 * Agendamos o time-out do pacote que acabou de ser enviado. Para
+			 * facilitar a remoção do evento de time-out quando o SACK
+			 * correspondente chegar, também armazenamos o evento no pacote.
+			 */
+			EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
+					+ tx.getRTO(), etcp.getTxTCP());
+			filaEventos.add(eTimeOut);
+			proximoPacoteAEnviar.setEventoTimeOut(eTimeOut);
+		}
 	}
 
 	/**
@@ -394,8 +398,8 @@ public class Simulador {
 	 */
 	private void tratarEventoRoteadorTerminaEnvio() {
 
-		if (rede.getRoteador().getNumeroPacotes() == 0)
-			return; // TODO rever causa de eventos desnecessário de envio!
+		//if (rede.getRoteador().getNumeroPacotes() == 0)
+			//return; // TODO rever causa de eventos desnecessário de envio!
 
 		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
 
@@ -523,6 +527,11 @@ public class Simulador {
 		}
 		System.out.println("\t\t" + estimadorVazaoMediaGlobal.getMedia() + "±"
 				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
+
+		System.out.println("cwnd = "
+				+ simulador.rede.getTransmissores()[0].getCwnd());
+		System.out.println("threshold = "
+				+ simulador.rede.getTransmissores()[0].getThreshold());
 
 	}
 }
