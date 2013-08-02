@@ -134,7 +134,7 @@ public class Pacote {
 	}
 
 	public String toString() {
-		return "P" + byteInicial / Parametros.mss + "," + destino + " <"
+		return "P" + destino + "," + byteInicial / Parametros.mss + " <"
 				+ byteInicial + ", " + byteFinal + ">";
 	}
 }

@@ -155,7 +155,7 @@ public class SACK {
 	}
 
 	public String toString() {
-		String ret = "ACK " + this.proximoByteEsperado;
+		String ret = "ACK" + this.getDestino() + ", " + this.proximoByteEsperado;
 
 		if (sequenciasRecebidasCorretamente != null
 				&& sequenciasRecebidasCorretamente.length > 0) {
