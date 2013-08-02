@@ -29,6 +29,8 @@ public class SACK {
 
 	private EventoTimeOut eventoTimeOut;
 
+	private double tempoDeEnvioPacoteOriginal;
+
 	public int getDestino() {
 		return destino;
 	}
@@ -142,6 +144,14 @@ public class SACK {
 
 	public void setEventoTimeOut(EventoTimeOut e) {
 		this.eventoTimeOut = e;
+	}
+
+	public double getTempoDeEnvioPacoteOriginal() {
+		return tempoDeEnvioPacoteOriginal;
+	}
+
+	public void setTempoDeEnvioPacoteOriginal(double tempoDeEnvioPacoteOriginal) {
+		this.tempoDeEnvioPacoteOriginal = tempoDeEnvioPacoteOriginal;
 	}
 
 }

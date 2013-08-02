@@ -24,28 +24,34 @@ public class RxTCP {
 
 	public SACK receberPacote(Pacote p) {
 
-		if (p.getByteInicial() < this.proximoByteEsperado) {			
-			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
-		}
-		else if(p.getByteInicial() == this.proximoByteEsperado){
+		SACK sack;
+
+		if (p.getByteInicial() < this.proximoByteEsperado) {
+			sack = new SACK(p.getDestino(), this.proximoByteEsperado,
+					this.getArrayDeSequenciaParaMatriz());
+		} else if (p.getByteInicial() == this.proximoByteEsperado) {
 			this.atualizaSequenciasRecebidas(p);
-			
+
 			long[] primeiraSequencia = this.sequencias.get(0);
-			
-			if(primeiraSequencia.length >= 2){
+
+			if (primeiraSequencia.length >= 2) {
 				this.proximoByteEsperado = primeiraSequencia[1];
 			}
-			
+
 			this.sequencias.remove(0);
-			
-			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
-		}
-		else
-		{
+
+			sack = new SACK(p.getDestino(), this.proximoByteEsperado,
+					this.getArrayDeSequenciaParaMatriz());
+		} else {
 			this.atualizaSequenciasRecebidas(p);
-			
-			return new SACK(p.getDestino(), this.proximoByteEsperado, this.getArrayDeSequenciaParaMatriz());
+
+			sack = new SACK(p.getDestino(), this.proximoByteEsperado,
+					this.getArrayDeSequenciaParaMatriz());
 		}
+
+		sack.setTempoDeEnvioPacoteOriginal(p.getTempoDeEnvio());
+
+		return sack;
 	}
 
 	/**
@@ -55,23 +61,23 @@ public class RxTCP {
 	 * @param p
 	 *            pacote recebido
 	 */
-	
-	private long[][] getArrayDeSequenciaParaMatriz(){
-		
-		if(this.sequencias.size() == 0 || this.sequencias == null){
+
+	private long[][] getArrayDeSequenciaParaMatriz() {
+
+		if (this.sequencias.size() == 0 || this.sequencias == null) {
 			return null;
 		}
-		
+
 		long[][] sequenciasSack = new long[this.sequencias.size()][2];
-		
-		for(int i = 0; i<sequenciasSack.length; i++){
+
+		for (int i = 0; i < sequenciasSack.length; i++) {
 			sequenciasSack[i][0] = this.sequencias.get(i)[0];
 			sequenciasSack[i][1] = this.sequencias.get(i)[1];
 		}
-		
+
 		return sequenciasSack;
 	}
-	
+
 	private void atualizaSequenciasRecebidas(Pacote p) {
 		long limites[] = new long[2];
 

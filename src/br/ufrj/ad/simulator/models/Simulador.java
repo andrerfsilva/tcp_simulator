@@ -297,7 +297,7 @@ public class Simulador {
 
 		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
-		tx.receberSACK(esack.getSACK());
+		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
 		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!
 
@@ -334,7 +334,8 @@ public class Simulador {
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
-		Pacote p = tx.enviarPacote();
+		Pacote p = tx.enviarPacote(tempoAtualSimulado); // TODO: erro grave
+														// aqui!
 		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
 
 		/*

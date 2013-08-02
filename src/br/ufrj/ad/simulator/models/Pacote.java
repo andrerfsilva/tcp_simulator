@@ -26,8 +26,15 @@ public class Pacote {
 
 	private EventoTimeOut eventoTimeOut;
 
+	/**
+	 * Armazena quando o pacote começou a ser enviado do TxTCP correspondente no
+	 * tempo de simulação (em milisegundos). Essa variável será usada para
+	 * calcular o RTT instantâneo e estimar o RTO.
+	 */
+	private double tempoDeEnvio;
+
 	public Pacote() {
-		this.destino = -1;
+		this.destino = -1; // por default é tráfego de fundo
 		this.byteInicial = 0;
 		this.byteFinal = 0;
 	}
@@ -61,6 +68,13 @@ public class Pacote {
 		this.destino = destino;
 	}
 
+	/**
+	 * Destino representa qual dos RxTCP deve receber esse pacote. Para
+	 * representar o tráfego de fundo, usaremos pacotes com destino negativo, ou
+	 * seja, eles não vão para nenhum RxTCP.
+	 * 
+	 * @return número do RxTCP que reberá esse pacote
+	 */
 	public int getDestino() {
 		return this.destino;
 
@@ -94,6 +108,11 @@ public class Pacote {
 		return destino < 0;
 	}
 
+	/**
+	 * Tamanho do pacote (em bytes).
+	 * 
+	 * @return tamanho do pacote (em bytes)
+	 */
 	public long getTamanho() {
 		return byteFinal - byteInicial + 1;
 	}
@@ -104,6 +123,14 @@ public class Pacote {
 
 	public EventoTimeOut getEventoTimeOut() {
 		return eventoTimeOut;
+	}
+
+	public double getTempoDeEnvio() {
+		return tempoDeEnvio;
+	}
+
+	public void setTempoDeEnvio(double tempoDeEnvio) {
+		this.tempoDeEnvio = tempoDeEnvio;
 	}
 
 }

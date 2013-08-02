@@ -80,6 +80,16 @@ public class TxTCP {
 	 */
 	private int numeroConexao;
 
+	/**
+	 * Estimativa do RTT (em milisegundos).
+	 */
+	private double rtt;
+
+	/**
+	 * Valor estimado do desvio médio do RTT (em milisegundos²).
+	 */
+	private double desvioMedio;
+
 	public TxTCP(int numeroConexao) {
 		this.numeroConexao = numeroConexao;
 
@@ -94,6 +104,8 @@ public class TxTCP {
 		ultimoACKDuplicado = -1;
 		isFastRetransmit = false;
 		recwnd = -1;
+
+		// TODO: ESTIMAR VALOR INICIAL DO RTO!!!
 	}
 
 	/**
@@ -102,8 +114,12 @@ public class TxTCP {
 	 * 
 	 * @param sack
 	 *            um objeto do tipo SACK
+	 * 
+	 * @param tempoDeRecebimento
+	 *            indica quando o TxTCP recebeu o SACK no tempo simulado (em
+	 *            milisegundos)
 	 */
-	public void receberSACK(SACK sack) {
+	public void receberSACK(SACK sack, double tempoDeRecebimento) {
 
 		/*
 		 * A primeira coisa a ser feita (independentemente do estado do TxTCP) é
@@ -175,6 +191,11 @@ public class TxTCP {
 				 * mais antigo sem ACK normalmente.
 				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+				/*
+				 * Atualiza estimativa do RTO.
+				 */
+				estimarRTT(sack.getTempoDeEnvioPacoteOriginal(),
+						tempoDeRecebimento);
 			}
 
 		} else {
@@ -184,9 +205,16 @@ public class TxTCP {
 			 */
 			cwnd += Parametros.mss;
 
-			// Atualiza ponteiro para o pacote mais antigo sem SACK.
 			if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
+				/*
+				 * Atualiza ponteiro para o pacote mais antigo sem SACK.
+				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+				/*
+				 * Atualiza estimativa de RTO.
+				 */
+				estimarRTT(sack.getTempoDeEnvioPacoteOriginal(),
+						tempoDeRecebimento);
 			}
 
 			/*
@@ -200,6 +228,30 @@ public class TxTCP {
 				nSACKSRecebidosDesdeUltimoIncremento = 0;
 			}
 		}
+
+	}
+
+	public void receberSACK(SACK sack) {
+		receberSACK(sack, 0);
+	}
+
+	/**
+	 * Atualiza as estimativas do RTT em função do novo SACK.
+	 * 
+	 * @param tempoDeEnvioPacoteOriginal
+	 *            tempo quando o pacote original foi enviado
+	 * 
+	 * @param tempoDeRecebimento
+	 *            tempo quando o SACK correspondente ao pacote original chegou
+	 *            no TxTCP
+	 */
+	private void estimarRTT(double tempoDeEnvioPacoteOriginal,
+			double tempoDeRecebimento) {
+
+		double m = tempoDeRecebimento - tempoDeEnvioPacoteOriginal;
+		double y = m - rtt;
+		desvioMedio = desvioMedio + 0.25 * (Math.abs(y) - desvioMedio);
+		rtt = rtt + 0.125 * y;
 
 	}
 
@@ -223,6 +275,10 @@ public class TxTCP {
 	 * Prepara o próximo pacote pronto para ser enviado e atualiza as variáveis
 	 * de estado em função desse novo envio.
 	 * 
+	 * @param tempoDeEnvio
+	 *            indica quando o pacote foi passado para a camada de enlace
+	 *            para ser transmitido (em milisegundos)
+	 * 
 	 * @return pacote enviado
 	 * 
 	 * @throws TxTCPNotReadyToSendException
@@ -231,7 +287,8 @@ public class TxTCP {
 	 *             transmitidos, então essa exceção será lançada. Tomar cuidado
 	 *             para não enviar pacotes fora da janela de congestionamento.
 	 */
-	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
+	public Pacote enviarPacote(double tempoDeEnvio)
+			throws TxTCPNotReadyToSendException {
 
 		if (!prontoParaTransmitir()) {
 			throw new TxTCPNotReadyToSendException();
@@ -241,6 +298,7 @@ public class TxTCP {
 		Pacote p = new Pacote();
 
 		p.setDestino(numeroConexao);
+		p.setTempoDeEnvio(tempoDeEnvio);
 
 		if (sequenciasRecebidasCorretamente == null
 				|| sequenciasRecebidasCorretamente.length == 0) {
@@ -290,6 +348,10 @@ public class TxTCP {
 		return p;
 	}
 
+	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
+		return enviarPacote(0);
+	}
+
 	/**
 	 * Indica se o TxTCP pode transmitir mais um pacote dependendo do tamanho da
 	 * janela de congestionamento.
@@ -325,13 +387,13 @@ public class TxTCP {
 	}
 
 	/**
-	 * Estimativa do RTO usada no tempo de time-out (em milisegundos).
+	 * Estimativa do retransmission time-out (RTO) usada usada para agendar o
+	 * evento de time-out (em milisegundos).
 	 * 
 	 * @return estimativa do RTO
 	 */
 	public double getRTO() {
-		// TODO: IMPLEMENTAR ESTIMADOR DE RTT E RTO!!!
-		return 0;
+		return rtt + 4 * desvioMedio;
 	}
 
 	/**
