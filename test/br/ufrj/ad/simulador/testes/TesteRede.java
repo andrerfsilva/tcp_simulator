@@ -75,6 +75,47 @@ public class TesteRede {
 	}
 
 	@Test
+	public void testInicializacaoRoteador1() {
+
+		parametros.setProperty("EstacoesGrupo1", "10");
+		parametros.setProperty("EstacoesGrupo2", "5");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertEquals(15, rede.getReceptores().length);
+	}
+
+	@Test
+	public void testInicializacaoRoteador2() {
+
+		parametros.setProperty("EstacoesGrupo1", "12");
+		parametros.setProperty("EstacoesGrupo2", "54");
+		parametros.setProperty("DisciplinaRoteador", "RED");
+
+		rede = new Rede(parametros);
+
+		assertEquals(66, rede.getReceptores().length);
+	}
+
+	@Test
+	public void testInicializacaoRoteador3() {
+
+		parametros.setProperty("EstacoesGrupo1", "3");
+		parametros.setProperty("EstacoesGrupo2", "2");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertTrue((rede.getRoteador().getReceptores().length == 5)
+				&& (rede.getRoteador().getReceptores()[0] != null)
+				&& (rede.getRoteador().getReceptores()[1] != null)
+				&& (rede.getRoteador().getReceptores()[2] != null)
+				&& (rede.getRoteador().getReceptores()[3] != null)
+				&& (rede.getRoteador().getReceptores()[4] != null));
+	}
+
+	@Test
 	public void testRoteadorFIFO() {
 
 		parametros.setProperty("EstacoesGrupo1", "20");

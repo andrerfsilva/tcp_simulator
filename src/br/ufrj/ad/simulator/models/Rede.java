@@ -36,11 +36,13 @@ public class Rede {
 		while (i < numTxGrupo1) {
 			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(1);
+			receptores[i] = new RxTCP();
 			i++;
 		}
 		while (i < numTxGrupo1 + numTxGrupo2) {
 			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(2);
+			receptores[i] = new RxTCP();
 			i++;
 		}
 
@@ -51,6 +53,7 @@ public class Rede {
 		}
 
 		roteador.setTamanhoBuffer(parametros.getTamanhoBufferRoteador());
+		roteador.setReceptores(receptores);
 	}
 
 	public Roteador getRoteador() {
