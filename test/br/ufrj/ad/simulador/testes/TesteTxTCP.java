@@ -28,6 +28,12 @@ public class TesteTxTCP {
 	}
 
 	@Test
+	public void testDestinoPacote() {
+		tx = new TxTCP(39);
+		assertEquals(39, tx.enviarPacote().getDestino());
+	}
+
+	@Test
 	public void testEstadoInicialCwnd() {
 		assertEquals(Parametros.mss, tx.getCwnd());
 	}

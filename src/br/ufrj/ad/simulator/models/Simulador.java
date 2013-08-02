@@ -199,7 +199,8 @@ public class Simulador {
 			 * Cria o evento e insere na fila de eventos.
 			 */
 			Evento primeiraChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
-					inicioAssincrono + tempoPropagacao + tempoTransmissao, i);
+					inicioAssincrono + tempoPropagacao + tempoTransmissao,
+					rede.getTransmissores()[i].enviarPacote(inicioAssincrono));
 
 			filaEventos.add(primeiraChegadaTCP);
 		}
@@ -277,8 +278,6 @@ public class Simulador {
 		EventoTimeOut eto = (EventoTimeOut) e;
 		TxTCP tx = rede.getTransmissores()[eto.getTxTCP()];
 
-		tx.reagirTimeOut();
-
 		/*
 		 * Agenda o reenvio de pacotes.
 		 */
@@ -286,15 +285,24 @@ public class Simulador {
 		// TODO: CONSIDERAR QUE O TIME-OUT PODE ACONTECER DURANTE O ENVIO DE UM
 		// PACOTE!!!
 
-		double tempoTransmissao = Parametros.mss / parametros.getCs();
-		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
-				: parametros.getTP2());
+		/*
+		 * Se o TxTCP não estiver enviando no momento do time-out, então podemos
+		 * agendar o próximo envio, pois o TxTCP começará enviar imediatamente.
+		 */
+		if (!tx.prontoParaTransmitir()) {
+			tx.reagirTimeOut();
+			double tempoTransmissao = Parametros.mss / parametros.getCs();
+			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
+					: parametros.getTP2());
 
-		EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
-				tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
-				eto.getTxTCP());
+			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
+					tx.enviarPacote(tempoAtualSimulado));
 
-		filaEventos.add(proximaChegadaTCP);
+			filaEventos.add(proximaChegadaTCP);
+		} else {
+			tx.reagirTimeOut();
+		}
 	}
 
 	/**
@@ -346,8 +354,7 @@ public class Simulador {
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
-		Pacote p = tx.enviarPacote(tempoAtualSimulado); // TODO: erro grave
-														// aqui!
+		Pacote p = etcp.getPacote();
 		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
 
 		/*
@@ -362,7 +369,7 @@ public class Simulador {
 
 			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
 					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
-					etcp.getTxTCP());
+					tx.enviarPacote(tempoAtualSimulado));
 
 			filaEventos.add(proximaChegadaTCP);
 		}
