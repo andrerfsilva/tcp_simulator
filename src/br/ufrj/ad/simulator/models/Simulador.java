@@ -330,7 +330,6 @@ public class Simulador {
 
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
 
-		// int pacotesNoRoteadorNoMomentoDaChegada
 		/*
 		 * Se o pacote TCP encontrar o roteador vazio, então podemos agendar o
 		 * próximo envio. Caso contrário, não podemos, pois provavelmente
@@ -462,8 +461,8 @@ public class Simulador {
 		/*
 		 * Calcula o número de pacotes na rajada e coloca um por um no roteador.
 		 */
-		long tamanhoRajada = (long) geradorNumerosAleatorios
-				.nextGeometric(1.0 / parametros.getMediaPacotesPorRajada());
+		long tamanhoRajada = Math.round(geradorNumerosAleatorios
+				.nextGeometric(1.0 / parametros.getMediaPacotesPorRajada()));
 
 		for (long i = 0; i < tamanhoRajada; i++) {
 			rede.getRoteador().receberPacote(new Pacote(), tempoAtualSimulado);

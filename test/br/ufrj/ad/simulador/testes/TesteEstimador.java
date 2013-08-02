@@ -47,7 +47,7 @@ public class TesteEstimador {
 		for (int i = 1; i <= 100; i++) {
 			estimador.coletarAmostra(i);
 		}
-		assertEquals(5050.0/100, estimador.getMedia(), 0);
+		assertEquals(5050.0 / 100, estimador.getMedia(), 0);
 	}
 
 	@Test
@@ -111,4 +111,11 @@ public class TesteEstimador {
 		assertEquals(0, estimador.getDistanciaICMedia(0.99), 0);
 	}
 
+	@Test
+	public void testGetDistanciaICApenasUmaAmostra() {
+
+		estimador.coletarAmostra(71237);
+
+		assertTrue(Double.isNaN(estimador.getDistanciaICMedia(0.9)));
+	}
 }
