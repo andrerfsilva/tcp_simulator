@@ -62,7 +62,7 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
-		numeroEventosPorRodada = 10000;
+		numeroEventosPorRodada = 100000;
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
@@ -121,9 +121,6 @@ public class Simulador {
 			for (int i = 0; i < numeroEventosPorRodada
 					&& filaEventos.size() > 0; i++) {
 
-				System.out.println("Nº eventos OK = " + i); // TODO: tira essa
-															// porra!
-
 				tratarProximoEvento();
 			}
 
@@ -152,8 +149,6 @@ public class Simulador {
 
 		Evento e = filaEventos.poll();
 
-		System.out.println(e.getClass().toString()); // TODO: tira essa porra!
-
 		/*
 		 * Confere a consistência da ordem dos eventos no tempo.
 		 */
@@ -178,7 +173,7 @@ public class Simulador {
 		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				geradorNumerosAleatorios.nextExponential(1 / parametros
 						.getTempoMedioEntreRajadas()));
-		filaEventos.add(primeiraChegadaTrafegoFundo);
+		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar impacto!
 
 		/*
 		 * Primeiras transmissões TCP.
@@ -314,8 +309,6 @@ public class Simulador {
 		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
 
-		System.out.println(esack.getSACK().toString());// TODO: tirar isso!
-
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
 		// TODO CANCELAR O TIME-OUT DO PACOTE CORRESPONDENTE!!!
@@ -355,10 +348,7 @@ public class Simulador {
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
 		Pacote p = tx.enviarPacote(tempoAtualSimulado); // TODO: erro grave
 														// aqui!
-		boolean recebeu = rede.getRoteador().receberPacote(p,
-				tempoAtualSimulado);
-
-		System.out.println(p.toString() + (recebeu ? " OK" : " DESCARTADO"));
+		rede.getRoteador().receberPacote(p, tempoAtualSimulado);
 
 		/*
 		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada
@@ -396,6 +386,9 @@ public class Simulador {
 	 * e podemos remvê-lo do buffer o roteador e iniciar a próxima transmissão.
 	 */
 	private void tratarEventoRoteadorTerminaEnvio() {
+
+		if (rede.getRoteador().getNumeroPacotes() == 0)
+			return; // TODO rever causa de eventos desnecessário de envio!
 
 		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
 
@@ -448,7 +441,7 @@ public class Simulador {
 		Evento proximaChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				tempoAtualSimulado
 						+ geradorNumerosAleatorios
-								.nextExponential(1 / parametros
+								.nextExponential(1.0 / parametros
 										.getTempoMedioEntreRajadas()));
 		filaEventos.add(proximaChegadaTrafegoFundo);
 
@@ -511,6 +504,9 @@ public class Simulador {
 							.getDistanciaICMedia(0.9));
 		}
 
+		System.out.println("Rodadas = "
+				+ simulador.estimadoresDeVazaoTCP[0].getNumeroAmostras());
+
 		System.out.println("VAZÃO MÉDIA GLOBAL:");
 		Estimador estimadorVazaoMediaGlobal = new Estimador();
 		for (int i = 0; i < simulador.estimadoresDeVazaoTCP.length; i++) {
@@ -520,5 +516,6 @@ public class Simulador {
 		}
 		System.out.println("\t\t" + estimadorVazaoMediaGlobal.getMedia() + "±"
 				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
+
 	}
 }
