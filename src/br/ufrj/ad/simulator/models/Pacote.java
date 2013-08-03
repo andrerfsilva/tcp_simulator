@@ -36,7 +36,7 @@ public class Pacote {
 	public Pacote() {
 		this.destino = -1; // por default é tráfego de fundo
 		this.byteInicial = 0;
-		this.byteFinal = 0;
+		this.byteFinal = Parametros.mss - 1;
 	}
 
 	/*

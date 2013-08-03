@@ -39,12 +39,12 @@ public class TesteSimulador {
 		parametros.setProperty("TamanhoBufferRoteador", "40");
 		parametros.setProperty("TempoMedioEntreRajadas", "24");
 		parametros.setProperty("MediaPacotePorRajada", "10");
+
+		simulador = new Simulador(parametros);
 	}
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP1() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -62,8 +62,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP2() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -79,8 +77,6 @@ public class TesteSimulador {
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP3() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -100,8 +96,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP4() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -119,8 +113,6 @@ public class TesteSimulador {
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP5() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -140,8 +132,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP6() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -160,8 +150,6 @@ public class TesteSimulador {
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP7() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -186,8 +174,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP8() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -211,8 +197,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP9() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -235,8 +219,6 @@ public class TesteSimulador {
 	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP10() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -262,8 +244,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP11() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
@@ -286,8 +266,6 @@ public class TesteSimulador {
 	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP12() {
-
-		simulador = new Simulador(parametros);
 
 		Pacote p0 = new Pacote();
 		p0.setByteInicialEFinal(0, 1499);
@@ -337,8 +315,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP14() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
 
 		simulador.getFilaEventos().add(
@@ -359,8 +335,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP15() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
 
 		simulador.getFilaEventos().add(
@@ -379,8 +353,6 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorRecebePacoteTxTCP16() {
 
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
 
 		simulador.getFilaEventos().add(
@@ -393,4 +365,74 @@ public class TesteSimulador {
 		assertEquals(null, simulador.getFilaEventos().poll()); // null
 
 	}
+
+	/* --------------Testes do EventoRoteadorTerminaEnvio-------------- */
+
+	/**
+	 * Tratar fim de envio no roteador quando não há pacotes. Indica que criamos
+	 * eventos de envio desnecessários.
+	 */
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testRoteadorTerminaEnvio1() {
+
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(1.2));
+
+		simulador.tratarProximoEvento();
+
+	}
+
+	/**
+	 * Garante que não irá criar um evento de terminar envio quando não houver
+	 * mais pacotes no buffer para serem enviados.
+	 * 
+	 * OBS: Nesse caso, pacotes de tráfego de fundo não criam o evento de SACK.
+	 */
+	@Test
+	public void testRoteadorTerminaEnvio2() {
+
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(1.2));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(null, simulador.getFilaEventos().poll());
+
+	}
+
+	/**
+	 * 
+	 * OBS: Nesse caso, pacotes de tráfego de fundo não criam o evento de SACK.
+	 */
+	@Test
+	public void testRoteadorTerminaEnvio3() {
+
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(1.2));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorTerminaEnvio.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	/**
+	 * 
+	 * OBS: Nesse caso, pacotes de tráfego de fundo não criam o evento de SACK.
+	 */
+	@Test
+	public void testRoteadorTerminaEnvio4() {
+
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(1.2));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(1.2 + 1.2, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
+
 }
