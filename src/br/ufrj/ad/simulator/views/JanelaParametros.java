@@ -1,6 +1,5 @@
 package br.ufrj.ad.simulator.views;
 
-import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;

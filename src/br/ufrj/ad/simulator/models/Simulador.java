@@ -439,9 +439,6 @@ public class Simulador {
 	 */
 	private void tratarEventoRoteadorTerminaEnvio() {
 
-		// if (rede.getRoteador().getNumeroPacotes() == 0)
-		// return; // TODO rever causa de eventos desnecessário de envio!
-
 		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
 
 		/*

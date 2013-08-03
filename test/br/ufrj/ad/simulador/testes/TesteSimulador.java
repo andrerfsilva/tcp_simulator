@@ -8,9 +8,11 @@ import org.junit.Test;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
+import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.models.Simulador;
+import br.ufrj.ad.simulator.models.TxTCP;
 
 /**
  * Casos de teste para classe Simulador.
@@ -400,6 +402,8 @@ public class TesteSimulador {
 	}
 
 	/**
+	 * Testa tratamento de evento de envio no roteador quando há dois pacotes de
+	 * tráfego de fundo no buffer.
 	 * 
 	 * OBS: Nesse caso, pacotes de tráfego de fundo não criam o evento de SACK.
 	 */
@@ -418,6 +422,8 @@ public class TesteSimulador {
 	}
 
 	/**
+	 * Confere o tempo de ocorrência do envio do segundo pacote de tráfego de
+	 * fundo no buffer do roteador.
 	 * 
 	 * OBS: Nesse caso, pacotes de tráfego de fundo não criam o evento de SACK.
 	 */
@@ -435,4 +441,119 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Agora testando com pacotes TCP no buffer do roteador.
+	 */
+	@Test
+	public void testRoteadorTerminaEnvio5() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoTxRecebeSACK.class, simulador.getFilaEventos()
+				.poll().getClass());
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio6() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(100 + 100, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio7() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+		simulador.getFilaEventos().poll(); // EventoTxTCPRecebeSACK
+
+		assertEquals(0, simulador.getFilaEventos().size());
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio8() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorTerminaEnvio.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio9() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(100 + 1.2, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio10() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
+
+		assertEquals(EventoTxRecebeSACK.class, simulador.getFilaEventos()
+				.poll().getClass());
+
+	}
+
+	@Test
+	public void testRoteadorTerminaEnvio11() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
+
+		assertEquals(100 + 100, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
 }
