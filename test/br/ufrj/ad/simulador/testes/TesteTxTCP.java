@@ -26,6 +26,22 @@ public class TesteTxTCP {
 	public void setUp() throws Exception {
 		tx = new TxTCP(new Random().nextInt(30));
 	}
+	
+	@Test
+	public void testRetransmissao() {
+		
+		tx = new TxTCP(23);
+		
+		tx.enviarPacote();
+		
+		tx.receberSACK(new SACK(23, 1500, null));
+		
+		Pacote p1 = new Pacote();
+		p1.setByteInicialEFinal(1500, 2999);
+		p1.setDestino(23);
+		
+		assertEquals(p1, tx.enviarPacote());
+	}
 
 	@Test
 	public void testDestinoPacote() {

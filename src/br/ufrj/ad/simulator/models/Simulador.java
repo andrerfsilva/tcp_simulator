@@ -12,6 +12,7 @@ import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 import br.ufrj.ad.simulator.exceptions.EventOutOfOrderException;
+import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema
@@ -62,7 +63,7 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
-		numeroEventosPorRodada = 1000000;
+		numeroEventosPorRodada = 100000;
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
@@ -118,10 +119,13 @@ public class Simulador {
 
 			// TODO: estimar fase transiente!
 
-			for (int i = 0; i < numeroEventosPorRodada
-					&& filaEventos.size() > 0; i++) {
+			for (int i = 0; i < numeroEventosPorRodada; i++) {
 
 				tratarProximoEvento();
+
+				if (filaEventos.size() == 0) {
+					throw new EndOfTheWorldException();
+				}
 			}
 
 			/*
@@ -173,7 +177,8 @@ public class Simulador {
 		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				geradorNumerosAleatorios.nextExponential(1 / parametros
 						.getTempoMedioEntreRajadas()));
-		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar impacto!
+		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
+		// impacto!
 
 		/*
 		 * Primeiras transmissões TCP.
@@ -251,6 +256,10 @@ public class Simulador {
 	 *            próximo evento da fila de eventos
 	 */
 	private void tratarEvento(Evento e) {
+
+		System.out.println(estimadoresDeVazaoTCP[0].getNumeroAmostras() + ":"
+				+ e.getClass());
+
 		if (e instanceof EventoRoteadorRecebeTrafegoDeFundo) {
 			tratarEventoRoteadorRecebeTrafegoDeFundo();
 		} else if (e instanceof EventoRoteadorTerminaEnvio) {
@@ -297,7 +306,6 @@ public class Simulador {
 			tx.reagirTimeOut();
 		}
 
-		System.out.println(e.getClass());
 		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
 	}
 
@@ -313,14 +321,25 @@ public class Simulador {
 		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
 
+		boolean prontoParaTransmitirAntesDoSACK = tx.prontoParaTransmitir();
+
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
+
+		boolean prontoParaTransmitirDepoisDoSACK = tx.prontoParaTransmitir();
+
+		if (!prontoParaTransmitirAntesDoSACK
+				&& prontoParaTransmitirDepoisDoSACK) {
+
+			agendarProximoEnvioTxTCP(tx);
+		}
 
 		/* Cancela evento de time-out do pacote correspondente. */
 		filaEventos.remove(esack.getSACK().getEventoTimeOut());
 
-		System.out.println(e.getClass());
 		System.out.println(esack.getSACK());
 		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
+		System.out.println("proximoPacoteAEnviar="
+				+ rede.getTransmissores()[0].getProximoPacoteAEnviar());
 	}
 
 	/**
@@ -337,8 +356,7 @@ public class Simulador {
 	private void tratarEventoRoteadorRecebePacoteTxTCP(Evento e) {
 
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
-		
-		System.out.println(e.getClass());
+
 		System.out.println(etcp.getPacote());
 
 		/*
@@ -359,7 +377,9 @@ public class Simulador {
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
-		rede.getRoteador().receberPacote(etcp.getPacote(), tempoAtualSimulado);
+		boolean recebeuOK = rede.getRoteador().receberPacote(etcp.getPacote(),
+				tempoAtualSimulado);
+		System.out.println(recebeuOK ? " OK" : " DESCARTADO");
 
 		/*
 		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada
@@ -367,28 +387,38 @@ public class Simulador {
 		 */
 		if (tx.prontoParaTransmitir()) {
 
-			Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
-
-			double tempoTransmissao = Parametros.mss / parametros.getCs();
-			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
-					: parametros.getTP2());
-
-			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
-					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
-					proximoPacoteAEnviar);
-
-			filaEventos.add(proximaChegadaTCP);
-
-			/*
-			 * Agendamos o time-out do pacote que acabou de ser enviado. Para
-			 * facilitar a remoção do evento de time-out quando o SACK
-			 * correspondente chegar, também armazenamos o evento no pacote.
-			 */
-			EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
-					+ tx.getRTO(), etcp.getTxTCP());
-			filaEventos.add(eTimeOut);
-			proximoPacoteAEnviar.setEventoTimeOut(eTimeOut);
+			agendarProximoEnvioTxTCP(tx);
 		}
+	}
+
+	/**
+	 * @param etcp
+	 * @param tx
+	 * @throws TxTCPNotReadyToSendException
+	 */
+	private void agendarProximoEnvioTxTCP(TxTCP tx)
+			throws TxTCPNotReadyToSendException {
+		Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
+
+		double tempoTransmissao = Parametros.mss / parametros.getCs();
+		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
+				: parametros.getTP2());
+
+		EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+				tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
+				proximoPacoteAEnviar);
+
+		filaEventos.add(proximaChegadaTCP);
+
+		/*
+		 * Agendamos o time-out do pacote que acabou de ser enviado. Para
+		 * facilitar a remoção do evento de time-out quando o SACK
+		 * correspondente chegar, também armazenamos o evento no pacote.
+		 */
+		EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
+				+ tx.getRTO(), tx.getNumeroConexao());
+		filaEventos.add(eTimeOut);
+		proximoPacoteAEnviar.setEventoTimeOut(eTimeOut);
 	}
 
 	/**
@@ -398,8 +428,8 @@ public class Simulador {
 	 */
 	private void tratarEventoRoteadorTerminaEnvio() {
 
-		//if (rede.getRoteador().getNumeroPacotes() == 0)
-			//return; // TODO rever causa de eventos desnecessário de envio!
+		// if (rede.getRoteador().getNumeroPacotes() == 0)
+		// return; // TODO rever causa de eventos desnecessário de envio!
 
 		SACK sack = rede.getRoteador().enviarProximoPacote(tempoAtualSimulado);
 
