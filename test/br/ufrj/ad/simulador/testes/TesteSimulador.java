@@ -1,11 +1,15 @@
 package br.ufrj.ad.simulador.testes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import br.ufrj.ad.simulator.eventos.Evento;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
+import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
@@ -554,6 +558,59 @@ public class TesteSimulador {
 
 		assertEquals(100 + 100, simulador.getFilaEventos().poll()
 				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	/* -----------Testes do EventoRoteadorRecebeTafegoFundo----------- */
+
+	@Test
+	public void testEventoRoteadorRecebeTafegoFundo1() {
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebeTrafegoDeFundo(50));
+
+		simulador.tratarProximoEvento();
+
+		Evento e = simulador.getFilaEventos().poll();
+
+		assertTrue((e instanceof EventoRoteadorRecebeTrafegoDeFundo)
+				|| (e instanceof EventoRoteadorTerminaEnvio));
+
+	}
+
+	@Test
+	public void testEventoRoteadorRecebeTafegoFundo2() {
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebeTrafegoDeFundo(50));
+
+		simulador.tratarProximoEvento();
+
+		Evento e = simulador.getFilaEventos().poll();
+
+		if (e instanceof EventoRoteadorRecebeTrafegoDeFundo) {
+			assertEquals(50 + 1.2, simulador.getFilaEventos().poll()
+					.getTempoDeOcorrencia(), 0);
+
+		} else if (e instanceof EventoRoteadorTerminaEnvio) {
+			assertEquals(50 + 1.2, e.getTempoDeOcorrencia(), 0);
+		} else {
+			fail("Evento inválido na fila: " + e.getClass());
+		}
+	}
+
+	@Test
+	public void testEventoRoteadorRecebeTafegoFundo3() {
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebeTrafegoDeFundo(50));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorRecebeTrafegoDeFundo.class, simulador
+				.getFilaEventos().poll().getClass());
 
 	}
 }
