@@ -567,4 +567,8 @@ public class Simulador {
 				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
 
 	}
+
+	public TxTCP[] getTransmissores() {
+		return rede.getTransmissores();
+	}
 }

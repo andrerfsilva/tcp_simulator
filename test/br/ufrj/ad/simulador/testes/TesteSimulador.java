@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
+import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.models.Simulador;
@@ -116,5 +117,92 @@ public class TesteSimulador {
 
 		assertEquals(100 + 100 + 0.012, simulador.getFilaEventos().peek()
 				.getTempoDeOcorrencia(), 0);
+	}
+
+	@Test
+	public void testRoteadorRecebePacoteTxTCP5() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(1, simulador.getFilaEventos().size());
+	}
+
+	@Test
+	public void testRoteadorRecebePacoteTxTCP6() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
+				.getClass());
+	}
+
+	@Test
+	public void testRoteadorRecebePacoteTxTCP7() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(simulador.getTransmissores()[0].getRTO() + 100, simulador
+				.getFilaEventos().poll().getTempoDeOcorrencia(), 0);
+	}
+
+	/**
+	 * Verifica se o ao iniciar uma nova transmissão de pacote TxTCP o evento de
+	 * time-out corresponte está sendo criado corretamente.
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP8() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
+		Pacote p1 = ((EventoRoteadorRecebePacoteTxTCP) simulador
+				.getFilaEventos().poll()).getPacote(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(p1.getEventoTimeOut(), simulador.getFilaEventos().poll());
 	}
 }
