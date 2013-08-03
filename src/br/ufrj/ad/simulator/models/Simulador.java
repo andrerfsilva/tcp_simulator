@@ -63,7 +63,7 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
-		numeroEventosPorRodada = 100000;
+		numeroEventosPorRodada = 1000000;
 		geradorNumerosAleatorios = new Random();
 		parametros = new Parametros();
 
@@ -177,7 +177,7 @@ public class Simulador {
 		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				geradorNumerosAleatorios.nextExponential(1 / parametros
 						.getTempoMedioEntreRajadas()));
-		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
+		//filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
 		// impacto!
 
 		/*
@@ -257,9 +257,6 @@ public class Simulador {
 	 */
 	private void tratarEvento(Evento e) {
 
-		System.out.println(estimadoresDeVazaoTCP[0].getNumeroAmostras() + ":"
-				+ e.getClass());
-
 		if (e instanceof EventoRoteadorRecebeTrafegoDeFundo) {
 			tratarEventoRoteadorRecebeTrafegoDeFundo();
 		} else if (e instanceof EventoRoteadorTerminaEnvio) {
@@ -305,8 +302,6 @@ public class Simulador {
 		} else {
 			tx.reagirTimeOut();
 		}
-
-		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
 	}
 
 	/**
@@ -336,10 +331,6 @@ public class Simulador {
 		/* Cancela evento de time-out do pacote correspondente. */
 		filaEventos.remove(esack.getSACK().getEventoTimeOut());
 
-		System.out.println(esack.getSACK());
-		System.out.println("cwnd=" + rede.getTransmissores()[0].getCwnd());
-		System.out.println("proximoPacoteAEnviar="
-				+ rede.getTransmissores()[0].getProximoPacoteAEnviar());
 	}
 
 	/**
@@ -356,8 +347,6 @@ public class Simulador {
 	private void tratarEventoRoteadorRecebePacoteTxTCP(Evento e) {
 
 		EventoRoteadorRecebePacoteTxTCP etcp = (EventoRoteadorRecebePacoteTxTCP) e;
-
-		System.out.println(etcp.getPacote());
 
 		/*
 		 * Se o pacote TCP encontrar o roteador vazio, então podemos agendar o
@@ -377,9 +366,7 @@ public class Simulador {
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
 		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
-		boolean recebeuOK = rede.getRoteador().receberPacote(etcp.getPacote(),
-				tempoAtualSimulado);
-		System.out.println(recebeuOK ? " OK" : " DESCARTADO");
+		rede.getRoteador().receberPacote(etcp.getPacote(), tempoAtualSimulado);
 
 		/*
 		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada

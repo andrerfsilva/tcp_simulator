@@ -179,8 +179,13 @@ public class TxTCP {
 						 * de Fast Retransmit. Todos os "gaps" dentro da recwnd
 						 * serão retransmitidos.
 						 */
-						retransmitwnd = sack.getSequenciasRecebidasCorretamente()[sack
-								.getSequenciasRecebidasCorretamente().length - 1][1];
+						if (sack.getSequenciasRecebidasCorretamente() != null) {
+							retransmitwnd = sack
+									.getSequenciasRecebidasCorretamente()[sack
+									.getSequenciasRecebidasCorretamente().length - 1][1];
+						} else {
+							retransmitwnd = sack.getProximoByteEsperado();
+						}
 
 						proximoPacoteAEnviar = sack.getProximoByteEsperado();
 					}
