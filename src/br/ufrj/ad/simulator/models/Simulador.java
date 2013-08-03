@@ -63,9 +63,24 @@ public class Simulador {
 
 	public Simulador() throws IOException {
 
+		inicializarParametrosDoSimulador(new Parametros());
+	}
+
+	public Simulador(Parametros parametros) {
+
+		inicializarParametrosDoSimulador(parametros);
+	}
+
+	/**
+	 * O construtor chama esse método auxiliar para inicializar suas variáveis.
+	 * 
+	 * @param parametros
+	 *            parametros de entrada da simulação
+	 */
+	private void inicializarParametrosDoSimulador(Parametros parametros) {
 		numeroEventosPorRodada = 1000000;
 		geradorNumerosAleatorios = new Random();
-		parametros = new Parametros();
+		this.parametros = parametros;
 
 		/* Inicializa estimadores */
 		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
@@ -387,7 +402,13 @@ public class Simulador {
 			throws TxTCPNotReadyToSendException {
 		Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
 
-		double tempoTransmissao = Parametros.mss / parametros.getCs();
+		/* Tempo de transmissão (em milisegundos) */
+		double tempoTransmissao = (Parametros.mss * 8)
+				/ (parametros.getCs() * 1E-3);
+		/*
+		 * Tempo de propagação (em milisegundos). Cada grupo tem seu tempo
+		 * distinto.
+		 */
 		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
 				: parametros.getTP2());
 
