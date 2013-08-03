@@ -8,6 +8,12 @@ import org.junit.Test;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 
+/**
+ * Casos de teste para a classe pacote.
+ * 
+ * @author André Ramos, Wellington Mascena, Felipe Teixeira
+ * 
+ */
 public class TestePacote {
 
 	private Pacote pacote;
@@ -21,6 +27,11 @@ public class TestePacote {
 	@Test
 	public void testGetTamanho() {
 		assertEquals(Parametros.mss, pacote.getTamanho());
+	}
+
+	@Test
+	public void testTrafegoFundo() {
+		assertTrue(pacote.isTrafegoDeFundo());
 	}
 
 }

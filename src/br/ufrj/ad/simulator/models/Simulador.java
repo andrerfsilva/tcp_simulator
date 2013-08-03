@@ -78,7 +78,7 @@ public class Simulador {
 	 *            parametros de entrada da simulação
 	 */
 	private void inicializarParametrosDoSimulador(Parametros parametros) {
-		numeroEventosPorRodada = 1000000;
+		numeroEventosPorRodada = parametros.getNumeroEventosPorRodada();
 		geradorNumerosAleatorios = new Random();
 		this.parametros = parametros;
 
@@ -187,13 +187,16 @@ public class Simulador {
 	private void agendarEventosIniciais() {
 
 		/*
-		 * Primeira chegada de tráfego de fundo.
+		 * Agenda a primeira chegada de tráfego de fundo se o parâmetro estiver
+		 * habilitado.
 		 */
-		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
-				geradorNumerosAleatorios.nextExponential(1 / parametros
-						.getTempoMedioEntreRajadas()));
-		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
-		// impacto!
+
+		if (parametros.getHabilitarTrafegoFundo()) {
+			Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
+					geradorNumerosAleatorios.nextExponential(1 / parametros
+							.getTempoMedioEntreRajadas()));
+			filaEventos.add(primeiraChegadaTrafegoFundo);
+		}
 
 		/*
 		 * Primeiras transmissões TCP.
@@ -571,8 +574,8 @@ public class Simulador {
 	public TxTCP[] getTransmissores() {
 		return rede.getTransmissores();
 	}
-	
-	public Roteador getRoteador(){
+
+	public Roteador getRoteador() {
 		return rede.getRoteador();
 	}
 }

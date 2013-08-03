@@ -1,10 +1,12 @@
 package br.ufrj.ad.simulator.views;
 
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,6 +33,8 @@ public class JanelaParametros extends JFrame {
 	private JTextField textFieldEstacoesGrupo2;
 	private JTextField textFieldMediaPacotesPorRajada;
 	private JTextField textFieldTempoMedioEntreRajadas;
+	private JTextField textFieldNumeroEventosPorRodada;
+	private JCheckBox checkBoxTrafegoFundo;
 	private JButton buttonSalvar;
 	private JButton buttonCancelar;
 
@@ -72,7 +76,7 @@ public class JanelaParametros extends JFrame {
 		this.add(new JLabel("TP2 (ms):"));
 		this.textFieldTP2 = new JTextField();
 		this.add(textFieldTP2);
-		
+
 		this.add(new JLabel("TPACK1 (ms):"));
 		this.textFieldTPACK1 = new JTextField();
 		this.add(textFieldTPACK1);
@@ -96,6 +100,15 @@ public class JanelaParametros extends JFrame {
 		this.add(new JLabel("Tempo Médio Entre Rajadas TF (ms):"));
 		this.textFieldTempoMedioEntreRajadas = new JTextField();
 		this.add(textFieldTempoMedioEntreRajadas);
+
+		this.add(new JLabel());
+
+		this.checkBoxTrafegoFundo = new JCheckBox("Habilitar Tráfego de Fundo");
+		this.add(checkBoxTrafegoFundo);
+
+		this.add(new JLabel("Número de Eventos Por Rodada:"));
+		this.textFieldNumeroEventosPorRodada = new JTextField();
+		this.add(textFieldNumeroEventosPorRodada);
 
 		buttonSalvar = new JButton("Salvar");
 		buttonSalvar.setActionCommand("Salvar");
@@ -142,7 +155,7 @@ public class JanelaParametros extends JFrame {
 	public JTextField getTextFieldTP2() {
 		return textFieldTP2;
 	}
-	
+
 	public JTextField getTextFieldTPACK1() {
 		return textFieldTPACK1;
 	}
@@ -173,6 +186,14 @@ public class JanelaParametros extends JFrame {
 
 	public JButton getButtonCancelar() {
 		return buttonCancelar;
+	}
+
+	public JTextField getTextFieldNumeroEventosPorRodada() {
+		return textFieldNumeroEventosPorRodada;
+	}
+
+	public JCheckBox getCheckBoxTrafegoFundo() {
+		return checkBoxTrafegoFundo;
 	}
 
 	public static void main(String[] args) {

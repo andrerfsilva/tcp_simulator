@@ -243,4 +243,20 @@ public class Parametros extends Properties {
 	public int getTamanhoBufferRoteador() {
 		return Integer.parseInt(getTamanhoBufferRoteadorProperty());
 	}
+
+	public String getNumeroEventosPorRodadaProperty() {
+		return getProperty("NumeroEventosPorRodada", "1000000");
+	}
+
+	public String getHabilitarTrafegoFundoProperty() {
+		return getProperty("HabilitarTrafegoFundo", "true");
+	}
+
+	public int getNumeroEventosPorRodada() {
+		return Integer.parseInt(getNumeroEventosPorRodadaProperty());
+	}
+
+	public boolean getHabilitarTrafegoFundo() {
+		return Boolean.parseBoolean(getHabilitarTrafegoFundoProperty());
+	}
 }

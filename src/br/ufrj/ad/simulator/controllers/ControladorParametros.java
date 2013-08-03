@@ -50,6 +50,12 @@ public class ControladorParametros implements ActionListener {
 		janelaParametros.getComboBoxTamanhoBufferRoteador().setSelectedItem(
 				parametros.getDisciplinaRoteadorProperty());
 
+		janelaParametros.getTextFieldNumeroEventosPorRodada().setText(
+				parametros.getNumeroEventosPorRodadaProperty());
+
+		janelaParametros.getCheckBoxTrafegoFundo().setSelected(
+				parametros.getHabilitarTrafegoFundo());
+
 		janelaParametros.getButtonSalvar().addActionListener(this);
 		janelaParametros.getButtonCancelar().addActionListener(this);
 
@@ -88,6 +94,12 @@ public class ControladorParametros implements ActionListener {
 								.getText());
 				parametros.setProperty("TempoMedioEntreRajadas",
 						janelaParametros.getTextFieldTempoMedioEntreRajadas()
+								.getText());
+				parametros.setProperty("HabilitarTrafegoFundo",
+						janelaParametros.getCheckBoxTrafegoFundo().isSelected()
+								+ "");
+				parametros.setProperty("NumeroEventosPorRodada",
+						janelaParametros.getTextFieldNumeroEventosPorRodada()
 								.getText());
 
 				parametros.salvar();
