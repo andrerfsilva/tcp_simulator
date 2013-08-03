@@ -177,7 +177,7 @@ public class Simulador {
 		Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 				geradorNumerosAleatorios.nextExponential(1 / parametros
 						.getTempoMedioEntreRajadas()));
-		//filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
+		filaEventos.add(primeiraChegadaTrafegoFundo); // TODO: avaliar
 		// impacto!
 
 		/*
@@ -544,11 +544,6 @@ public class Simulador {
 		}
 		System.out.println("\t\t" + estimadorVazaoMediaGlobal.getMedia() + "±"
 				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
-
-		System.out.println("cwnd = "
-				+ simulador.rede.getTransmissores()[0].getCwnd());
-		System.out.println("threshold = "
-				+ simulador.rede.getTransmissores()[0].getThreshold());
 
 	}
 }
