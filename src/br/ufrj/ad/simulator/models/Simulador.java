@@ -308,7 +308,8 @@ public class Simulador {
 		 */
 		if (!tx.prontoParaTransmitir()) {
 			tx.reagirTimeOut();
-			double tempoTransmissao = Parametros.mss / parametros.getCs();
+			double tempoTransmissao = (Parametros.mss * 8)
+					/ (parametros.getCs() * 1E-3);
 			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
 					: parametros.getTP2());
 

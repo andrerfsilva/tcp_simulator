@@ -613,4 +613,61 @@ public class TesteSimulador {
 				.getFilaEventos().poll().getClass());
 
 	}
+
+	/* -----------------Testes do EventoTimeOut----------------- */
+
+	@Test
+	public void testEventoTimeOut1() {
+
+		simulador.getFilaEventos().add(new EventoTimeOut(400, 0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(0, simulador.getFilaEventos().size());
+
+	}
+
+	@Test
+	public void testEventoTimeOut2() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+		tx.enviarPacote();
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(1, simulador.getFilaEventos().size());
+
+	}
+
+	@Test
+	public void testEventoTimeOut3() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+		tx.enviarPacote();
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	@Test
+	public void testEventoTimeOut4() {
+
+		TxTCP tx = simulador.getTransmissores()[0];
+		tx.enviarPacote();
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(400 + 100 + 0.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
 }
