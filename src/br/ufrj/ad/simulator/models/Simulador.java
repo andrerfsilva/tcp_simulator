@@ -571,4 +571,8 @@ public class Simulador {
 	public TxTCP[] getTransmissores() {
 		return rede.getTransmissores();
 	}
+	
+	public Roteador getRoteador(){
+		return rede.getRoteador();
+	}
 }

@@ -52,8 +52,7 @@ public class TesteRoteadorRED {
 			i++;
 			roteador.receberPacote(new Pacote());
 		}
-		System.out.println(i);
-		System.out.println(roteador.getAvg());
+
 		assertEquals(i, roteador.getNumeroPacotes());
 	}
 
@@ -74,9 +73,6 @@ public class TesteRoteadorRED {
 			}
 
 		}
-
-		System.out.println(i);
-		System.out.println(roteador.getAvg());
 
 		for (int j = 0; j < 2000; j++) {
 			roteador.receberPacote(new Pacote());

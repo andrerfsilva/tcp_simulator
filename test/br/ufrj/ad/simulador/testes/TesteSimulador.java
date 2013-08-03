@@ -1,8 +1,6 @@
 package br.ufrj.ad.simulador.testes;
 
-import static org.junit.Assert.*;
-
-import java.io.FileOutputStream;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,7 @@ import br.ufrj.ad.simulator.models.Simulador;
 /**
  * Casos de teste para classe Simulador.
  * 
- * @author Wellignton Mascena, Felipe Teixeira
+ * @author André Ramos, Wellignton Mascena, Felipe Teixeira
  * 
  */
 public class TesteSimulador {
@@ -204,5 +202,195 @@ public class TesteSimulador {
 				.getFilaEventos().poll()).getPacote(); // RoteadorRecebePacoteTxTCP
 
 		assertEquals(p1.getEventoTimeOut(), simulador.getFilaEventos().poll());
+	}
+
+	/**
+	 * Verifica se irá criar um evento de RoteadorRecebePacoteTxTCP ao resgatar
+	 * o primeiro evento da fila de eventos
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP9() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().poll().getClass()); // RoteadorRecebePacoteTxTCP
+
+	}
+
+	/**
+	 * Verifica se irá resgatar um evento TimeOut ao resgatar o segundo evento
+	 * da fila de eventos
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP10() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
+				.getClass()); // Time-Out
+	}
+
+	/**
+	 * Verifica se o evento RoteadorRecebePacoteTxTCP recebe o evento no tempo
+	 * esperado (200,012)
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP11() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(200.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0); // RoteadorRecebePacoteTxTCP
+
+	}
+
+	/**
+	 * Verifica se irá resgatar um evento TimeOut ao resgatar o segundo evento
+	 * da fila de eventos no tempo correto
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP12() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = new Pacote();
+		p0.setByteInicialEFinal(0, 1499);
+		p0.setDestino(0);
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(100 + simulador.getTransmissores()[0].getRTO(), simulador
+				.getFilaEventos().poll().getTempoDeOcorrencia(), 0); // Time-Out
+	}
+
+	/**
+	 * Verifica se não haverá eventos na fila de eventos, que é o esperado nesse
+	 * caso, onde não o TxTCP já fica com a cwnd congestionada, e portanto não
+	 * criará evento de Time-out e como o roteador está cheio, não haverá
+	 * eventos na lista de eventos
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP13() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
+
+		simulador.getRoteador().receberPacote(new Pacote());
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(null, simulador.getFilaEventos().poll()); // null
+
+	}
+
+	/**
+	 * Verifica se irá criar o evento RoteadorTerminaEnvio no caso onde o buffer
+	 * do roteador estará vazio
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP14() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoRoteadorTerminaEnvio.class, simulador
+				.getFilaEventos().poll().getClass()); // RoteadorTerminaEnvio
+
+	}
+
+	/**
+	 * Verifica se irá criar o evento RoteadorTerminaEnvio no caso onde o buffer
+	 * do roteador estará vazio, e verificar se o tempo é condizente com a
+	 * expectativa
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP15() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(101.212, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0); // RoteadorTerminaEnvio
+
+	}
+
+	/**
+	 * Verifica se o evento após o RoteadorTerminaEnvio é nulo
+	 */
+	@Test
+	public void testRoteadorRecebePacoteTxTCP16() {
+
+		simulador = new Simulador(parametros);
+
+		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll();
+
+		assertEquals(null, simulador.getFilaEventos().poll()); // null
+
 	}
 }
