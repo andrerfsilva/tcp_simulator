@@ -523,6 +523,42 @@ public class Simulador {
 		return parametros;
 	}
 
+	public double[][] getAmostrasCwndPorMSSxTempo(int numeroDeAmostras)
+			throws EndOfTheWorldException {
+
+		setarEstadoInicialDeSimulacao();
+		agendarEventosIniciais();
+
+		TxTCP tx = this.rede.getTransmissores()[0];
+		double[][] dados = new double[2][numeroDeAmostras];
+
+		long ultimoCwndPorMss = tx.getCwnd() / Parametros.mss;
+
+		dados[0][0] = 0;
+		dados[1][0] = ultimoCwndPorMss;
+
+		int i = 1;
+
+		while (i < numeroDeAmostras) {
+
+			tratarProximoEvento();
+
+			if (filaEventos.size() == 0) {
+				throw new EndOfTheWorldException();
+			}
+
+			if (ultimoCwndPorMss != (tx.getCwnd() / Parametros.mss)) {
+				ultimoCwndPorMss = (tx.getCwnd() / Parametros.mss);
+				dados[0][i] = tempoAtualSimulado;
+				dados[1][i] = ultimoCwndPorMss;
+
+				i++;
+			}
+		}
+
+		return dados;
+	}
+
 	/**
 	 * Executa o simulador e apresenta as estatísticas da vazão TCP para cada
 	 * par Tx/Rx e a vazão média das conexões como um todo.
