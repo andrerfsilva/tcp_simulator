@@ -56,6 +56,9 @@ public class ControladorParametros implements ActionListener {
 		janelaParametros.getCheckBoxTrafegoFundo().setSelected(
 				parametros.getHabilitarTrafegoFundo());
 
+		janelaParametros.getTextFieldNumeroAmostrasCwndGrafico().setText(
+				parametros.getNumeroAmostrasCwndGraficoProperty());
+
 		janelaParametros.getButtonSalvar().addActionListener(this);
 		janelaParametros.getButtonCancelar().addActionListener(this);
 
@@ -100,6 +103,10 @@ public class ControladorParametros implements ActionListener {
 								+ "");
 				parametros.setProperty("NumeroEventosPorRodada",
 						janelaParametros.getTextFieldNumeroEventosPorRodada()
+								.getText());
+				parametros.setProperty("NumeroAmostrasCwndGrafico",
+						janelaParametros
+								.getTextFieldNumeroAmostrasCwndGrafico()
 								.getText());
 
 				parametros.salvar();

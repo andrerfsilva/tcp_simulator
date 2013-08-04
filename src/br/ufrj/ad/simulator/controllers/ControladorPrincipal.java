@@ -21,6 +21,8 @@ public class ControladorPrincipal implements ActionListener {
 
 		janelaPrincipal.getMenuItemConfigurarParametrosSimulacao()
 				.addActionListener(this);
+		janelaPrincipal.getMenuItemGerarGraficoCwndPorMSSxTempo()
+				.addActionListener(this);
 		janelaPrincipal.getMenuItemIniciarSimulacao().addActionListener(this);
 		janelaPrincipal.getMenuItemSair().addActionListener(this);
 	}
@@ -28,16 +30,20 @@ public class ControladorPrincipal implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if ("Sair".equals(e.getActionCommand())) {
-			janelaPrincipal.close();
-		} else if ("ConfigurarParametros".equals(e.getActionCommand())) {
-			try {
+		try {
+
+			if ("Sair".equals(e.getActionCommand())) {
+				janelaPrincipal.close();
+			} else if ("ConfigurarParametros".equals(e.getActionCommand())) {
 				new ControladorParametros();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} else if ("IniciarSimulacao".equals(e.getActionCommand())) {
+				// TODO: Fazer isso logo!
+			} else if ("GerarGrafico".equals(e.getActionCommand())) {
+				new ControladorGraficoCongestionWindow();
 			}
-		} else if ("IniciarSimulacao".equals(e.getActionCommand())) {
-			// TODO: Fazer isso logo!
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 
 	}

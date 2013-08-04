@@ -259,4 +259,12 @@ public class Parametros extends Properties {
 	public boolean getHabilitarTrafegoFundo() {
 		return Boolean.parseBoolean(getHabilitarTrafegoFundoProperty());
 	}
+
+	public String getNumeroAmostrasCwndGraficoProperty() {
+		return getProperty("NumeroAmostrasCwndGrafico", "1000");
+	}
+
+	public int getNumeroAmostrasCwndGrafico() {
+		return Integer.parseInt(getNumeroAmostrasCwndGraficoProperty());
+	}
 }

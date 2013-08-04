@@ -523,8 +523,23 @@ public class Simulador {
 		return parametros;
 	}
 
-	public double[][] getAmostrasCwndPorMSSxTempo(int numeroDeAmostras)
+	/**
+	 * Coleta N amostras da variação de cwnd/MSS em função do tempo e retorna
+	 * uma matriz M[2][N] onde M[0][i] é o tempo da amostra i, e M[1][i] é a
+	 * cwnd/MSS da amostra i.
+	 * 
+	 * @param numeroDeAmostras
+	 *            número de N amostras de cwnd/MSS
+	 * @return matriz de amostras M[2][N] onde M[0][i] é o tempo da amostra i, e
+	 *         M[1][i] é a cwnd/MSS da amostra i
+	 * @throws EndOfTheWorldException
+	 *             Se em algum momento não existir mais eventos, então temos um
+	 *             erro de modelagem e tratamento de eventos.
+	 */
+	public double[][] getAmostrasCwndPorMSSxTempo()
 			throws EndOfTheWorldException {
+
+		int numeroDeAmostras = parametros.getNumeroAmostrasCwndGrafico();
 
 		setarEstadoInicialDeSimulacao();
 		agendarEventosIniciais();

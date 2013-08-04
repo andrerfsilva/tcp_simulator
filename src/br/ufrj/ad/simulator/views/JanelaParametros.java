@@ -33,6 +33,7 @@ public class JanelaParametros extends JFrame {
 	private JTextField textFieldMediaPacotesPorRajada;
 	private JTextField textFieldTempoMedioEntreRajadas;
 	private JTextField textFieldNumeroEventosPorRodada;
+	private JTextField textFieldNumeroAmostrasCwndGrafico;
 	private JCheckBox checkBoxTrafegoFundo;
 	private JButton buttonSalvar;
 	private JButton buttonCancelar;
@@ -109,6 +110,10 @@ public class JanelaParametros extends JFrame {
 		this.textFieldNumeroEventosPorRodada = new JTextField();
 		this.add(textFieldNumeroEventosPorRodada);
 
+		this.add(new JLabel("Número de Amostras de cwnd no Gráfico:"));
+		this.textFieldNumeroAmostrasCwndGrafico = new JTextField();
+		this.add(textFieldNumeroAmostrasCwndGrafico);
+
 		buttonSalvar = new JButton("Salvar");
 		buttonSalvar.setActionCommand("Salvar");
 		this.add(buttonSalvar);
@@ -129,6 +134,10 @@ public class JanelaParametros extends JFrame {
 		Toolkit.getDefaultToolkit().getSystemEventQueue()
 				.postEvent(winClosingEvent);
 
+	}
+
+	public JTextField getTextFieldNumeroAmostrasCwndGrafico() {
+		return textFieldNumeroAmostrasCwndGrafico;
 	}
 
 	public JTextField getTextFieldTamanhoBufferRoteador() {

@@ -31,9 +31,9 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 
 		this.ds.addSeries("Cwnd/MSS Tx0", tempoXbit);
 
-		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x Tempo",
-				"Tempo (ms)", "Pacotes", ds, PlotOrientation.VERTICAL, true,
-				true, false);
+		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x tempo",
+				"tempo (ms)", "cwnd/MSS (pacotes)", ds,
+				PlotOrientation.VERTICAL, true, true, false);
 
 		ChartPanel cp = new ChartPanel(this.grafico);
 

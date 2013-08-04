@@ -22,6 +22,7 @@ public class JanelaPrincipal extends JFrame {
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItemConfigurarParametrosSimulacao;
+	private JMenuItem menuItemGerarGraficoCwndPorMSSxTempo;
 	private JMenuItem menuItemIniciarSimulacao;
 	private JMenuItem menuItemSair;
 
@@ -48,6 +49,11 @@ public class JanelaPrincipal extends JFrame {
 		menuItemConfigurarParametrosSimulacao
 				.setActionCommand("ConfigurarParametros");
 		menu.add(menuItemConfigurarParametrosSimulacao);
+
+		menuItemGerarGraficoCwndPorMSSxTempo = new JMenuItem(
+				"Gerar Gráfico cwnd/MSS x tempo", KeyEvent.VK_G);
+		menuItemGerarGraficoCwndPorMSSxTempo.setActionCommand("GerarGrafico");
+		menu.add(menuItemGerarGraficoCwndPorMSSxTempo);
 
 		menuItemIniciarSimulacao = new JMenuItem("Iniciar Simulação",
 				KeyEvent.VK_S);
@@ -77,6 +83,10 @@ public class JanelaPrincipal extends JFrame {
 		Toolkit.getDefaultToolkit().getSystemEventQueue()
 				.postEvent(winClosingEvent);
 
+	}
+
+	public JMenuItem getMenuItemGerarGraficoCwndPorMSSxTempo() {
+		return menuItemGerarGraficoCwndPorMSSxTempo;
 	}
 
 	public JMenuItem getMenuItemConfigurarParametrosSimulacao() {
