@@ -1,5 +1,7 @@
 package br.ufrj.ad.simulator.views;
 
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
@@ -20,6 +22,9 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 	 * *
 	 */
 	public JanelaGraficoCongestionWindow(double[][] tempoXbit) {
+
+		this.setPreferredSize(new Dimension(800, 600));
+		this.setExtendedState(MAXIMIZED_BOTH);
 
 		this.ds = new DefaultXYDataset();
 

@@ -12,7 +12,7 @@ import br.ufrj.ad.simulator.views.JanelaParametros;
 /**
  * Controla os eventos da janela de parâmetros.
  * 
- * @author André Ramos
+ * @author André Ramos, Wellington Mascena, Felipe Teixeira
  * 
  */
 public class ControladorParametros implements ActionListener {

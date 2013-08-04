@@ -10,7 +10,7 @@ import br.ufrj.ad.simulator.views.JanelaGraficoCongestionWindow;
 /**
  * Controlador para a JanelaGraficoCongestionWindon.
  * 
- * @author André Ramos
+ * @author André Ramos, Felipe Teixeira, Wellington Mascena
  * 
  */
 public class ControladorGraficoCongestionWindow {
