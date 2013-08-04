@@ -24,6 +24,8 @@ public class JanelaGraficoVazaoTempo extends JFrame {
 	 */
 	public JanelaGraficoVazaoTempo(double[][] tempoXbps) {
 
+		super("Gráfico Vazão Média x Tempo");
+
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setExtendedState(MAXIMIZED_BOTH);
 
@@ -31,9 +33,9 @@ public class JanelaGraficoVazaoTempo extends JFrame {
 
 		this.ds.addSeries("Vazão Tx0", tempoXbps);
 
-		this.grafico = ChartFactory.createXYLineChart("vazão x tempo",
-				"tempo (ms)", "vazão (bps)", ds, PlotOrientation.VERTICAL,
-				true, true, false);
+		this.grafico = ChartFactory.createXYLineChart("vazão média x tempo",
+				"tempo (ms)", "vazão média (bps)", ds,
+				PlotOrientation.VERTICAL, true, true, false);
 
 		ChartPanel cp = new ChartPanel(this.grafico);
 

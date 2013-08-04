@@ -23,6 +23,8 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 	 * *
 	 */
 	public JanelaGraficoCongestionWindow(double[][] tempoXbit) {
+		
+		super("Gráfico cwnd/MSS x Tempo");
 
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setExtendedState(MAXIMIZED_BOTH);

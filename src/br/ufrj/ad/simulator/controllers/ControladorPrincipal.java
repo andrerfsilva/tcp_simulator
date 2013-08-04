@@ -25,6 +25,8 @@ public class ControladorPrincipal implements ActionListener {
 				.addActionListener(this);
 		janelaPrincipal.getMenuItemIniciarSimulacao().addActionListener(this);
 		janelaPrincipal.getMenuItemSair().addActionListener(this);
+		janelaPrincipal.getMenuItemGerarGraficoVazaoMediaxTempo()
+				.addActionListener(this);
 	}
 
 	@Override
@@ -40,6 +42,8 @@ public class ControladorPrincipal implements ActionListener {
 				// TODO: Fazer isso logo!
 			} else if ("GerarGrafico".equals(e.getActionCommand())) {
 				new ControladorGraficoCongestionWindow();
+			} else if ("GerarGraficoVazaoMedia".equals(e.getActionCommand())) {
+				new ControladorGraficoVazaoTempo();
 			}
 
 		} catch (IOException e1) {

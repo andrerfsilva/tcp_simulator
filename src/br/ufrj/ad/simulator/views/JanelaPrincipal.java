@@ -23,12 +23,17 @@ public class JanelaPrincipal extends JFrame {
 	private JMenu menu;
 	private JMenuItem menuItemConfigurarParametrosSimulacao;
 	private JMenuItem menuItemGerarGraficoCwndPorMSSxTempo;
+	private JMenuItem menuItemGerarGraficoVazaoMediaxTempo;
 	private JMenuItem menuItemIniciarSimulacao;
 	private JMenuItem menuItemSair;
 
 	public JanelaPrincipal() {
 		super("Simulador TCP - 2013/1");
 		iniciarComponentes();
+	}
+
+	public JMenuItem getMenuItemGerarGraficoVazaoMediaxTempo() {
+		return menuItemGerarGraficoVazaoMediaxTempo;
 	}
 
 	private void iniciarComponentes() {
@@ -51,9 +56,15 @@ public class JanelaPrincipal extends JFrame {
 		menu.add(menuItemConfigurarParametrosSimulacao);
 
 		menuItemGerarGraficoCwndPorMSSxTempo = new JMenuItem(
-				"Gerar Gráfico cwnd/MSS x tempo", KeyEvent.VK_G);
+				"Gerar Gráfico cwnd/MSS x Tempo", KeyEvent.VK_G);
 		menuItemGerarGraficoCwndPorMSSxTempo.setActionCommand("GerarGrafico");
 		menu.add(menuItemGerarGraficoCwndPorMSSxTempo);
+
+		menuItemGerarGraficoVazaoMediaxTempo = new JMenuItem(
+				"Gerar Gráfico Vazão Média x Tempo");
+		menuItemGerarGraficoVazaoMediaxTempo
+				.setActionCommand("GerarGraficoVazaoMedia");
+		menu.add(menuItemGerarGraficoVazaoMediaxTempo);
 
 		menuItemIniciarSimulacao = new JMenuItem("Iniciar Simulação",
 				KeyEvent.VK_S);
