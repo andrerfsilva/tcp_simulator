@@ -685,9 +685,8 @@ public class TesteSimulador {
 		simulador.tratarProximoEvento();
 
 		assertEquals(null, simulador.getFilaEventos().poll());
-
 	}
-	
+
 	@Test
 	public void testEventoTxTCPRecebeSACK2() {
 
@@ -695,14 +694,13 @@ public class TesteSimulador {
 		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
-		
+
 		Pacote pEnviado = simulador.getTransmissores()[0].enviarPacote();
 		Pacote pEsperado = new Pacote();
-		
+
 		pEsperado.setByteInicialEFinal(1500, 2999);
 		pEsperado.setDestino(0);
-			
-		assertEquals(pEsperado, pEnviado);
 
+		assertEquals(pEsperado, pEnviado);
 	}
 }

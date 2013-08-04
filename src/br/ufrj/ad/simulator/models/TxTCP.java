@@ -223,6 +223,11 @@ public class TxTCP {
 				 * Atualiza ponteiro para o pacote mais antigo sem SACK.
 				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+				
+				if(pacoteMaisAntigoSemACK > proximoPacoteAEnviar){
+					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
+				}
+				
 				/*
 				 * Atualiza estimativa de RTO.
 				 */
