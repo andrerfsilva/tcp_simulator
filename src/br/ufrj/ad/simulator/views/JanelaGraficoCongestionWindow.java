@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
 
 public class JanelaGraficoCongestionWindow extends JFrame {
@@ -30,8 +31,10 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 
 		this.ds.addSeries("Cwnd/MSS Tx0", tempoXbit);
 
-		this.grafico = ChartFactory.createTimeSeriesChart("cwnd/MSS x Tempo",
-				"Tempo (ms)", "Pacotes", ds, true, true, false);
+		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x Tempo",
+				"Tempo (ms)", "Pacotes", ds, PlotOrientation.VERTICAL, true,
+				true, false);
+
 		ChartPanel cp = new ChartPanel(this.grafico);
 
 		this.add(cp);
