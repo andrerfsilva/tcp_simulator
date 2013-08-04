@@ -575,6 +575,48 @@ public class Simulador {
 	}
 
 	/**
+	 * @return
+	 * @throws EndOfTheWorldException
+	 */
+	public double[][] getAmostrasVazaoxTempo() throws EndOfTheWorldException {
+
+		int numeroDeAmostras = parametros.getNumeroEventosPorRodada() / 1000;
+
+		setarEstadoInicialDeSimulacao();
+		agendarEventosIniciais();
+
+		RxTCP rx = this.rede.getReceptores()[0];
+		double[][] dados = new double[2][numeroDeAmostras];
+
+		long byteEsperadoFimUltimaAmostra = 0;
+		double tempoFimUltimaAmostra = 0.0;
+
+		int i = 0;
+		while (i < numeroDeAmostras) {
+
+			for (int j = 0; j < 1000; j++) {
+				tratarProximoEvento();
+			}
+
+			if (filaEventos.size() == 0) {
+				throw new EndOfTheWorldException();
+			}
+
+			double vazaoLocal = ((rx.getProximoByteEsperado() - byteEsperadoFimUltimaAmostra) * 8)
+					/ ((tempoAtualSimulado - tempoFimUltimaAmostra) * 1E-3);
+
+			dados[0][i] = tempoAtualSimulado;
+			dados[1][i] = vazaoLocal;
+
+			byteEsperadoFimUltimaAmostra = rx.getProximoByteEsperado();
+			tempoFimUltimaAmostra = tempoAtualSimulado;
+
+		}
+
+		return dados;
+	}
+
+	/**
 	 * Executa o simulador e apresenta as estatísticas da vazão TCP para cada
 	 * par Tx/Rx e a vazão média das conexões como um todo.
 	 * 
