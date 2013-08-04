@@ -199,6 +199,11 @@ public class TxTCP {
 				 * mais antigo sem ACK normalmente.
 				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
+				
+				if(pacoteMaisAntigoSemACK > proximoPacoteAEnviar){
+					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
+				}
+				
 				/*
 				 * Atualiza estimativa do RTO.
 				 */

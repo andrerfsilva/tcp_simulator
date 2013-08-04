@@ -15,6 +15,7 @@ import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
+import br.ufrj.ad.simulator.models.SACK;
 import br.ufrj.ad.simulator.models.Simulador;
 import br.ufrj.ad.simulator.models.TxTCP;
 
@@ -48,6 +49,8 @@ public class TesteSimulador {
 
 		simulador = new Simulador(parametros);
 	}
+
+	/* --------------Testes do RoteadorRecebePacoteTxTCP-------------- */
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP1() {
@@ -668,6 +671,38 @@ public class TesteSimulador {
 
 		assertEquals(400 + 100 + 0.012, simulador.getFilaEventos().poll()
 				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	/* -----------------Testes do EventoTxTCPRecebeSACK----------------- */
+
+	@Test
+	public void testEventoTxTCPRecebeSACK1() {
+
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(null, simulador.getFilaEventos().poll());
+
+	}
+	
+	@Test
+	public void testEventoTxTCPRecebeSACK2() {
+
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+
+		simulador.tratarProximoEvento();
+		
+		Pacote pEnviado = simulador.getTransmissores()[0].enviarPacote();
+		Pacote pEsperado = new Pacote();
+		
+		pEsperado.setByteInicialEFinal(1500, 2999);
+		pEsperado.setDestino(0);
+			
+		assertEquals(pEsperado, pEnviado);
 
 	}
 }
