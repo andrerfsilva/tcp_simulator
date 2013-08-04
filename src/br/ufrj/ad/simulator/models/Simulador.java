@@ -132,15 +132,28 @@ public class Simulador {
 			setarEstadoInicialDeSimulacao();
 			agendarEventosIniciais();
 
-			// TODO: estimar fase transiente!
+			double estimativaFimFaseTransiente = getEstimativaFimFaseTransiente();
+
+			/* Estimativa do fim da fase transiente. */
+			while (tempoAtualSimulado < estimativaFimFaseTransiente) {
+				tratarProximoEvento();
+			}
+
+			double tempoFimFaseTransiente = tempoAtualSimulado;
+			long[] proximoByteEsperadoFimFaseTransiente = new long[rede
+					.getReceptores().length];
+			for (int i = 0; i < proximoByteEsperadoFimFaseTransiente.length; i++) {
+				proximoByteEsperadoFimFaseTransiente[i] = rede.getReceptores()[i]
+						.getProximoByteEsperado();
+			}
+
+			/*
+			 * Os dados da fase transiente serão desconsiderados nas
+			 * estatísticas finais.
+			 */
 
 			for (int i = 0; i < numeroEventosPorRodada; i++) {
-
 				tratarProximoEvento();
-
-				if (filaEventos.size() == 0) {
-					throw new EndOfTheWorldException();
-				}
 			}
 
 			/*
@@ -148,12 +161,37 @@ public class Simulador {
 			 * estimadores correspondentes.
 			 */
 			for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
-				double vazaoEmBps = (rede.getReceptores()[i]
-						.getProximoByteEsperado() * 8)
-						/ (tempoAtualSimulado * 1E-3);
+				double vazaoEmBps = ((rede.getReceptores()[i]
+						.getProximoByteEsperado() - proximoByteEsperadoFimFaseTransiente[i]) * 8)
+						/ ((tempoAtualSimulado - tempoFimFaseTransiente) * 1E-3);
 				estimadoresDeVazaoTCP[i].coletarAmostra(vazaoEmBps);
 			}
 		}
+	}
+
+	/**
+	 * Retorna uma estimativa de quanto tempo o sistema demora para entrar em
+	 * equilíbrio. Essa estimativa foi obtita analizando vários gráficos da
+	 * vazão média em função do tempo. Foi o jeito mais simples que achamos para
+	 * obter essa estimativa.
+	 * 
+	 * @return estimativa do fim da fase transiente
+	 */
+	private double getEstimativaFimFaseTransiente() {
+
+		Estimador estimadorFimFaseTransiente = new Estimador();
+		estimadorFimFaseTransiente.coletarAmostra(600000);
+		estimadorFimFaseTransiente.coletarAmostra(500000);
+		estimadorFimFaseTransiente.coletarAmostra(600000);
+		estimadorFimFaseTransiente.coletarAmostra(800000);
+		estimadorFimFaseTransiente.coletarAmostra(700000);
+		estimadorFimFaseTransiente.coletarAmostra(800000);
+		estimadorFimFaseTransiente.coletarAmostra(700000);
+		estimadorFimFaseTransiente.coletarAmostra(300000);
+		estimadorFimFaseTransiente.coletarAmostra(200000);
+		estimadorFimFaseTransiente.coletarAmostra(220000);
+
+		return estimadorFimFaseTransiente.getMedia();
 	}
 
 	/**
@@ -177,6 +215,10 @@ public class Simulador {
 
 		tempoAtualSimulado = e.getTempoDeOcorrencia();
 		tratarEvento(e);
+
+		if (filaEventos.size() == 0) {
+			throw new EndOfTheWorldException();
+		}
 	}
 
 	/**
@@ -575,24 +617,33 @@ public class Simulador {
 	}
 
 	/**
-	 * @return
+	 * Coleta N amostras da média da vazão em relação ao tempo simulado. Esses
+	 * dados serão usados para plotar o gráfico da vazão média no tempo e
+	 * estimar o fim da fase transiente graficamente. O número de amostras é o
+	 * número de eventos por rodada/1000.
+	 * 
+	 * @return matriz M[2][N] onde M[0][i] é o tempo da amostra i e M[1][i] é a
+	 *         vazão média
 	 * @throws EndOfTheWorldException
+	 *             Se em algum momento não existir mais eventos, então temos um
+	 *             erro de modelagem e tratamento de eventos.
 	 */
 	public double[][] getAmostrasVazaoxTempo() throws EndOfTheWorldException {
 
-		int numeroDeAmostras = parametros.getNumeroEventosPorRodada() / 1000;
+		int numeroDeAmostras = parametros.getNumeroEventosPorRodada() / 10000;
 
 		setarEstadoInicialDeSimulacao();
 		agendarEventosIniciais();
 
+		Estimador estimadorVazao = new Estimador();
+
 		RxTCP rx = this.rede.getReceptores()[0];
 		double[][] dados = new double[2][numeroDeAmostras];
 
-		long byteEsperadoFimUltimaAmostra = 0;
-		double tempoFimUltimaAmostra = 0.0;
+		dados[0][1] = 0.0;
+		dados[1][0] = 0.0;
 
-		int i = 0;
-		while (i < numeroDeAmostras) {
+		for (int i = 1; i < numeroDeAmostras; i++) {
 
 			for (int j = 0; j < 1000; j++) {
 				tratarProximoEvento();
@@ -602,15 +653,13 @@ public class Simulador {
 				throw new EndOfTheWorldException();
 			}
 
-			double vazaoLocal = ((rx.getProximoByteEsperado() - byteEsperadoFimUltimaAmostra) * 8)
-					/ ((tempoAtualSimulado - tempoFimUltimaAmostra) * 1E-3);
+			double vazaoLocal = ((rx.getProximoByteEsperado()) * 8)
+					/ ((tempoAtualSimulado) * 1E-3);
+
+			estimadorVazao.coletarAmostra(vazaoLocal);
 
 			dados[0][i] = tempoAtualSimulado;
-			dados[1][i] = vazaoLocal;
-
-			byteEsperadoFimUltimaAmostra = rx.getProximoByteEsperado();
-			tempoFimUltimaAmostra = tempoAtualSimulado;
-
+			dados[1][i] = estimadorVazao.getMedia();
 		}
 
 		return dados;
