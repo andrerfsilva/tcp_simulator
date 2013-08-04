@@ -306,18 +306,9 @@ public class Simulador {
 		 * Se o TxTCP não estiver enviando no momento do time-out, então podemos
 		 * agendar o próximo envio, pois o TxTCP começará enviar imediatamente.
 		 */
-		if (!tx.prontoParaTransmitir()) {
+		if (!tx.isTransmitindo()) {
 			tx.reagirTimeOut();
-			double tempoTransmissao = (Parametros.mss * 8)
-					/ (parametros.getCs() * 1E-3);
-			double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
-					: parametros.getTP2());
-
-			EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
-					tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
-					tx.enviarPacote(tempoAtualSimulado));
-
-			filaEventos.add(proximaChegadaTCP);
+			this.agendarProximoEnvioTxTCP(tx);
 		} else {
 			tx.reagirTimeOut();
 		}
@@ -335,14 +326,11 @@ public class Simulador {
 		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
 
-		boolean prontoParaTransmitirAntesDoSACK = tx.prontoParaTransmitir();
-
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
 		boolean prontoParaTransmitirDepoisDoSACK = tx.prontoParaTransmitir();
 
-		if (!prontoParaTransmitirAntesDoSACK
-				&& prontoParaTransmitirDepoisDoSACK) {
+		if (!tx.isTransmitindo() && prontoParaTransmitirDepoisDoSACK) {
 
 			agendarProximoEnvioTxTCP(tx);
 		}
@@ -392,8 +380,9 @@ public class Simulador {
 		 * do próximo pacote TCP.
 		 */
 		if (tx.prontoParaTransmitir()) {
-
 			agendarProximoEnvioTxTCP(tx);
+		} else {
+			tx.setTransmitindo(false);
 		}
 	}
 
@@ -405,6 +394,8 @@ public class Simulador {
 	private void agendarProximoEnvioTxTCP(TxTCP tx)
 			throws TxTCPNotReadyToSendException {
 		Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
+
+		tx.setTransmitindo(true);
 
 		/* Tempo de transmissão (em milisegundos) */
 		double tempoTransmissao = (Parametros.mss * 8)

@@ -11,6 +11,12 @@ import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 public class TxTCP {
 
 	/**
+	 * Indica se o TxTCP está transmitindo algum pacote no momento
+	 * 
+	 */
+	private boolean transmitindo;
+
+	/**
 	 * Grupo de conexões. Pode ser 1 ou 2.
 	 */
 	private int grupo;
@@ -92,6 +98,7 @@ public class TxTCP {
 
 	public TxTCP(int numeroConexao) {
 		this.numeroConexao = numeroConexao;
+		this.transmitindo = false;
 
 		cwnd = Parametros.mss;
 		threshold = 65535;
@@ -199,11 +206,11 @@ public class TxTCP {
 				 * mais antigo sem ACK normalmente.
 				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
-				
-				if(pacoteMaisAntigoSemACK > proximoPacoteAEnviar){
+
+				if (pacoteMaisAntigoSemACK > proximoPacoteAEnviar) {
 					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 				}
-				
+
 				/*
 				 * Atualiza estimativa do RTO.
 				 */
@@ -223,11 +230,11 @@ public class TxTCP {
 				 * Atualiza ponteiro para o pacote mais antigo sem SACK.
 				 */
 				pacoteMaisAntigoSemACK = sack.getProximoByteEsperado();
-				
-				if(pacoteMaisAntigoSemACK > proximoPacoteAEnviar){
+
+				if (pacoteMaisAntigoSemACK > proximoPacoteAEnviar) {
 					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 				}
-				
+
 				/*
 				 * Atualiza estimativa de RTO.
 				 */
@@ -432,6 +439,14 @@ public class TxTCP {
 	 */
 	public int getNumeroConexao() {
 		return numeroConexao;
+	}
+
+	public boolean isTransmitindo() {
+		return transmitindo;
+	}
+
+	public void setTransmitindo(boolean transmitindo) {
+		this.transmitindo = transmitindo;
 	}
 
 }
