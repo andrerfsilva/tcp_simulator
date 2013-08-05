@@ -137,6 +137,10 @@ public class Simulador {
 			/* Estimativa do fim da fase transiente. */
 			while (tempoAtualSimulado < estimativaFimFaseTransiente) {
 				tratarProximoEvento();
+				
+				if (filaEventos.size() == 0) {
+					throw new EndOfTheWorldException();
+				}
 			}
 
 			double tempoFimFaseTransiente = tempoAtualSimulado;
@@ -154,6 +158,10 @@ public class Simulador {
 
 			for (int i = 0; i < numeroEventosPorRodada; i++) {
 				tratarProximoEvento();
+				
+				if (filaEventos.size() == 0) {
+					throw new EndOfTheWorldException();
+				}
 			}
 
 			/*
@@ -215,10 +223,6 @@ public class Simulador {
 
 		tempoAtualSimulado = e.getTempoDeOcorrencia();
 		tratarEvento(e);
-
-		if (filaEventos.size() == 0) {
-			throw new EndOfTheWorldException();
-		}
 	}
 
 	/**
@@ -258,7 +262,7 @@ public class Simulador {
 			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms.
 			 */
-			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
 
 			/*
 			 * Cria o evento e insere na fila de eventos.
@@ -682,7 +686,7 @@ public class Simulador {
 					+ i
 					+ ":\t"
 					+ simulador.estimadoresDeVazaoTCP[i].getMedia()
-					+ "±"
+					+ " ± "
 					+ simulador.estimadoresDeVazaoTCP[i]
 							.getDistanciaICMedia(0.9));
 		}
@@ -690,16 +694,28 @@ public class Simulador {
 		System.out.println("Rodadas = "
 				+ simulador.estimadoresDeVazaoTCP[0].getNumeroAmostras());
 
-		System.out.println("VAZÃO MÉDIA GLOBAL:");
-		Estimador estimadorVazaoMediaGlobal = new Estimador();
-		for (int i = 0; i < simulador.estimadoresDeVazaoTCP.length; i++) {
-			estimadorVazaoMediaGlobal
+		System.out.println("VAZÃO MÉDIA GRUPO 1:");
+		Estimador estimadorVazaoMediaGrupo1 = new Estimador();
+		int i = 0;
+		while (i < simulador.parametros.getEstacoesGrupo1()) {
+			estimadorVazaoMediaGrupo1
 					.coletarAmostra(simulador.estimadoresDeVazaoTCP[i]
 							.getMedia());
+			i++;
 		}
-		System.out.println("\t\t" + estimadorVazaoMediaGlobal.getMedia() + "±"
-				+ estimadorVazaoMediaGlobal.getDistanciaICMedia(0.9));
+		System.out.println("\t\t" + estimadorVazaoMediaGrupo1.getMedia() + "±"
+				+ estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9));
 
+		System.out.println("VAZÃO MÉDIA GRUPO 2:");
+		Estimador estimadorVazaoMediaGrupo2 = new Estimador();
+		while (i < simulador.rede.getTransmissores().length) {
+			estimadorVazaoMediaGrupo2
+					.coletarAmostra(simulador.estimadoresDeVazaoTCP[i]
+							.getMedia());
+			i++;
+		}
+		System.out.println("\t\t" + estimadorVazaoMediaGrupo2.getMedia() + "±"
+				+ estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9));
 	}
 
 	public TxTCP[] getTransmissores() {
