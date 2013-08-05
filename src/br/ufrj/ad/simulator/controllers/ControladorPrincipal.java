@@ -39,7 +39,7 @@ public class ControladorPrincipal implements ActionListener {
 			} else if ("ConfigurarParametros".equals(e.getActionCommand())) {
 				new ControladorParametros();
 			} else if ("IniciarSimulacao".equals(e.getActionCommand())) {
-				// TODO: Fazer isso logo!
+				new ControladorResultadoSimulacao();
 			} else if ("GerarGrafico".equals(e.getActionCommand())) {
 				new ControladorGraficoCongestionWindow();
 			} else if ("GerarGraficoVazaoMedia".equals(e.getActionCommand())) {
