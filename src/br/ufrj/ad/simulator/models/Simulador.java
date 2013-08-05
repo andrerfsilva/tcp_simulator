@@ -715,7 +715,7 @@ public class Simulador {
 			i++;
 		}
 		System.out.println("\t\t" + estimadorVazaoMediaGrupo2.getMedia() + "±"
-				+ estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9));
+				+ estimadorVazaoMediaGrupo2.getDistanciaICMedia(0.9));
 	}
 
 	public TxTCP[] getTransmissores() {
