@@ -1,6 +1,7 @@
 package br.ufrj.ad.simulador.testes;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,62 @@ public class TesteRede {
 		rede = new Rede(parametros);
 
 		assertEquals(22, rede.getTransmissores().length);
+	}
+
+	@Test
+	public void testInicializacaoTx3() {
+
+		parametros.setProperty("EstacoesGrupo1", "1");
+		parametros.setProperty("EstacoesGrupo2", "0");
+		parametros.setProperty("TP1", "100");
+		parametros.setProperty("TPACK1", "100");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertEquals(400, rede.getTransmissores()[0].getRTT(), 0);
+	}
+
+	@Test
+	public void testInicializacaoTx4() {
+
+		parametros.setProperty("EstacoesGrupo1", "0");
+		parametros.setProperty("EstacoesGrupo2", "1");
+		parametros.setProperty("TP2", "50");
+		parametros.setProperty("TPACK2", "50");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertEquals(200, rede.getTransmissores()[0].getRTT(), 0);
+	}
+
+	@Test
+	public void testInicializacaoTx5() {
+
+		parametros.setProperty("EstacoesGrupo1", "1");
+		parametros.setProperty("EstacoesGrupo2", "0");
+		parametros.setProperty("TP1", "100");
+		parametros.setProperty("TPACK1", "100");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertEquals(0, rede.getTransmissores()[0].getDesvioMedioRTT(), 0);
+	}
+
+	@Test
+	public void testInicializacaoTx6() {
+
+		parametros.setProperty("EstacoesGrupo1", "0");
+		parametros.setProperty("EstacoesGrupo2", "1");
+		parametros.setProperty("TP1", "50");
+		parametros.setProperty("TPACK1", "50");
+		parametros.setProperty("DisciplinaRoteador", "FIFO");
+
+		rede = new Rede(parametros);
+
+		assertEquals(0, rede.getTransmissores()[0].getDesvioMedioRTT(), 0);
 	}
 
 	@Test

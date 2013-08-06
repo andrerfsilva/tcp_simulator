@@ -36,12 +36,16 @@ public class Rede {
 		while (i < numTxGrupo1) {
 			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(1);
+			transmissores[i].setRTT(2 * (parametros.getTP1() + parametros
+					.getTPACK1()));
 			receptores[i] = new RxTCP();
 			i++;
 		}
 		while (i < numTxGrupo1 + numTxGrupo2) {
 			transmissores[i] = new TxTCP(i);
 			transmissores[i].setGrupo(2);
+			transmissores[i].setRTT(2 * (parametros.getTP2() + parametros
+					.getTPACK2()));
 			receptores[i] = new RxTCP();
 			i++;
 		}

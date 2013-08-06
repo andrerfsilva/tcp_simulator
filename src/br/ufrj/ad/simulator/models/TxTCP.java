@@ -94,7 +94,7 @@ public class TxTCP {
 	/**
 	 * Valor estimado do desvio médio do RTT (em milisegundos²).
 	 */
-	private double desvioMedio;
+	private double desvioMedioRTT;
 
 	public TxTCP(int numeroConexao) {
 		this.numeroConexao = numeroConexao;
@@ -112,9 +112,7 @@ public class TxTCP {
 		isFastRetransmit = false;
 		retransmitwnd = 1500;
 
-		// TODO: ESTIMAR VALOR INICIAL DO RTO!!!
-		rtt = 100;
-		desvioMedio = 1;
+		desvioMedioRTT = 0;
 	}
 
 	/**
@@ -275,7 +273,7 @@ public class TxTCP {
 
 		double m = tempoDeRecebimento - tempoDeEnvioPacoteOriginal;
 		double y = m - rtt;
-		desvioMedio = desvioMedio + 0.25 * (Math.abs(y) - desvioMedio);
+		desvioMedioRTT = desvioMedioRTT + 0.25 * (Math.abs(y) - desvioMedioRTT);
 		rtt = rtt + 0.125 * y;
 
 	}
@@ -418,7 +416,7 @@ public class TxTCP {
 	 * @return estimativa do RTO
 	 */
 	public double getRTO() {
-		return rtt + 4 * desvioMedio;
+		return rtt + 4 * desvioMedioRTT;
 	}
 
 	/**
@@ -447,6 +445,18 @@ public class TxTCP {
 
 	public void setTransmitindo(boolean transmitindo) {
 		this.transmitindo = transmitindo;
+	}
+
+	public double getRTT() {
+		return rtt;
+	}
+
+	public void setRTT(double rtt) {
+		this.rtt = rtt;
+	}
+
+	public double getDesvioMedioRTT() {
+		return desvioMedioRTT;
 	}
 
 }
