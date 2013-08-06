@@ -489,10 +489,10 @@ public class Simulador {
 			Evento proximoSACK;
 			if (rede.getTransmissores()[sack.getDestino()].getGrupo() == 1) {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ parametros.getTempoPropagacaoRetornoACKGrupo1(), sack);
+						+ parametros.getTPACK1(), sack);
 			} else {
 				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
-						+ parametros.getTempoPropagacaoRetornoACKGrupo2(), sack);
+						+ parametros.getTPACK2(), sack);
 			}
 
 			filaEventos.add(proximoSACK);

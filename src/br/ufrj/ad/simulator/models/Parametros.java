@@ -183,7 +183,7 @@ public class Parametros extends Properties {
 	 * @return tempo de propagação de retorno do ACK para o grupo 1 (em
 	 *         milisegundos)
 	 */
-	public double getTempoPropagacaoRetornoACKGrupo1() {
+	public double getTPACK1() {
 		return Double.parseDouble(getTPACK1Property());
 	}
 
@@ -193,7 +193,7 @@ public class Parametros extends Properties {
 	 * @return tempo de propagação de retorno do ACK para o grupo 2 (em
 	 *         milisegundos)
 	 */
-	public double getTempoPropagacaoRetornoACKGrupo2() {
+	public double getTPACK2() {
 		return Double.parseDouble(getTPACK2Property());
 	}
 
@@ -233,26 +233,6 @@ public class Parametros extends Properties {
 	 */
 	public double getTP2() {
 		return Double.parseDouble(getTP2Property());
-	}
-
-	/**
-	 * Tempo de propagação entre o RxTCP e o TxTCP para as conexões do grupo 1
-	 * (em milisegundos).
-	 * 
-	 * @return tempo de propagação de retorno para o grupo 1 (em milisegundos)
-	 */
-	public double getTPACK1() {
-		return Double.parseDouble(getTPACK1Property());
-	}
-
-	/**
-	 * Tempo de propagação entre o RxTCP e o TxTCP para as conexões do grupo 2
-	 * (em milisegundos).
-	 * 
-	 * @return tempo de propagação para o grupo 2 (em milisegundos)
-	 */
-	public double getTPACK2() {
-		return Double.parseDouble(getTPACK2Property());
 	}
 
 	/**
