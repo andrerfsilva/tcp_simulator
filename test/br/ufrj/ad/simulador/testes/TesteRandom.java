@@ -25,6 +25,10 @@ public class TesteRandom {
 		estimador = new Estimador();
 	}
 
+	/**
+	 * Gera 10.000 amostras de uma distribuição exponencial e confere se a média
+	 * está dentro do intervalo de confiaça com 95%.
+	 */
 	@Test
 	public void testNextExponential() {
 		for (int i = 0; i < 10000; i++) {
@@ -35,6 +39,10 @@ public class TesteRandom {
 				estimador.getDistanciaICMedia(0.95));
 	}
 
+	/**
+	 * Gera 10.000 amostras de uma distribuição geométrica e confere se a média
+	 * está dentro do intervalo de confiaça com 95%.
+	 */
 	@Test
 	public void testNextGeometric() {
 		for (int i = 0; i < 10000; i++) {
@@ -46,6 +54,10 @@ public class TesteRandom {
 
 	}
 
+	/**
+	 * Cria dois geradores com o mesmo seed e testa se eles estão gerando o
+	 * mesmo número.
+	 */
 	@Test
 	public void testSeed1() {
 
@@ -57,6 +69,10 @@ public class TesteRandom {
 
 	}
 
+	/**
+	 * Cria dois geradores com o mesmo seed e depois cada um gera 10.000
+	 * amostras. Confere se as sequências são iguais.
+	 */
 	@Test
 	public void testSeed2() {
 
@@ -76,6 +92,10 @@ public class TesteRandom {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, mas o seed do segundo é obtido pelo seed
+	 * inicial do primeiro gerador.
+	 */
 	@Test
 	public void testSeed3() {
 

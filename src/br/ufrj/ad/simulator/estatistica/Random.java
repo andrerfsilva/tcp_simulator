@@ -9,24 +9,44 @@ package br.ufrj.ad.simulator.estatistica;
  */
 public class Random extends java.util.Random {
 
+	/**
+	 * Seed inicial.
+	 */
 	private long seed;
 
+	/**
+	 * Instancia um Random com um seed aleatório.
+	 */
 	public Random() {
 		super();
+		// TODO: Pesquisar métodos melhores de inicialização de seeds.
 		java.util.Random geradorSeed = new java.util.Random();
 		this.seed = geradorSeed.nextLong();
 		this.setSeed(seed);
 	}
 
+	/**
+	 * Instancia um Random com o seed passado como parâmetro.
+	 * 
+	 * @param seed
+	 */
 	public Random(long seed) {
 		super(seed);
 		this.seed = seed;
 	}
 
+	/**
+	 * Retorna o seed inicial.
+	 * 
+	 * @return seed inicial
+	 */
 	public long getSeed() {
 		return seed;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.Random#setSeed(long)
+	 */
 	public void setSeed(long seed) {
 		super.setSeed(seed);
 		this.seed = seed;
