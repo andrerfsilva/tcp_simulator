@@ -59,12 +59,12 @@ public class JanelaResultadoSimulacaoHTML extends JFrame {
 						+ "<p>This is some sample text</p>\n"
 						+ "<p><a href=\"http://devdaily.com/blog/\">devdaily blog</a></p>\n"
 						+ "</body>\n";
-				
+
 				JanelaResultadoSimulacaoHTML janelaHTML = new JanelaResultadoSimulacaoHTML();
-				
+
 				janelaHTML.insertStringHTML(htmlString);
-				
-				janelaHTML.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+
+				janelaHTML.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 			}
 		});
