@@ -13,7 +13,8 @@ import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
-import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
+import br.ufrj.ad.simulator.eventos.EventoTxTCPRecebeSACK;
+import br.ufrj.ad.simulator.eventos.EventoTxTCPTerminaTransmissao;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.models.SACK;
@@ -54,8 +55,194 @@ public class TesteSimulador {
 		tx = simulador.getTransmissores()[0];
 	}
 
+	/* ---------------Testes do TxTCPTerminaTransmissao--------------- */
+
+	/**
+	 * Quando termina a transmissão, se a cwnd permitir, então podemos cadastrar
+	 * mais uma trasmissao. Nesse caso os eventos criados serão o próximo
+	 * TxTCPTerminaTransmissao, RoteadorRecebePacoteTxTCP e TimeOut.
+	 * 
+	 * Neste teste conferimos se o segundo evento é RoteadorRecebePacoteTxTCP.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao0() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().peek().getClass()); // RoteadoRecebePacoteTxTCP
+	}
+
+	/**
+	 * Para a mesma sistuação anterior, confere o tempo de ocorrência do evento
+	 * RoteadorRecebePacoteTxTCP.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao1() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
+
+		assertEquals(100 + 100 + 0.012, simulador.getFilaEventos().peek()
+				.getTempoDeOcorrencia(), 0); // RoteadoRecebePacoteTxTCP
+	}
+
+	/**
+	 * Para a mesma situação anterior, confere o número de eventos criados.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao2() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(3, simulador.getFilaEventos().size());
+	}
+
+	/**
+	 * Para a mesma situação anterior, confere se o terceiro evento é um
+	 * EventoTimeOut.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao3() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
+		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
+				.getClass());
+	}
+
+	/**
+	 * Para a mesma situação anterior, confere se o tempo do EventoTimeOut está
+	 * correto.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao4() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
+		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(100 + tx.getRTO(), simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+	}
+
+	/**
+	 * Para a mesma situação anterior, verifica se o primeiro evento é um
+	 * EventoTxTCPTerminaTransmissao.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao5() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoTxTCPTerminaTransmissao.class, simulador
+				.getFilaEventos().poll().getClass());
+	}
+
+	/**
+	 * Para a mesma situação anterior, confere se o tempo de ocorrência do
+	 * EventoTxTCPTerminaTransmissao está correto.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao6() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(100.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+	}
+
+	/**
+	 * Verifica se o ao iniciar uma nova transmissão de pacote TxTCP o evento de
+	 * time-out corresponte está sendo criado corretamente.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao7() {
+
+		tx.setTransmitindo(true);
+		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
+		Pacote p = ((EventoRoteadorRecebePacoteTxTCP) simulador
+				.getFilaEventos().poll()).getPacote(); // RoteadorRecebePacoteTxTCP
+
+		assertEquals(p.getEventoTimeOut(), simulador.getFilaEventos().poll());
+	}
+
+	/**
+	 * Se ao terminar a transmissão a cwnd estiver cheia, então nenhum evento
+	 * deve ser criado quando o evento TxTCPTerminaTransmissao for tratado.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao8() {
+
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100.012));
+
+		tx.enviarPacote();
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(0, simulador.getFilaEventos().size());
+
+	}
+
+	/**
+	 * Se a cwnd estiver cheia no momento que termina a transmissão, então não
+	 * será criado outro evento de transmissão, logo o TxTCP entrará no estado
+	 * de não-transmitindo.
+	 */
+	@Test
+	public void testTxTCPTerminaTransmissao9() {
+
+		simulador.getTransmissores()[0].enviarPacote();
+		tx.setTransmitindo(true);
+
+		simulador.getFilaEventos()
+				.add(new EventoTxTCPTerminaTransmissao(0.012));
+
+		simulador.tratarProximoEvento();
+
+		assertFalse(tx.isTransmitindo());
+
+	}
+
 	/* --------------Testes do RoteadorRecebePacoteTxTCP-------------- */
 
+	/**
+	 * Se um pacote chegar ao roteador e esse se encontra com o buffer vazio,
+	 * então podemos agendar o término de envio do pacote.
+	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP1() {
 
@@ -72,6 +259,10 @@ public class TesteSimulador {
 				.getFilaEventos().peek().getClass());
 	}
 
+	/**
+	 * Para a mesma condição do teste anterior, confere se o término da
+	 * transmissão no enlace de saída do roteador ocorreu no tempo certo.
+	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP2() {
 
@@ -88,6 +279,10 @@ public class TesteSimulador {
 				.getTempoDeOcorrencia(), 0);
 	}
 
+	/**
+	 * Para as mesmas condições do teste anterior, ao tratar o evento
+	 * RoteadorRecebePacoteTxtTCP, testa se somente um evento foi criado.
+	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP3() {
 
@@ -100,12 +295,15 @@ public class TesteSimulador {
 
 		simulador.tratarProximoEvento();
 
-		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
 
-		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
-				.getFilaEventos().peek().getClass());
+		assertEquals(null, simulador.getFilaEventos().peek());
 	}
 
+	/**
+	 * Se já existir pacotes no buffer do roteador no momento da chegada do novo
+	 * pacote, então não podemos criar evento de envio na saída do roteador.
+	 */
 	@Test
 	public void testRoteadorRecebePacoteTxTCP4() {
 
@@ -113,292 +311,22 @@ public class TesteSimulador {
 		p0.setByteInicialEFinal(0, 1499);
 		p0.setDestino(0);
 
+		simulador.getRoteador().receberPacote(new Pacote());
+
 		simulador.getFilaEventos().add(
 				new EventoRoteadorRecebePacoteTxTCP(100, p0));
 
 		simulador.tratarProximoEvento();
 
-		simulador.getFilaEventos().poll();
+		assertEquals(0, simulador.getFilaEventos().size());
 
-		assertEquals(100 + 100 + 0.012, simulador.getFilaEventos().peek()
-				.getTempoDeOcorrencia(), 0);
 	}
 
 	@Test
 	public void testRoteadorRecebePacoteTxTCP5() {
 
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll();
-		simulador.getFilaEventos().poll();
-
-		assertEquals(1, simulador.getFilaEventos().size());
-	}
-
-	@Test
-	public void testRoteadorRecebePacoteTxTCP6() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll();
-		simulador.getFilaEventos().poll();
-
-		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
-				.getClass());
-	}
-
-	@Test
-	public void testRoteadorRecebePacoteTxTCP7() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll();
-		simulador.getFilaEventos().poll();
-
-		assertEquals(simulador.getTransmissores()[0].getRTO() + 100, simulador
-				.getFilaEventos().poll().getTempoDeOcorrencia(), 0);
-	}
-
-	/**
-	 * Verifica se o ao iniciar uma nova transmissão de pacote TxTCP o evento de
-	 * time-out corresponte está sendo criado corretamente.
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP8() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
-		Pacote p1 = ((EventoRoteadorRecebePacoteTxTCP) simulador
-				.getFilaEventos().poll()).getPacote(); // RoteadorRecebePacoteTxTCP
-
-		assertEquals(p1.getEventoTimeOut(), simulador.getFilaEventos().poll());
-	}
-
-	/**
-	 * Verifica se irá criar um evento de RoteadorRecebePacoteTxTCP ao resgatar
-	 * o primeiro evento da fila de eventos
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP9() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getRoteador().receberPacote(new Pacote());
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
-				.getFilaEventos().poll().getClass()); // RoteadorRecebePacoteTxTCP
-
-	}
-
-	/**
-	 * Verifica se irá resgatar um evento TimeOut ao resgatar o segundo evento
-	 * da fila de eventos
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP10() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getRoteador().receberPacote(new Pacote());
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
-
-		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
-				.getClass()); // Time-Out
-	}
-
-	/**
-	 * Verifica se o evento RoteadorRecebePacoteTxTCP recebe o evento no tempo
-	 * esperado (200,012)
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP11() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getRoteador().receberPacote(new Pacote());
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(200.012, simulador.getFilaEventos().poll()
-				.getTempoDeOcorrencia(), 0); // RoteadorRecebePacoteTxTCP
-
-	}
-
-	/**
-	 * Verifica se irá resgatar um evento TimeOut ao resgatar o segundo evento
-	 * da fila de eventos no tempo correto
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP12() {
-
-		Pacote p0 = new Pacote();
-		p0.setByteInicialEFinal(0, 1499);
-		p0.setDestino(0);
-
-		simulador.getRoteador().receberPacote(new Pacote());
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll(); // RoteadorRecebePacoteTxTCP
-
-		assertEquals(100 + simulador.getTransmissores()[0].getRTO(), simulador
-				.getFilaEventos().poll().getTempoDeOcorrencia(), 0); // Time-Out
-	}
-
-	/**
-	 * Verifica se não haverá eventos na fila de eventos, que é o esperado nesse
-	 * caso, onde não o TxTCP já fica com a cwnd congestionada, e portanto não
-	 * criará evento de Time-out e como o roteador está cheio, não haverá
-	 * eventos na lista de eventos
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP13() {
-
-		simulador = new Simulador(parametros);
-
 		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-
-		simulador.getRoteador().receberPacote(new Pacote());
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(null, simulador.getFilaEventos().poll()); // null
-
-	}
-
-	/**
-	 * Verifica se irá criar o evento RoteadorTerminaEnvio no caso onde o buffer
-	 * do roteador estará vazio
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP14() {
-
-		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(EventoRoteadorTerminaEnvio.class, simulador
-				.getFilaEventos().poll().getClass()); // RoteadorTerminaEnvio
-
-	}
-
-	/**
-	 * Verifica se irá criar o evento RoteadorTerminaEnvio no caso onde o buffer
-	 * do roteador estará vazio, e verificar se o tempo é condizente com a
-	 * expectativa
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP15() {
-
-		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(101.212, simulador.getFilaEventos().poll()
-				.getTempoDeOcorrencia(), 0); // RoteadorTerminaEnvio
-
-	}
-
-	/**
-	 * Verifica se o evento após o RoteadorTerminaEnvio é nulo
-	 */
-	@Test
-	public void testRoteadorRecebePacoteTxTCP16() {
-
-		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
-
-		simulador.tratarProximoEvento();
-
-		simulador.getFilaEventos().poll();
-
-		assertEquals(null, simulador.getFilaEventos().poll()); // null
-
-	}
-
-	@Test
-	public void testRoteadorRecebePacoteTxTCP17() {
-
-		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-		tx.setTransmitindo(true);
-
-		simulador.getFilaEventos().add(
-				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
-
-		simulador.tratarProximoEvento();
-
-		assertFalse(tx.isTransmitindo());
-
-	}
-
-	@Test
-	public void testRoteadorRecebePacoteTxTCP18() {
-
-		Pacote p0 = simulador.getTransmissores()[0].enviarPacote();
-		tx.setTransmitindo(true);
+		tx.setTransmitindo(false);
 
 		simulador.getFilaEventos().add(
 				new EventoRoteadorRecebePacoteTxTCP(100.012, p0));
@@ -410,6 +338,8 @@ public class TesteSimulador {
 		assertTrue(tx.isTransmitindo());
 
 	}
+
+	/* --------------Testes do EventoRoteadorTerminaEnvio-------------- */
 
 	/* --------------Testes do EventoRoteadorTerminaEnvio-------------- */
 
@@ -490,22 +420,22 @@ public class TesteSimulador {
 	@Test
 	public void testRoteadorTerminaEnvio5() {
 
-		TxTCP tx = simulador.getTransmissores()[0];
-
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(EventoTxRecebeSACK.class, simulador.getFilaEventos()
+		assertEquals(EventoTxTCPRecebeSACK.class, simulador.getFilaEventos()
 				.poll().getClass());
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o tempo do TxTCPRecebeSACK está
+	 * correto.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio6() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
@@ -517,25 +447,30 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, testa se apenas um evento é criado.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio7() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
 
 		simulador.tratarProximoEvento();
-		simulador.getFilaEventos().poll(); // EventoTxTCPRecebeSACK
 
-		assertEquals(0, simulador.getFilaEventos().size());
+		assertEquals(1, simulador.getFilaEventos().size());
 
 	}
 
+	/**
+	 * Agora o roteador tem um pacote TCP e um pacote de tráfego de fundo.
+	 * Quando o evento de terminar envio ocorrer, o pacote TCP chegará no Rx.
+	 * 
+	 * Nesse caso, os eventos criados serão o próximo RoteadorTerminaEnvio (do
+	 * pacote de TF) e o TxTCPRecebeSACK.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio8() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getRoteador().receberPacote(new Pacote());
@@ -548,10 +483,12 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o RoteadorTerminaEnvio ocorre no
+	 * tempo correto.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio9() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getRoteador().receberPacote(new Pacote());
@@ -564,10 +501,12 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, verifica se o segundo evento é um
+	 * TxTCPRecebeSACK.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio10() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getRoteador().receberPacote(new Pacote());
@@ -577,15 +516,17 @@ public class TesteSimulador {
 
 		simulador.getFilaEventos().poll(); // RoteadorTerminaEnvio
 
-		assertEquals(EventoTxRecebeSACK.class, simulador.getFilaEventos()
+		assertEquals(EventoTxTCPRecebeSACK.class, simulador.getFilaEventos()
 				.poll().getClass());
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o segundo evento ocorre no tempo
+	 * correto.
+	 */
 	@Test
 	public void testRoteadorTerminaEnvio11() {
-
-		TxTCP tx = simulador.getTransmissores()[0];
 
 		simulador.getRoteador().receberPacote(tx.enviarPacote());
 		simulador.getRoteador().receberPacote(new Pacote());
@@ -600,8 +541,30 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se são criados apenas dois eventos.
+	 */
+	@Test
+	public void testRoteadorTerminaEnvio12() {
+
+		simulador.getRoteador().receberPacote(tx.enviarPacote());
+		simulador.getRoteador().receberPacote(new Pacote());
+		simulador.getFilaEventos().add(new EventoRoteadorTerminaEnvio(100));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(2, simulador.getFilaEventos().size());
+
+	}
+
 	/* -----------Testes do EventoRoteadorRecebeTafegoFundo----------- */
 
+	/**
+	 * Quando um tráfego de fundo chega no roteador vazio, então são criados 2
+	 * eventos: RoteadorRecebeTrafegoDeFundo e RoteadorTerminaEnvio. Como a
+	 * próxima chegada do tráfego de fundo é uma v.a., não sabemos qual dos dois
+	 * eventos acontecerá primeiro.
+	 */
 	@Test
 	public void testEventoRoteadorRecebeTafegoFundo1() {
 
@@ -617,6 +580,10 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, captura o evento RoteadorTerminaEnvio e
+	 * confere se ele ocorre no tempo esperado.
+	 */
 	@Test
 	public void testEventoRoteadorRecebeTafegoFundo2() {
 
@@ -630,7 +597,6 @@ public class TesteSimulador {
 		if (e instanceof EventoRoteadorRecebeTrafegoDeFundo) {
 			assertEquals(50 + 1.2, simulador.getFilaEventos().poll()
 					.getTempoDeOcorrencia(), 0);
-
 		} else if (e instanceof EventoRoteadorTerminaEnvio) {
 			assertEquals(50 + 1.2, e.getTempoDeOcorrencia(), 0);
 		} else {
@@ -638,8 +604,27 @@ public class TesteSimulador {
 		}
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se foram criados apenas dois eventos.
+	 */
 	@Test
 	public void testEventoRoteadorRecebeTafegoFundo3() {
+
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebeTrafegoDeFundo(50));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(2, simulador.getFilaEventos().size());
+
+	}
+
+	/**
+	 * Se o tráfego de fundo chegar quando o roteador contém pacotes, então o
+	 * único evento agendado será a próxima chegada de tráfego de fundo.
+	 */
+	@Test
+	public void testEventoRoteadorRecebeTafegoFundo4() {
 
 		simulador.getRoteador().receberPacote(new Pacote());
 
@@ -653,28 +638,35 @@ public class TesteSimulador {
 
 	}
 
-	/* -----------------Testes do EventoTimeOut----------------- */
-
+	/**
+	 * Para o mesmo caso anterior, confere se foi criado apenas um evento.
+	 */
 	@Test
-	public void testEventoTimeOut1() {
+	public void testEventoRoteadorRecebeTafegoFundo5() {
 
-		simulador.getTransmissores()[0].enviarPacote();
-		simulador.getTransmissores()[0].setTransmitindo(false);
+		simulador.getRoteador().receberPacote(new Pacote());
 
-		simulador.getFilaEventos().add(new EventoTimeOut(400, 0));
+		simulador.getFilaEventos().add(
+				new EventoRoteadorRecebeTrafegoDeFundo(50));
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(2, simulador.getFilaEventos().size());
+		assertEquals(1, simulador.getFilaEventos().size());
 
 	}
 
-	@Test
-	public void testEventoTimeOut2() {
+	/* -----------------Testes do EventoTimeOut----------------- */
 
-		TxTCP tx = simulador.getTransmissores()[0];
+	/**
+	 * Se o TimeOut ocorrer quando TxTCP estiver transmitindo, então nenhum
+	 * evento será criado.
+	 */
+	@Test
+	public void testEventoTimeOut1() {
+
 		tx.enviarPacote();
 		tx.setTransmitindo(true);
+
 		simulador.getFilaEventos().add(
 				new EventoTimeOut(400, tx.getNumeroConexao()));
 
@@ -684,21 +676,51 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Se ocorrer um TimeOut quando o TxTCP não estiver transmitindo, então ele
+	 * começa a transmitir imediatamente. Podemos agendar os eventos
+	 * TxTCPTerminaTransmissao, RoteadorRecebePacote e o TimeOut do novo pacote
+	 * enviado.
+	 */
 	@Test
-	public void testEventoTimeOut3() {
+	public void testEventoTimeOut2() {
 
-		TxTCP tx = simulador.getTransmissores()[0];
 		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		simulador.getFilaEventos().add(
 				new EventoTimeOut(400, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+		assertEquals(3, simulador.getFilaEventos().size());
+
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o primeiro evento é um
+	 * TxTCPTerminaTransmissao.
+	 */
+	@Test
+	public void testEventoTimeOut3() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoTxTCPTerminaTransmissao.class, simulador
 				.getFilaEventos().poll().getClass());
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o primeiro evento ocorre no tempo
+	 * correto.
+	 */
 	@Test
 	public void testEventoTimeOut4() {
 
@@ -709,16 +731,106 @@ public class TesteSimulador {
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(400 + 100 + 0.012, simulador.getFilaEventos().poll()
+		assertEquals(400 + 0.012, simulador.getFilaEventos().poll()
 				.getTempoDeOcorrencia(), 0);
 
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o segundo evento é um
+	 * RoteadorRecebePacoteTxTCP.
+	 */
 	@Test
 	public void testEventoTimeOut5() {
 
 		tx.enviarPacote();
 		tx.setTransmitindo(false);
+
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o tempo de ocorrência do segundo
+	 * evento está correto.
+	 */
+	@Test
+	public void testEventoTimeOut6() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(400 + 100 + 0.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o terceiro evento é um TimeOut.
+	 */
+	@Test
+	public void testEventoTimeOut7() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
+				.getClass());
+
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o tempo de ocorrência do terceiro
+	 * evento está correto.
+	 */
+	@Test
+	public void testEventoTimeOut8() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		simulador.getFilaEventos().add(
+				new EventoTimeOut(400, tx.getNumeroConexao()));
+
+		simulador.tratarProximoEvento();
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(400 + tx.getRTO(), simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+
+	}
+
+	/**
+	 * Independende do estado anterior do TxTCP, depois do TimeOut ele deve
+	 * estar no estado de transmitindo.
+	 */
+	@Test
+	public void testEventoTimeOut9() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		simulador.getFilaEventos().add(
 				new EventoTimeOut(400, tx.getNumeroConexao()));
 
@@ -728,11 +840,16 @@ public class TesteSimulador {
 
 	}
 
+	/**
+	 * Independende do estado anterior do TxTCP, depois do TimeOut ele deve
+	 * estar no estado de transmitindo.
+	 */
 	@Test
-	public void testEventoTimeOut6() {
+	public void testEventoTimeOut10() {
 
 		tx.enviarPacote();
 		tx.setTransmitindo(true);
+
 		simulador.getFilaEventos().add(
 				new EventoTimeOut(400, tx.getNumeroConexao()));
 
@@ -744,118 +861,205 @@ public class TesteSimulador {
 
 	/* -----------------Testes do EventoTxTCPRecebeSACK----------------- */
 
+	/**
+	 * Se chegar um SACK quando TxTCP estiver transmitindo, então nenhum evento
+	 * será criado.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACK1() {
 
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		tx.setTransmitindo(true);
 
-		simulador.getTransmissores()[0].setTransmitindo(true);
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(null, simulador.getFilaEventos().poll());
+		assertEquals(0, simulador.getFilaEventos().size());
 	}
 
+	/**
+	 * Se o TxTCP receber um SACK quando não está transmitindo, então conferimos
+	 * se os próximos pacotes enviados são o esperado.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACK2() {
 
+		tx.setTransmitindo(false);
+
 		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
-		Pacote pEnviado = simulador.getTransmissores()[0].enviarPacote(350);
+		Pacote pEnviado = tx.enviarPacote(350);
 		Pacote pEsperado = new Pacote();
-
 		pEsperado.setByteInicialEFinal(3000, 4499);
 		pEsperado.setDestino(0);
 
 		assertEquals(pEsperado, pEnviado);
 	}
 
+	/**
+	 * Se depois do TxTCP receber um SACK enquanto não estiver transmitindo e
+	 * estiver pronto para transmitir (sua cwnd não estiver cheia), então o
+	 * TxTCP começará a transmitir imediatamente e serão agendados 3 eventos:
+	 * TxTCPTerminaTransmissao, RoteadorRecebePacoteTxTCP e TimeOut.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACK3() {
 
-		simulador.getTransmissores()[0].enviarPacote();
-		SACK sack = new SACK(0, 1500);
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
 
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
+
+		assertEquals(3, simulador.getFilaEventos().size());
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o primeiro evento é um
+	 * TxTCPTerminaTransmissao.
+	 */
+	@Test
+	public void testEventoTxTCPRecebeSACK4() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(EventoTxTCPTerminaTransmissao.class, simulador
+				.getFilaEventos().poll().getClass());
+	}
+
+	/**
+	 * Para o mesmo caso anterior, verifica se o tempo de ocorrência do primeiro
+	 * evento está correto.
+	 */
+	@Test
+	public void testEventoTxTCPRecebeSACK5() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
+
+		simulador.tratarProximoEvento();
+
+		assertEquals(350.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
+	}
+
+	/**
+	 * Para o mesmo caso anterior, confere se o segundo evento é um
+	 * RoteadorRecebePacoteTxTCP
+	 */
+	@Test
+	public void testEventoTxTCPRecebeSACK6() {
+
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
+		SACK sack = new SACK(0, 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
+
+		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll();
 
 		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
 				.getFilaEventos().poll().getClass());
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o tempo do segundo evento está
+	 * correto.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACK4() {
+	public void testEventoTxTCPRecebeSACK7() {
 
-		simulador.getTransmissores()[0].enviarPacote();
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		SACK sack = new SACK(0, 1500);
-
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
-		assertEquals(2, simulador.getFilaEventos().size());
+		simulador.getFilaEventos().poll();
+
+		assertEquals(350 + 100 + 0.012, simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
 	}
 
+	/**
+	 * Para o mesmo caso anterior, verifica se o terceiro evento é um TimeOut.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACK5() {
+	public void testEventoTxTCPRecebeSACK8() {
 
-		simulador.getTransmissores()[0].enviarPacote();
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		SACK sack = new SACK(0, 1500);
-
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
+		simulador.getFilaEventos().poll();
 		simulador.getFilaEventos().poll();
 
 		assertEquals(EventoTimeOut.class, simulador.getFilaEventos().poll()
 				.getClass());
 	}
 
+	/**
+	 * Para o mesmo caso anterior, verifica se o tempo de ocorrência do terceiro
+	 * evento está correto.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACK6() {
+	public void testEventoTxTCPRecebeSACK9() {
 
-		simulador.getTransmissores()[0].enviarPacote();
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		SACK sack = new SACK(0, 1500);
-
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(450.012, simulador.getFilaEventos().poll()
-				.getTempoDeOcorrencia(), 0);
-	}
-
-	@Test
-	public void testEventoTxTCPRecebeSACK7() {
-
-		simulador.getTransmissores()[0].enviarPacote();
-		SACK sack = new SACK(0, 1500);
-
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
 		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
 
-		assertEquals(350 + simulador.getTransmissores()[0].getRTO(), simulador
-				.getFilaEventos().poll().getTempoDeOcorrencia(), 0);
+		assertEquals(350 + tx.getRTO(), simulador.getFilaEventos().poll()
+				.getTempoDeOcorrencia(), 0);
 	}
 
+	/**
+	 * Para o mesmo caso anterior, confere se o pacote do evento
+	 * RoteadorRecebePacoteTxTCP está correto.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACK8() {
+	public void testEventoTxTCPRecebeSACK10() {
 
-		simulador.getTransmissores()[0].enviarPacote();
+		tx.enviarPacote();
+		tx.setTransmitindo(false);
+
 		SACK sack = new SACK(0, 1500);
 
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
+
+		simulador.getFilaEventos().poll(); // TxTCPTerminaTransmissao
 
 		Pacote pEsperado = new Pacote();
 
@@ -866,17 +1070,21 @@ public class TesteSimulador {
 				.getFilaEventos().poll()).getPacote());
 	}
 
+	/**
+	 * Verifica se o próximo pacote a enviar é atualizado corretamente em função
+	 * de um SACK não duplicado.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACK9() {
+	public void testEventoTxTCPRecebeSACK11() {
 
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
+		SACK sack = new SACK(tx.getNumeroConexao(), 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
-		simulador.getTransmissores()[0].setTransmitindo(true);
+		tx.setTransmitindo(true);
 
 		simulador.tratarProximoEvento();
 
-		Pacote pEnviado = simulador.getTransmissores()[0].enviarPacote(350);
+		Pacote pEnviado = tx.enviarPacote(350);
 		Pacote pEsperado = new Pacote();
 
 		pEsperado.setByteInicialEFinal(1500, 2999);
@@ -885,73 +1093,60 @@ public class TesteSimulador {
 		assertEquals(pEsperado, pEnviado);
 	}
 
-	@Test
-	public void testEventoTxTCPRecebeSACK10() {
-
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
-
-		simulador.getTransmissores()[0].setTransmitindo(true);
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(0, simulador.getFilaEventos().size());
-
-	}
-
-	@Test
-	public void testEventoTxTCPRecebeSACK11() {
-
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
-
-		simulador.getTransmissores()[0].setTransmitindo(true);
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(0, simulador.getFilaEventos().size());
-	}
-
+	/**
+	 * Em Slow Start, independente do estado anterior do TxTCP, ele estará
+	 * transmitindo depois de receber um SACK.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACK12() {
 
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
-
 		tx.setTransmitindo(true);
+
+		SACK sack = new SACK(tx.getNumeroConexao(), 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
 		assertTrue(tx.isTransmitindo());
 	}
 
+	/**
+	 * Em Slow Start, independente do estado anterior do TxTCP, ele estará
+	 * transmitindo depois de receber um SACK.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACK13() {
 
-		SACK sack = new SACK(0, 1500);
-		simulador.getFilaEventos().add(new EventoTxRecebeSACK(350, sack));
-
 		tx.setTransmitindo(false);
+
+		SACK sack = new SACK(tx.getNumeroConexao(), 1500);
+		simulador.getFilaEventos().add(new EventoTxTCPRecebeSACK(350, sack));
 
 		simulador.tratarProximoEvento();
 
 		assertTrue(tx.isTransmitindo());
 	}
 
-	/* -----------Testes Especiais----------- */
+	/* ----------------------Testes Legados-------------------- */
+
+	/**
+	 * Mostrar que o comportamento esperado está correto ao receber um SACK no
+	 * meio da transmissão. Atualmente esse problema foi resolvido com o estado
+	 * "transmitindo" do TxTCP, mas esse teste foi importante para revelar o
+	 * erro.
+	 */
 	@Test
-	public void testEventoTxTCPRecebeSACKDuranteTransmissao() {
+	public void testEventoTxTCPRecebeSACKDuranteTransmissao1() {
 
-		Evento roteadorRecebeTxTCP = new EventoRoteadorRecebePacoteTxTCP(
-				100.012, simulador.getTransmissores()[0].enviarPacote(0));
+		Evento txTCPTerminaTransmissao = new EventoTxTCPTerminaTransmissao(
+				100.012);
 
-		simulador.getTransmissores()[0].setTransmitindo(true);
+		tx.setTransmitindo(true);
 
-		simulador.getFilaEventos().add(roteadorRecebeTxTCP);
+		simulador.getFilaEventos().add(txTCPTerminaTransmissao);
 
-		SACK sack = new SACK(0, 1500);
-
-		Evento txRecebeSACK = new EventoTxRecebeSACK(50, sack);
+		SACK sack = new SACK(tx.getNumeroConexao(), 1500);
+		Evento txRecebeSACK = new EventoTxTCPRecebeSACK(100.006, sack);
 
 		simulador.getFilaEventos().add(txRecebeSACK);
 
@@ -960,48 +1155,30 @@ public class TesteSimulador {
 		assertEquals(1, simulador.getFilaEventos().size());
 	}
 
+	/**
+	 * Mostrar que o comportamento esperado está correto ao receber um SACK no
+	 * meio da transmissão. Atualmente esse problema foi resolvido com o estado
+	 * "transmitindo" do TxTCP, mas esse teste foi importante para revelar o
+	 * erro.
+	 */
 	@Test
 	public void testEventoTxTCPRecebeSACKDuranteTransmissao2() {
 
-		Evento roteadorRecebeTxTCP = new EventoRoteadorRecebePacoteTxTCP(
-				100.012, simulador.getTransmissores()[0].enviarPacote(0));
+		Evento txTCPTerminaTransmissao = new EventoTxTCPTerminaTransmissao(
+				100.012);
 
-		simulador.getTransmissores()[0].setTransmitindo(true);
+		tx.setTransmitindo(true);
 
-		simulador.getFilaEventos().add(roteadorRecebeTxTCP);
+		simulador.getFilaEventos().add(txTCPTerminaTransmissao);
 
-		SACK sack = new SACK(0, 1500);
-
-		Evento txRecebeSACK = new EventoTxRecebeSACK(50, sack);
-
-		simulador.getFilaEventos().add(txRecebeSACK);
-
-		simulador.tratarProximoEvento();
-
-		assertEquals(roteadorRecebeTxTCP, simulador.getFilaEventos().poll());
-	}
-
-	@Test
-	public void testEventoTxTCPRecebeSACKDuranteTransmissao3() {
-
-		Evento roteadorRecebeTxTCP = new EventoRoteadorRecebePacoteTxTCP(
-				100.012, simulador.getTransmissores()[0].enviarPacote(0));
-
-		simulador.getTransmissores()[0].setTransmitindo(true);
-
-		simulador.getFilaEventos().add(roteadorRecebeTxTCP);
-
-		SACK sack = new SACK(0, 1500);
-
-		Evento txRecebeSACK = new EventoTxRecebeSACK(50, sack);
+		SACK sack = new SACK(tx.getNumeroConexao(), 1500);
+		Evento txRecebeSACK = new EventoTxTCPRecebeSACK(100.006, sack);
 
 		simulador.getFilaEventos().add(txRecebeSACK);
 
 		simulador.tratarProximoEvento();
 
-		simulador.getFilaEventos().poll();
-
-		assertEquals(null, simulador.getFilaEventos().poll());
+		assertEquals(txTCPTerminaTransmissao, simulador.getFilaEventos().poll());
 	}
 
 }

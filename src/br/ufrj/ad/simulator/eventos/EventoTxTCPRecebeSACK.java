@@ -8,11 +8,11 @@ import br.ufrj.ad.simulator.models.SACK;
  * @author André Ramos, Wellignton Mascena, featuring Vitor Maia
  * 
  */
-public class EventoTxRecebeSACK extends Evento {
+public class EventoTxTCPRecebeSACK extends Evento {
 
 	private SACK sack;
 
-	public EventoTxRecebeSACK(double tempoDeOcorrencia, SACK sack) {
+	public EventoTxTCPRecebeSACK(double tempoDeOcorrencia, SACK sack) {
 		super(tempoDeOcorrencia);
 
 		this.sack = sack;

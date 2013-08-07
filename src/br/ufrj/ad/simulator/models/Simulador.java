@@ -10,7 +10,7 @@ import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
-import br.ufrj.ad.simulator.eventos.EventoTxRecebeSACK;
+import br.ufrj.ad.simulator.eventos.EventoTxTCPRecebeSACK;
 import br.ufrj.ad.simulator.exceptions.EventOutOfOrderException;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 
@@ -327,7 +327,7 @@ public class Simulador {
 			tratarEventoRoteadorTerminaEnvio();
 		} else if (e instanceof EventoRoteadorRecebePacoteTxTCP) {
 			tratarEventoRoteadorRecebePacoteTxTCP(e);
-		} else if (e instanceof EventoTxRecebeSACK) {
+		} else if (e instanceof EventoTxTCPRecebeSACK) {
 			tratarEventoTxRecebeSACK(e);
 		} else if (e instanceof EventoTimeOut) {
 			tratarEventoTimeOut(e);
@@ -369,7 +369,7 @@ public class Simulador {
 	 */
 	private void tratarEventoTxRecebeSACK(Evento e) {
 
-		EventoTxRecebeSACK esack = (EventoTxRecebeSACK) e;
+		EventoTxTCPRecebeSACK esack = (EventoTxTCPRecebeSACK) e;
 		TxTCP tx = rede.getTransmissores()[esack.getSACK().getDestino()];
 
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
@@ -488,10 +488,10 @@ public class Simulador {
 
 			Evento proximoSACK;
 			if (rede.getTransmissores()[sack.getDestino()].getGrupo() == 1) {
-				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
+				proximoSACK = new EventoTxTCPRecebeSACK(tempoAtualSimulado
 						+ parametros.getTPACK1(), sack);
 			} else {
-				proximoSACK = new EventoTxRecebeSACK(tempoAtualSimulado
+				proximoSACK = new EventoTxTCPRecebeSACK(tempoAtualSimulado
 						+ parametros.getTPACK2(), sack);
 			}
 
