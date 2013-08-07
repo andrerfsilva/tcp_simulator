@@ -1258,4 +1258,104 @@ public class TesteSimulador {
 				.equals(EventoTimeOut.class));
 
 	}
+
+	@Test
+	public void testCancelamentoTimeOut4() {
+
+		tx.receberSACK(new SACK(0, 1500));
+		tx.setTransmitindo(false);
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.018, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaEnvio
+		simulador.tratarProximoEvento(); // TxTCPTerminaEnvio
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		assertEquals(3, simulador.getFilaEventos().size());
+
+	}
+
+	@Test
+	public void testCancelamentoTimeOut5() {
+
+		tx.receberSACK(new SACK(0, 1500));
+		tx.setTransmitindo(false);
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.018, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		assertEquals(EventoTxTCPTerminaTransmissao.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	@Test
+	public void testCancelamentoTimeOut6() {
+
+		tx.receberSACK(new SACK(0, 1500));
+		tx.setTransmitindo(false);
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.018, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		simulador.getFilaEventos().poll();
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
+
+	@Test
+	public void testCancelamentoTimeOut7() {
+
+		tx.receberSACK(new SACK(0, 1500));
+		tx.setTransmitindo(false);
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.018, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPTerminaTransmissao
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		simulador.getFilaEventos().poll();
+		simulador.getFilaEventos().poll();
+
+		assertEquals(EventoRoteadorRecebePacoteTxTCP.class, simulador
+				.getFilaEventos().poll().getClass());
+
+	}
 }
