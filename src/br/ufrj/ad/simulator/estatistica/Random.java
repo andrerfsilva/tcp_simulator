@@ -27,6 +27,11 @@ public class Random extends java.util.Random {
 		return seed;
 	}
 
+	public void setSeed(long seed) {
+		super.setSeed(seed);
+		this.seed = seed;
+	}
+
 	/**
 	 * Gera um número exponencialmente distribuído com taxa = {@code rate}. Isso
 	 * é feito através da inversa da c.d.f. da distribuição exponencial.
