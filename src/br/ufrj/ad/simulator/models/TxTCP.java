@@ -1,14 +1,21 @@
 package br.ufrj.ad.simulator.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sun.jmx.remote.util.OrderClassLoaders;
+
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 
 /**
  * Representa o lado transmissor de uma sessão TCP.
  * 
- * @author André Ramos
+ * @author André Ramos, Felipe Teixeira
  * 
  */
 public class TxTCP {
+
+	private List<Pacote> pacotesSemACK;
 
 	/**
 	 * Indica se o TxTCP está transmitindo algum pacote no momento
@@ -113,6 +120,12 @@ public class TxTCP {
 		retransmitwnd = 1500;
 
 		desvioMedioRTT = 0;
+
+		pacotesSemACK = new ArrayList<Pacote>();
+	}
+
+	public List<Pacote> getPacotesSemACK() {
+		return pacotesSemACK;
 	}
 
 	/**

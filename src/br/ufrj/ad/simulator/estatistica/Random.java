@@ -19,10 +19,6 @@ public class Random extends java.util.Random {
 	 */
 	public Random() {
 		super();
-		// TODO: Pesquisar métodos melhores de inicialização de seeds.
-		java.util.Random geradorSeed = new java.util.Random();
-		this.seed = geradorSeed.nextLong();
-		this.setSeed(seed);
 	}
 
 	/**

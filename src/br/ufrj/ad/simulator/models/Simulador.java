@@ -136,14 +136,15 @@ public class Simulador {
 
 			double estimativaFimFaseTransiente = getEstimativaFimFaseTransiente();
 
+			// TODO
 			/* Estimativa do fim da fase transiente. */
-			while (tempoAtualSimulado < estimativaFimFaseTransiente) {
-				tratarProximoEvento();
-
-				if (filaEventos.size() == 0) {
-					throw new EndOfTheWorldException();
-				}
-			}
+			/*
+			 * while (tempoAtualSimulado < estimativaFimFaseTransiente) {
+			 * tratarProximoEvento();
+			 * 
+			 * if (filaEventos.size() == 0) { throw new
+			 * EndOfTheWorldException(); } }
+			 */
 
 			double tempoFimFaseTransiente = tempoAtualSimulado;
 			long[] proximoByteEsperadoFimFaseTransiente = new long[rede
@@ -264,16 +265,27 @@ public class Simulador {
 			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms.
 			 */
-			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
 
 			/*
-			 * Cria o evento e insere na fila de eventos.
+			 * Cria os eventos e insere na fila de eventos.
 			 */
-			Evento primeiraChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
-					inicioAssincrono + tempoPropagacao + tempoTransmissao,
-					rede.getTransmissores()[i].enviarPacote(inicioAssincrono));
 
+			Evento primeiraTransmissao = new EventoTxTCPTerminaTransmissao(
+					inicioAssincrono + tempoTransmissao, i);
+			filaEventos.add(primeiraTransmissao);
+
+			Pacote p = rede.getTransmissores()[i]
+					.enviarPacote(inicioAssincrono);
+			Evento primeiraChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+					inicioAssincrono + tempoPropagacao + tempoTransmissao, p);
 			filaEventos.add(primeiraChegadaTCP);
+
+			EventoTimeOut primeiroTimeOut = new EventoTimeOut(inicioAssincrono
+					+ rede.getTransmissores()[i].getRTO(), i);
+
+			p.setEventoTimeOut(primeiroTimeOut);
+			filaEventos.add(primeiroTimeOut);
 		}
 	}
 
@@ -406,8 +418,19 @@ public class Simulador {
 		}
 
 		/* Cancela evento de time-out do pacote correspondente. */
-		filaEventos.remove(esack.getSACK().getEventoTimeOut());
 
+		SACK sack = esack.getSACK();
+		filaEventos.remove(sack.getEventoTimeOut());
+
+		Pacote[] pacotes = new Pacote[tx.getPacotesSemACK().size()];
+		tx.getPacotesSemACK().toArray(pacotes);
+
+		for (Pacote pacote : pacotes) {
+			if (pacote.getByteFinal() < sack.getProximoByteEsperado()) {
+				filaEventos.remove(pacote.getEventoTimeOut());
+				tx.getPacotesSemACK().remove(pacote);
+			}
+		}
 	}
 
 	/**
@@ -493,8 +516,20 @@ public class Simulador {
 		 */
 		EventoTimeOut eTimeOut = new EventoTimeOut(tempoAtualSimulado
 				+ tx.getRTO(), tx.getNumeroConexao());
-		filaEventos.add(eTimeOut);
 		proximoPacoteAEnviar.setEventoTimeOut(eTimeOut);
+		filaEventos.add(eTimeOut);
+
+		if (tx.getPacotesSemACK().contains(proximoPacoteAEnviar)) {
+
+			int index = tx.getPacotesSemACK().indexOf(proximoPacoteAEnviar);
+
+			Pacote pAntigo = tx.getPacotesSemACK().get(index);
+			filaEventos.remove(pAntigo.getEventoTimeOut());
+
+			tx.getPacotesSemACK().remove(index);
+		}
+
+		tx.getPacotesSemACK().add(proximoPacoteAEnviar);
 	}
 
 	/**

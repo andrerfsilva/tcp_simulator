@@ -1191,4 +1191,71 @@ public class TesteSimulador {
 		assertEquals(txTCPTerminaTransmissao, simulador.getFilaEventos().poll());
 	}
 
+	/* ----------------------Testes Especiais-------------------- */
+
+	/**
+	 * Verificar um ACK cancela os timeouts dos pacotes de número de sequência
+	 * inferior ao ACK. Por exemplo, um ACK 6000 deve cancelar os eventos de
+	 * timeout dos pacotes <0, 1499>, <1500, 2999>, <3000, 4499> e <4500, 5999>.
+	 */
+	@Test
+	public void testCancelamentoTimeOut1() {
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.006, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaEnvio
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		assertEquals(2, simulador.getFilaEventos().size());
+
+	}
+
+	@Test
+	public void testCancelamentoTimeOut2() {
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.006, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaEnvio
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		assertFalse(simulador.getFilaEventos().peek().getClass()
+				.equals(EventoTimeOut.class));
+
+	}
+
+	@Test
+	public void testCancelamentoTimeOut3() {
+
+		EventoTxTCPTerminaTransmissao etx = new EventoTxTCPTerminaTransmissao(
+				50, tx.getNumeroConexao());
+
+		SACK sack4 = new SACK(tx.getNumeroConexao(), 4 * Parametros.mss);
+		EventoTxTCPRecebeSACK esack = new EventoTxTCPRecebeSACK(50.006, sack4);
+
+		simulador.getFilaEventos().add(esack);
+		simulador.getFilaEventos().add(etx);
+
+		simulador.tratarProximoEvento(); // TxTCPTerminaEnvio
+		simulador.tratarProximoEvento(); // TxTCPRecebeSACK
+
+		simulador.getFilaEventos().poll();
+
+		assertFalse(simulador.getFilaEventos().peek().getClass()
+				.equals(EventoTimeOut.class));
+
+	}
 }
