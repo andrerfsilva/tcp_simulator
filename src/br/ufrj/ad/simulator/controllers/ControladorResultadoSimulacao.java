@@ -3,17 +3,17 @@ package br.ufrj.ad.simulator.controllers;
 import java.io.IOException;
 
 import br.ufrj.ad.simulator.models.Simulador;
-import br.ufrj.ad.simulator.views.JanelaResultadoSimulacao;
+import br.ufrj.ad.simulator.views.JanelaResultadoSimulacaoHTML;;
 
 public class ControladorResultadoSimulacao {
 
-	private JanelaResultadoSimulacao janelaResultadoSimulacao;
+	private JanelaResultadoSimulacaoHTML janelaResultadoSimulacaoHTML;
 	private Simulador simulador;
 
 	public ControladorResultadoSimulacao() throws IOException {
 		this.simulador = new Simulador();
-		this.janelaResultadoSimulacao = new JanelaResultadoSimulacao();
-		this.janelaResultadoSimulacao.getTextAreaResultado().setText(
+		this.janelaResultadoSimulacaoHTML = new JanelaResultadoSimulacaoHTML();
+		this.janelaResultadoSimulacaoHTML.insertStringHTML(
 				simulador.resultadoSimulacao());
 	}
 

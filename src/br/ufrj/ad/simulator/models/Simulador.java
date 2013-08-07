@@ -1,6 +1,7 @@
 package br.ufrj.ad.simulator.models;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.PriorityQueue;
 
 import br.ufrj.ad.simulator.estatistica.Estimador;
@@ -731,14 +732,37 @@ public class Simulador {
 		String ret = "";
 		simular();
 
-		ret += "VAZÃO MÉDIA POR CONEXÃO:\n";
+		ret += "<h1>VAZÃO MÉDIA POR CONEXÃO</h1>\n";
+		
+		ret += "<table border = \"1\">\n";
+		
+		DecimalFormat resultado = new DecimalFormat("#.##");
+		
 		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
-			ret += "\tTx" + i + ":\t" + estimadoresDeVazaoTCP[i].getMedia()
-					+ " ± " + estimadoresDeVazaoTCP[i].getDistanciaICMedia(0.9)
-					+ "\n";
+			
+			ret+= "<tr>\n";
+			ret += "<th>Tx" + i + "</th> ";
+			ret += " <td>" + resultado.format(estimadoresDeVazaoTCP[i].getMedia())
+					+ " ± " + resultado.format(estimadoresDeVazaoTCP[i].getDistanciaICMedia(0.9)) + ""
+					+ "</td>\n";
+			ret += "</tr>";
 		}
+		ret += "</table>\n";
 
-		ret += "VAZÃO MÉDIA GRUPO 1:\n";
+		ret += "<p/>";
+		ret += "<p/>";
+		
+		ret += "<table border = \"1\">\n";
+		
+		ret += "<tr>\n";
+		
+		ret += "<th>VAZÃO MÉDIA GRUPO 1</th> ";
+		
+		ret += "<th>VAZÃO MÉDIA GRUPO 2</th>";
+		
+		ret += "</tr>\n";
+
+		ret += "<tr>\n";
 		Estimador estimadorVazaoMediaGrupo1 = new Estimador();
 		int i = 0;
 		while (i < parametros.getEstacoesGrupo1()) {
@@ -746,21 +770,22 @@ public class Simulador {
 					.getMedia());
 			i++;
 		}
-		ret += "\t\t" + estimadorVazaoMediaGrupo1.getMedia() + "±"
-				+ estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9) + "\n";
+		ret += "<td>" + resultado.format(estimadorVazaoMediaGrupo1.getMedia()) + "±"
+				+ resultado.format(estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9)) + "</td>\n";
 
-		ret += "VAZÃO MÉDIA GRUPO 2:\n";
 		Estimador estimadorVazaoMediaGrupo2 = new Estimador();
 		while (i < rede.getTransmissores().length) {
 			estimadorVazaoMediaGrupo2.coletarAmostra(estimadoresDeVazaoTCP[i]
 					.getMedia());
 			i++;
 		}
-		ret += "\t\t" + estimadorVazaoMediaGrupo2.getMedia() + "±"
-				+ estimadorVazaoMediaGrupo2.getDistanciaICMedia(0.9) + "\n\n";
+		ret += "<td>" + resultado.format(estimadorVazaoMediaGrupo2.getMedia()) + " ± "
+				+ resultado.format(estimadorVazaoMediaGrupo2.getDistanciaICMedia(0.9)) + "</td>\n";
+		
+		ret += "</table>\n";
 
-		ret += "Rodadas = " + estimadoresDeVazaoTCP[0].getNumeroAmostras()
-				+ "\n";
+		ret += "<h3>Rodadas = " + estimadoresDeVazaoTCP[0].getNumeroAmostras()
+				+ "</h3>";
 
 		return ret;
 	}

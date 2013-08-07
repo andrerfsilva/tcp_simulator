@@ -21,7 +21,7 @@ public class JanelaResultadoSimulacaoHTML extends JFrame {
 	private Document doc;
 
 	public JanelaResultadoSimulacaoHTML() {
-		this.setTitle("Resultado Simulação");
+		this.setTitle("Resultado SimulaÃ§Ã£o");
 
 		this.htmlView = new JEditorPane();
 		this.htmlView.setEditable(false);
