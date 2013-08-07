@@ -1,5 +1,7 @@
 package br.ufrj.ad.simulator.views;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -37,9 +39,8 @@ public class JanelaResultadoSimulacaoHTML extends JFrame {
 		this.htmlView.setDocument(this.doc);
 
 		this.setSize(800, 600);
-		this.setVisible(true);
 
-		this.add(this.htmlView);
+		this.getContentPane().add(this.janelaDeslizante, BorderLayout.CENTER);
 	}
 
 	public void insertStringHTML(String resultadoHTML) {
@@ -58,12 +59,12 @@ public class JanelaResultadoSimulacaoHTML extends JFrame {
 						+ "<p>This is some sample text</p>\n"
 						+ "<p><a href=\"http://devdaily.com/blog/\">devdaily blog</a></p>\n"
 						+ "</body>\n";
-				
+
 				JanelaResultadoSimulacaoHTML janelaHTML = new JanelaResultadoSimulacaoHTML();
-				
+
 				janelaHTML.insertStringHTML(htmlString);
-				
-				janelaHTML.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+
+				janelaHTML.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 			}
 		});

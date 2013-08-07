@@ -15,6 +15,7 @@ public class ControladorResultadoSimulacao {
 		this.janelaResultadoSimulacaoHTML = new JanelaResultadoSimulacaoHTML();
 		this.janelaResultadoSimulacaoHTML.insertStringHTML(
 				simulador.resultadoSimulacao());
+		this.janelaResultadoSimulacaoHTML.setVisible(true);
 	}
 
 	/**
