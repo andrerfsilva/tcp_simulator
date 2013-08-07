@@ -9,12 +9,22 @@ package br.ufrj.ad.simulator.estatistica;
  */
 public class Random extends java.util.Random {
 
+	private long seed;
+
 	public Random() {
 		super();
+		java.util.Random geradorSeed = new java.util.Random();
+		this.seed = geradorSeed.nextLong();
+		this.setSeed(seed);
 	}
 
 	public Random(long seed) {
 		super(seed);
+		this.seed = seed;
+	}
+
+	public long getSeed() {
+		return seed;
 	}
 
 	/**
@@ -78,8 +88,6 @@ public class Random extends java.util.Random {
 		double mean = 0; // estimador da média
 		double variance = 0; // estimador da variância
 
-		// TODO: Para um número de armostras muito grande ocorre overflow! Com
-		// 100.000 amostras já dá esse problema. Pensar em um algoritmo melhor.
 		for (int i = 0; i < numberOfSamples; i++) {
 			double sample = generator.nextGeometric(p);
 			mean += sample;

@@ -28,20 +28,70 @@ public class TesteRandom {
 	@Test
 	public void testNextExponential() {
 		for (int i = 0; i < 10000; i++) {
-			estimador.coletarAmostra(gerador.nextExponential(1.0/24.0));
+			estimador.coletarAmostra(gerador.nextExponential(1.0 / 24.0));
 		}
-		
-		assertEquals(24.0, estimador.getMedia(), estimador.getDistanciaICMedia(0.95));
+
+		assertEquals(24.0, estimador.getMedia(),
+				estimador.getDistanciaICMedia(0.95));
 	}
 
 	@Test
 	public void testNextGeometric() {
 		for (int i = 0; i < 10000; i++) {
-			estimador.coletarAmostra(gerador.nextGeometric(1.0/10.0));
+			estimador.coletarAmostra(gerador.nextGeometric(1.0 / 10.0));
 		}
-		
-		assertEquals(10.0, estimador.getMedia(), estimador.getDistanciaICMedia(0.95));
-		
+
+		assertEquals(10.0, estimador.getMedia(),
+				estimador.getDistanciaICMedia(0.95));
+
+	}
+
+	@Test
+	public void testSeed1() {
+
+		long seed = gerador.nextLong();
+		Random gerador1 = new Random(seed);
+		Random gerador2 = new Random(seed);
+
+		assertEquals(gerador1.nextDouble(), gerador2.nextDouble(), 0);
+
+	}
+
+	@Test
+	public void testSeed2() {
+
+		long seed = gerador.nextLong();
+		Random gerador1 = new Random(seed);
+		Random gerador2 = new Random(seed);
+
+		double[] seq1 = new double[10000];
+		double[] seq2 = new double[10000];
+
+		for (int i = 0; i < seq1.length; i++) {
+			seq1[i] = gerador1.nextDouble();
+			seq2[i] = gerador2.nextDouble();
+		}
+
+		assertArrayEquals(seq1, seq2, 0);
+
+	}
+
+	@Test
+	public void testSeed3() {
+
+		Random gerador1 = new Random(gerador.getSeed());
+		Random gerador2 = new Random(gerador1.getSeed());
+
+		double[] seq1 = new double[10000];
+		double[] seq2 = new double[10000];
+
+		for (int i = 0; i < seq1.length; i++) {
+			seq1[i] = gerador1.nextDouble();
+			seq2[i] = gerador2.nextDouble();
+		}
+
+		assertArrayEquals(seq1, seq2, 0);
+
 	}
 
 }
