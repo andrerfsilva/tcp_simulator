@@ -68,7 +68,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao0() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -86,7 +87,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao1() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -103,7 +105,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao2() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -118,7 +121,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao3() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -137,7 +141,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao4() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -156,7 +161,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao5() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -172,7 +178,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao6() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -188,7 +195,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao7() {
 
 		tx.setTransmitindo(true);
-		simulador.getFilaEventos().add(new EventoTxTCPTerminaTransmissao(100));
+		simulador.getFilaEventos().add(
+				new EventoTxTCPTerminaTransmissao(100, tx.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -207,7 +215,8 @@ public class TesteSimulador {
 	public void testTxTCPTerminaTransmissao8() {
 
 		simulador.getFilaEventos().add(
-				new EventoTxTCPTerminaTransmissao(100.012));
+				new EventoTxTCPTerminaTransmissao(100.012, tx
+						.getNumeroConexao()));
 
 		tx.enviarPacote();
 
@@ -229,7 +238,8 @@ public class TesteSimulador {
 		tx.setTransmitindo(true);
 
 		simulador.getFilaEventos()
-				.add(new EventoTxTCPTerminaTransmissao(0.012));
+				.add(new EventoTxTCPTerminaTransmissao(0.012, tx
+						.getNumeroConexao()));
 
 		simulador.tratarProximoEvento();
 
@@ -1139,7 +1149,7 @@ public class TesteSimulador {
 	public void testEventoTxTCPRecebeSACKDuranteTransmissao1() {
 
 		Evento txTCPTerminaTransmissao = new EventoTxTCPTerminaTransmissao(
-				100.012);
+				100.012, tx.getNumeroConexao());
 
 		tx.setTransmitindo(true);
 
@@ -1165,7 +1175,7 @@ public class TesteSimulador {
 	public void testEventoTxTCPRecebeSACKDuranteTransmissao2() {
 
 		Evento txTCPTerminaTransmissao = new EventoTxTCPTerminaTransmissao(
-				100.012);
+				100.012, tx.getNumeroConexao());
 
 		tx.setTransmitindo(true);
 

@@ -9,8 +9,28 @@ package br.ufrj.ad.simulator.eventos;
  */
 public class EventoTxTCPTerminaTransmissao extends Evento {
 
-	public EventoTxTCPTerminaTransmissao(double tempoDeOcorrencia) {
+	private int txTCP;
+
+	/**
+	 * Inicializa o evento de término de transmissão TCP.
+	 * 
+	 * @param tempoDeOcorrencia
+	 *            tempo quando o evento ocorre
+	 * @param txTCP
+	 *            sessão TCP que originou o evento
+	 */
+	public EventoTxTCPTerminaTransmissao(double tempoDeOcorrencia, int txTCP) {
 		super(tempoDeOcorrencia);
+		this.txTCP = txTCP;
+	}
+
+	/**
+	 * Sessão TCP que originou o evento.
+	 * 
+	 * @return sessão TCP que originou o evento
+	 */
+	public int getTxTCP() {
+		return txTCP;
 	}
 
 }

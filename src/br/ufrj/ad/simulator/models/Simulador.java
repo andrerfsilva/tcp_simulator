@@ -12,6 +12,7 @@ import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
 import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.eventos.EventoTimeOut;
 import br.ufrj.ad.simulator.eventos.EventoTxTCPRecebeSACK;
+import br.ufrj.ad.simulator.eventos.EventoTxTCPTerminaTransmissao;
 import br.ufrj.ad.simulator.exceptions.EventOutOfOrderException;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 
@@ -332,6 +333,28 @@ public class Simulador {
 			tratarEventoTxRecebeSACK(e);
 		} else if (e instanceof EventoTimeOut) {
 			tratarEventoTimeOut(e);
+		} else if (e instanceof EventoTxTCPTerminaTransmissao) {
+			tratarEventoTxTCPTerminaTransmissao(e);
+		}
+	}
+
+	/**
+	 * Indica que a transmissão do último pacote terminou. Portanto, se a cwnd
+	 * do TxTCP correspondente assim permitir, serão agendados novas
+	 * transmissões e TimeOuts correspondentes.
+	 * 
+	 * @param e
+	 *            Evento do tipo TxTCPTerminaTransmissao.
+	 */
+	private void tratarEventoTxTCPTerminaTransmissao(Evento e) {
+
+		EventoTxTCPTerminaTransmissao etx = (EventoTxTCPTerminaTransmissao) e;
+		TxTCP tx = rede.getTransmissores()[etx.getTxTCP()];
+
+		if (tx.prontoParaTransmitir()) {
+			agendarProximoEnvioTxTCP(tx);
+		} else {
+			tx.setTransmitindo(false);
 		}
 	}
 
@@ -419,27 +442,26 @@ public class Simulador {
 		/*
 		 * Faz o roteador receber o pacote do TxTCP correspondente.
 		 */
-		TxTCP tx = rede.getTransmissores()[etcp.getTxTCP()];
 		rede.getRoteador().receberPacote(etcp.getPacote(), tempoAtualSimulado);
 
-		/*
-		 * Se o TxTCP ainda puder transmitir mais pacotes, agendamos a chegada
-		 * do próximo pacote TCP.
-		 */
-		if (tx.prontoParaTransmitir()) {
-			agendarProximoEnvioTxTCP(tx);
-		} else {
-			tx.setTransmitindo(false);
-		}
 	}
 
 	/**
-	 * @param etcp
+	 * Agenda o próximo envio TCP, ou seja, cria os eventos
+	 * TxTCPTerminaTransmissao, RoteadorRecebePacoteTxTCP e o TimeOut
+	 * correspondente.
+	 * 
 	 * @param tx
+	 *            Referência para o TxTCP que originou o evento.
+	 * 
 	 * @throws TxTCPNotReadyToSendException
+	 *             Se esse método for chamando quando o TxTCP não puder
+	 *             transmitir, será lançada uma exceção indicando que a geração
+	 *             de eventos foi programada incorretamente.
 	 */
 	private void agendarProximoEnvioTxTCP(TxTCP tx)
 			throws TxTCPNotReadyToSendException {
+
 		Pacote proximoPacoteAEnviar = tx.enviarPacote(tempoAtualSimulado);
 
 		tx.setTransmitindo(true);
@@ -454,11 +476,15 @@ public class Simulador {
 		double tempoPropagacao = (tx.getGrupo() == 1 ? parametros.getTP1()
 				: parametros.getTP2());
 
-		EventoRoteadorRecebePacoteTxTCP proximaChegadaTCP = new EventoRoteadorRecebePacoteTxTCP(
+		EventoTxTCPTerminaTransmissao terminoDaTransmissao = new EventoTxTCPTerminaTransmissao(
+				tempoAtualSimulado + tempoTransmissao, tx.getNumeroConexao());
+
+		EventoRoteadorRecebePacoteTxTCP proximaChegadaTCPNoRoteador = new EventoRoteadorRecebePacoteTxTCP(
 				tempoAtualSimulado + tempoPropagacao + tempoTransmissao,
 				proximoPacoteAEnviar);
 
-		filaEventos.add(proximaChegadaTCP);
+		filaEventos.add(terminoDaTransmissao);
+		filaEventos.add(proximaChegadaTCPNoRoteador);
 
 		/*
 		 * Agendamos o time-out do pacote que acabou de ser enviado. Para
@@ -733,33 +759,35 @@ public class Simulador {
 		simular();
 
 		ret += "<h1>VAZÃO MÉDIA POR CONEXÃO</h1>\n";
-		
+
 		ret += "<table border = \"1\">\n";
-		
+
 		DecimalFormat resultado = new DecimalFormat("#.##");
-		
+
 		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
-			
-			ret+= "<tr>\n";
+
+			ret += "<tr>\n";
 			ret += "<th>Tx" + i + "</th> ";
-			ret += " <td>" + resultado.format(estimadoresDeVazaoTCP[i].getMedia())
-					+ " ± " + resultado.format(estimadoresDeVazaoTCP[i].getDistanciaICMedia(0.9)) + ""
-					+ "</td>\n";
+			ret += " <td>"
+					+ resultado.format(estimadoresDeVazaoTCP[i].getMedia())
+					+ " ± "
+					+ resultado.format(estimadoresDeVazaoTCP[i]
+							.getDistanciaICMedia(0.9)) + "" + "</td>\n";
 			ret += "</tr>";
 		}
 		ret += "</table>\n";
 
 		ret += "<p/>";
 		ret += "<p/>";
-		
+
 		ret += "<table border = \"1\">\n";
-		
+
 		ret += "<tr>\n";
-		
+
 		ret += "<th>VAZÃO MÉDIA GRUPO 1</th> ";
-		
+
 		ret += "<th>VAZÃO MÉDIA GRUPO 2</th>";
-		
+
 		ret += "</tr>\n";
 
 		ret += "<tr>\n";
@@ -770,8 +798,11 @@ public class Simulador {
 					.getMedia());
 			i++;
 		}
-		ret += "<td>" + resultado.format(estimadorVazaoMediaGrupo1.getMedia()) + "±"
-				+ resultado.format(estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9)) + "</td>\n";
+		ret += "<td>"
+				+ resultado.format(estimadorVazaoMediaGrupo1.getMedia())
+				+ "±"
+				+ resultado.format(estimadorVazaoMediaGrupo1
+						.getDistanciaICMedia(0.9)) + "</td>\n";
 
 		Estimador estimadorVazaoMediaGrupo2 = new Estimador();
 		while (i < rede.getTransmissores().length) {
@@ -779,9 +810,12 @@ public class Simulador {
 					.getMedia());
 			i++;
 		}
-		ret += "<td>" + resultado.format(estimadorVazaoMediaGrupo2.getMedia()) + " ± "
-				+ resultado.format(estimadorVazaoMediaGrupo2.getDistanciaICMedia(0.9)) + "</td>\n";
-		
+		ret += "<td>"
+				+ resultado.format(estimadorVazaoMediaGrupo2.getMedia())
+				+ " ± "
+				+ resultado.format(estimadorVazaoMediaGrupo2
+						.getDistanciaICMedia(0.9)) + "</td>\n";
+
 		ret += "</table>\n";
 
 		ret += "<h3>Rodadas = " + estimadoresDeVazaoTCP[0].getNumeroAmostras()
