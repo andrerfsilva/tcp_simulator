@@ -696,7 +696,9 @@ public class Simulador {
 	 */
 	public double[][] getAmostrasVazaoxTempo() throws EndOfTheWorldException {
 
-		int numeroDeAmostras = parametros.getNumeroEventosPorRodada() / 10000;
+		int eventosPorAmostra = 10000;
+		int numeroDeAmostras = parametros.getNumeroEventosPorRodada()
+				/ eventosPorAmostra;
 
 		setarEstadoInicialDeSimulacao();
 		agendarEventosIniciais();
@@ -706,12 +708,12 @@ public class Simulador {
 		RxTCP rx = this.rede.getReceptores()[0];
 		double[][] dados = new double[2][numeroDeAmostras];
 
-		dados[0][1] = 0.0;
+		dados[0][0] = 0.0;
 		dados[1][0] = 0.0;
 
 		for (int i = 1; i < numeroDeAmostras; i++) {
 
-			for (int j = 0; j < 1000; j++) {
+			for (int j = 0; j < eventosPorAmostra; j++) {
 				tratarProximoEvento();
 			}
 
@@ -724,7 +726,7 @@ public class Simulador {
 
 			estimadorVazao.coletarAmostra(vazaoLocal);
 
-			dados[0][i] = tempoAtualSimulado;
+			dados[0][i] = i * eventosPorAmostra;
 			dados[1][i] = estimadorVazao.getMedia();
 		}
 

@@ -10,7 +10,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
 
-public class JanelaGraficoVazaoTempo extends JFrame {
+public class JanelaGraficoVazaoEventos extends JFrame {
 
 	/**
 	 * 
@@ -22,9 +22,9 @@ public class JanelaGraficoVazaoTempo extends JFrame {
 	/*
 	 * *
 	 */
-	public JanelaGraficoVazaoTempo(double[][] tempoXbps) {
+	public JanelaGraficoVazaoEventos(double[][] tempoXbps) {
 
-		super("Gráfico Vazão Média x Tempo");
+		super("Gráfico Vazão Média x Número de Eventos");
 
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -33,9 +33,10 @@ public class JanelaGraficoVazaoTempo extends JFrame {
 
 		this.ds.addSeries("Vazão Tx0", tempoXbps);
 
-		this.grafico = ChartFactory.createXYLineChart("vazão média x tempo",
-				"tempo (ms)", "vazão média (bps)", ds,
-				PlotOrientation.VERTICAL, true, true, false);
+		this.grafico = ChartFactory.createXYLineChart(
+				"Vazão Média x Número de Eventos", "Número de Eventos",
+				"Vazão Média (bps)", ds, PlotOrientation.VERTICAL, true, true,
+				false);
 
 		ChartPanel cp = new ChartPanel(this.grafico);
 
@@ -82,7 +83,7 @@ public class JanelaGraficoVazaoTempo extends JFrame {
 				tempoXbps[0][9] = 900;
 				tempoXbps[1][9] = 400;
 
-				JFrame frame = new JanelaGraficoVazaoTempo(tempoXbps);
+				JFrame frame = new JanelaGraficoVazaoEventos(tempoXbps);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			}
 		});

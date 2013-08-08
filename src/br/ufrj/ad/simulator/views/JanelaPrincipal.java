@@ -23,7 +23,7 @@ public class JanelaPrincipal extends JFrame {
 	private JMenu menu;
 	private JMenuItem menuItemConfigurarParametrosSimulacao;
 	private JMenuItem menuItemGerarGraficoCwndPorMSSxTempo;
-	private JMenuItem menuItemGerarGraficoVazaoMediaxTempo;
+	private JMenuItem menuItemGerarGraficoVazaoMediaxEventos;
 	private JMenuItem menuItemIniciarSimulacao;
 	private JMenuItem menuItemSair;
 
@@ -33,7 +33,7 @@ public class JanelaPrincipal extends JFrame {
 	}
 
 	public JMenuItem getMenuItemGerarGraficoVazaoMediaxTempo() {
-		return menuItemGerarGraficoVazaoMediaxTempo;
+		return menuItemGerarGraficoVazaoMediaxEventos;
 	}
 
 	private void iniciarComponentes() {
@@ -56,15 +56,15 @@ public class JanelaPrincipal extends JFrame {
 		menu.add(menuItemConfigurarParametrosSimulacao);
 
 		menuItemGerarGraficoCwndPorMSSxTempo = new JMenuItem(
-				"Gerar Gráfico cwnd/MSS x Tempo", KeyEvent.VK_G);
+				"Gerar Gráfico: cwnd/MSS x Tempo", KeyEvent.VK_G);
 		menuItemGerarGraficoCwndPorMSSxTempo.setActionCommand("GerarGrafico");
 		menu.add(menuItemGerarGraficoCwndPorMSSxTempo);
 
-		menuItemGerarGraficoVazaoMediaxTempo = new JMenuItem(
-				"Gerar Gráfico Vazão Média x Tempo");
-		menuItemGerarGraficoVazaoMediaxTempo
+		menuItemGerarGraficoVazaoMediaxEventos = new JMenuItem(
+				"Gerar Gráfico: Vazão Média x Número de Eventos");
+		menuItemGerarGraficoVazaoMediaxEventos
 				.setActionCommand("GerarGraficoVazaoMedia");
-		menu.add(menuItemGerarGraficoVazaoMediaxTempo);
+		menu.add(menuItemGerarGraficoVazaoMediaxEventos);
 
 		menuItemIniciarSimulacao = new JMenuItem("Iniciar Simulação",
 				KeyEvent.VK_S);

@@ -5,21 +5,21 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import br.ufrj.ad.simulator.models.Simulador;
-import br.ufrj.ad.simulator.views.JanelaGraficoVazaoTempo;
+import br.ufrj.ad.simulator.views.JanelaGraficoVazaoEventos;
 
 public class ControladorGraficoVazaoTempo {
 
-	private JanelaGraficoVazaoTempo janelaGraficoVazaoTempo;
+	private JanelaGraficoVazaoEventos janelaGraficoVazaoEventos;
 	private Simulador simulador;
 
 	public ControladorGraficoVazaoTempo() throws IOException {
 		this.simulador = new Simulador();
-		janelaGraficoVazaoTempo = new JanelaGraficoVazaoTempo(
+		janelaGraficoVazaoEventos = new JanelaGraficoVazaoEventos(
 				simulador.getAmostrasVazaoxTempo());
 	}
 
-	public JanelaGraficoVazaoTempo getJanelaGraficoVazaoTempo() {
-		return janelaGraficoVazaoTempo;
+	public JanelaGraficoVazaoEventos getJanelaGraficoVazaoTempo() {
+		return janelaGraficoVazaoEventos;
 	}
 
 	public static void main(String[] args) throws IOException {
