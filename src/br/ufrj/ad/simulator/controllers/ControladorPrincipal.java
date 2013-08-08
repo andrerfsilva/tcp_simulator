@@ -43,7 +43,7 @@ public class ControladorPrincipal implements ActionListener {
 			} else if ("GerarGrafico".equals(e.getActionCommand())) {
 				new ControladorGraficoCongestionWindow();
 			} else if ("GerarGraficoVazaoMedia".equals(e.getActionCommand())) {
-				new ControladorGraficoVazaoTempo();
+				new ControladorGraficoVazaoEventos();
 			}
 
 		} catch (IOException e1) {
