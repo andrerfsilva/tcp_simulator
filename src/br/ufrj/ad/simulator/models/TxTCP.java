@@ -3,8 +3,6 @@ package br.ufrj.ad.simulator.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.jmx.remote.util.OrderClassLoaders;
-
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 
 /**

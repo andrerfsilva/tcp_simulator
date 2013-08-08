@@ -19,6 +19,10 @@ public class Random extends java.util.Random {
 	 */
 	public Random() {
 		super();
+		java.util.Random gerador = new java.util.Random();
+		long seed = gerador.nextLong();
+		this.setSeed(seed);
+		this.seed = seed;
 	}
 
 	/**
@@ -40,7 +44,9 @@ public class Random extends java.util.Random {
 		return seed;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.Random#setSeed(long)
 	 */
 	public void setSeed(long seed) {
