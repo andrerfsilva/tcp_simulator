@@ -1,16 +1,16 @@
-package br.ufrj.ad.simulador.testes;
+package br.ufrj.ad.simulator.tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.estatistica.Random;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.models.SACK;
 import br.ufrj.ad.simulator.models.TxTCP;
+import br.ufrj.ad.simulator.statistics.Random;
 
 /**
  * Casos de teste para a classe TxTCP.

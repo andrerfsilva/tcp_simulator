@@ -1,6 +1,6 @@
 package br.ufrj.ad.simulator.models;
 
-import br.ufrj.ad.simulator.eventos.EventoTimeOut;
+import br.ufrj.ad.simulator.events.EventoTimeOut;
 
 /**
  * Armazena as informações do SACK, ou seja, o byte do próximo pacote esperado,

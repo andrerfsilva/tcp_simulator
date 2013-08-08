@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.eventos;
+package br.ufrj.ad.simulator.events;
 
 import br.ufrj.ad.simulator.models.Pacote;
 

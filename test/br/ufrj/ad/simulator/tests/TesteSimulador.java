@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulador.testes;
+package br.ufrj.ad.simulator.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,13 +8,13 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.eventos.Evento;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
-import br.ufrj.ad.simulator.eventos.EventoTimeOut;
-import br.ufrj.ad.simulator.eventos.EventoTxTCPRecebeSACK;
-import br.ufrj.ad.simulator.eventos.EventoTxTCPTerminaTransmissao;
+import br.ufrj.ad.simulator.events.Evento;
+import br.ufrj.ad.simulator.events.EventoRoteadorRecebePacoteTxTCP;
+import br.ufrj.ad.simulator.events.EventoRoteadorRecebeTrafegoDeFundo;
+import br.ufrj.ad.simulator.events.EventoRoteadorTerminaEnvio;
+import br.ufrj.ad.simulator.events.EventoTimeOut;
+import br.ufrj.ad.simulator.events.EventoTxTCPRecebeSACK;
+import br.ufrj.ad.simulator.events.EventoTxTCPTerminaTransmissao;
 import br.ufrj.ad.simulator.models.Pacote;
 import br.ufrj.ad.simulator.models.Parametros;
 import br.ufrj.ad.simulator.models.SACK;

@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.estatistica;
+package br.ufrj.ad.simulator.statistics;
 
 /**
  * Estende a classe Random para gerar números das disribuições presentes na

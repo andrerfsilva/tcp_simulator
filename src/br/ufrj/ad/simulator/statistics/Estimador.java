@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.estatistica;
+package br.ufrj.ad.simulator.statistics;
 
 import umontreal.iro.lecuyer.probdist.StudentDist;
 

@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.eventos;
+package br.ufrj.ad.simulator.events;
 
 /**
  * Evento de envio de pacotes no roteador. Representa o fim da transmissão, ou

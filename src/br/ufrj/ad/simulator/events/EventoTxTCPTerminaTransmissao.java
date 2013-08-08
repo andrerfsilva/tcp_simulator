@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.eventos;
+package br.ufrj.ad.simulator.events;
 
 /**
  * Indica que o TxTCP terminou de transmitir o pacote e pode iniciar uma nova

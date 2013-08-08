@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.eventos;
+package br.ufrj.ad.simulator.events;
 
 /**
  * O evento de timeout faz o TxTCP mudar drasticamente seu comportamento.

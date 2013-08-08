@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulador.testes;
+package br.ufrj.ad.simulator.tests;
 
 import static org.junit.Assert.assertEquals;
 

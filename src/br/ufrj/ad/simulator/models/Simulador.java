@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.PriorityQueue;
 
-import br.ufrj.ad.simulator.estatistica.Estimador;
-import br.ufrj.ad.simulator.estatistica.Random;
-import br.ufrj.ad.simulator.eventos.Evento;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebePacoteTxTCP;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorRecebeTrafegoDeFundo;
-import br.ufrj.ad.simulator.eventos.EventoRoteadorTerminaEnvio;
-import br.ufrj.ad.simulator.eventos.EventoTimeOut;
-import br.ufrj.ad.simulator.eventos.EventoTxTCPRecebeSACK;
-import br.ufrj.ad.simulator.eventos.EventoTxTCPTerminaTransmissao;
+import br.ufrj.ad.simulator.events.Evento;
+import br.ufrj.ad.simulator.events.EventoRoteadorRecebePacoteTxTCP;
+import br.ufrj.ad.simulator.events.EventoRoteadorRecebeTrafegoDeFundo;
+import br.ufrj.ad.simulator.events.EventoRoteadorTerminaEnvio;
+import br.ufrj.ad.simulator.events.EventoTimeOut;
+import br.ufrj.ad.simulator.events.EventoTxTCPRecebeSACK;
+import br.ufrj.ad.simulator.events.EventoTxTCPTerminaTransmissao;
 import br.ufrj.ad.simulator.exceptions.EventOutOfOrderException;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
+import br.ufrj.ad.simulator.statistics.Estimador;
+import br.ufrj.ad.simulator.statistics.Random;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema

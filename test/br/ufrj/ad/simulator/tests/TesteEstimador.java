@@ -1,11 +1,11 @@
-package br.ufrj.ad.simulador.testes;
+package br.ufrj.ad.simulator.tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import br.ufrj.ad.simulator.estatistica.Estimador;
+import br.ufrj.ad.simulator.statistics.Estimador;
 
 /**
  * Casos de teste para a classe Estimador.
