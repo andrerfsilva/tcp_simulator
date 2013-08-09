@@ -35,6 +35,8 @@ public class JanelaParametros extends JFrame {
 	private JTextField textFieldNumeroEventosPorRodada;
 	private JTextField textFieldNumeroAmostrasCwndGrafico;
 	private JTextField textFieldSeedInicial;
+	private JTextField textFieldEstimativaFaseTransiente;
+
 	private JCheckBox checkBoxTrafegoFundo;
 	private JCheckBox checkBoxFixarSeedInicial;
 	private JButton buttonSalvar;
@@ -111,6 +113,10 @@ public class JanelaParametros extends JFrame {
 		this.textFieldNumeroEventosPorRodada = new JTextField();
 		this.add(textFieldNumeroEventosPorRodada);
 
+		this.add(new JLabel("Estimativa Fase Transiente:"));
+		this.textFieldEstimativaFaseTransiente = new JTextField();
+		this.add(textFieldEstimativaFaseTransiente);
+
 		this.add(new JLabel("Número de Amostras de cwnd no Gráfico:"));
 		this.textFieldNumeroAmostrasCwndGrafico = new JTextField();
 		this.add(textFieldNumeroAmostrasCwndGrafico);
@@ -143,6 +149,10 @@ public class JanelaParametros extends JFrame {
 		Toolkit.getDefaultToolkit().getSystemEventQueue()
 				.postEvent(winClosingEvent);
 
+	}
+
+	public JTextField getTextFieldEstimativaFaseTransiente() {
+		return textFieldEstimativaFaseTransiente;
 	}
 
 	public JTextField getTextFieldSeedInicial() {

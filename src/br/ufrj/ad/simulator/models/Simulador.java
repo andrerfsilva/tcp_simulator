@@ -141,17 +141,23 @@ public class Simulador {
 			setarEstadoInicialDeSimulacao();
 			agendarEventosIniciais();
 
-			double estimativaFimFaseTransiente = getEstimativaFimFaseTransiente();
-
-			// TODO
-			/* Estimativa do fim da fase transiente. */
 			/*
-			 * while (tempoAtualSimulado < estimativaFimFaseTransiente) {
-			 * tratarProximoEvento();
-			 * 
-			 * if (filaEventos.size() == 0) { throw new
-			 * EndOfTheWorldException(); } }
+			 * A estimativa do número de eventos da fase transiente deve ser
+			 * passada como parâmetro. Isso foi feito pois cada cenário de
+			 * simulação pode ter uma fase transiente (em número de eventos)
+			 * diferente. No relatório nós detalhamos o método utilizado para
+			 * estimar a fase transiente, bem como a estimativa de cada cenário.
 			 */
+			int estimativaFimFaseTransiente = parametros
+					.getEstimativaFaseTransiente();
+
+			for (int i = 0; i < estimativaFimFaseTransiente; i++) {
+				tratarProximoEvento();
+
+				if (filaEventos.size() == 0) {
+					throw new EndOfTheWorldException();
+				}
+			}
 
 			double tempoFimFaseTransiente = tempoAtualSimulado;
 			long[] proximoByteEsperadoFimFaseTransiente = new long[rede
@@ -165,7 +171,6 @@ public class Simulador {
 			 * Os dados da fase transiente serão desconsiderados nas
 			 * estatísticas finais.
 			 */
-
 			for (int i = 0; i < numeroEventosPorRodada; i++) {
 				tratarProximoEvento();
 
@@ -176,7 +181,8 @@ public class Simulador {
 
 			/*
 			 * Coleta a vazão para cada sessão TCP e armazena nos seus
-			 * estimadores correspondentes.
+			 * estimadores correspondentes (desconsidera os dados da fase
+			 * transiente).
 			 */
 			for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
 				double vazaoEmBps = ((rede.getReceptores()[i]
@@ -185,31 +191,6 @@ public class Simulador {
 				estimadoresDeVazaoTCP[i].coletarAmostra(vazaoEmBps);
 			}
 		}
-	}
-
-	/**
-	 * Retorna uma estimativa de quanto tempo o sistema demora para entrar em
-	 * equilíbrio. Essa estimativa foi obtita analizando vários gráficos da
-	 * vazão média em função do tempo. Foi o jeito mais simples que achamos para
-	 * obter essa estimativa.
-	 * 
-	 * @return estimativa do fim da fase transiente
-	 */
-	private double getEstimativaFimFaseTransiente() {
-
-		Estimador estimadorFimFaseTransiente = new Estimador();
-		estimadorFimFaseTransiente.coletarAmostra(600000);
-		estimadorFimFaseTransiente.coletarAmostra(500000);
-		estimadorFimFaseTransiente.coletarAmostra(600000);
-		estimadorFimFaseTransiente.coletarAmostra(800000);
-		estimadorFimFaseTransiente.coletarAmostra(700000);
-		estimadorFimFaseTransiente.coletarAmostra(800000);
-		estimadorFimFaseTransiente.coletarAmostra(700000);
-		estimadorFimFaseTransiente.coletarAmostra(300000);
-		estimadorFimFaseTransiente.coletarAmostra(200000);
-		estimadorFimFaseTransiente.coletarAmostra(220000);
-
-		return estimadorFimFaseTransiente.getMedia();
 	}
 
 	/**

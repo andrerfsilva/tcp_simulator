@@ -46,24 +46,20 @@ public class ControladorParametros implements ActionListener {
 				parametros.getTPACK1Property());
 		janelaParametros.getTextFieldTPACK2().setText(
 				parametros.getTPACK2Property());
-
 		janelaParametros.getComboBoxTamanhoBufferRoteador().setSelectedItem(
 				parametros.getDisciplinaRoteadorProperty());
-
 		janelaParametros.getTextFieldNumeroEventosPorRodada().setText(
 				parametros.getNumeroEventosPorRodadaProperty());
-
 		janelaParametros.getCheckBoxTrafegoFundo().setSelected(
 				parametros.getHabilitarTrafegoFundo());
-
 		janelaParametros.getTextFieldNumeroAmostrasCwndGrafico().setText(
 				parametros.getNumeroAmostrasCwndGraficoProperty());
-
 		janelaParametros.getCheckBoxFixarSeedInicial().setSelected(
 				parametros.getFixarSeedInicial());
-
 		janelaParametros.getTextFieldSeedInicial().setText(
 				parametros.getSeedInicialProperty());
+		janelaParametros.getTextFieldEstimativaFaseTransiente().setText(
+				parametros.getEstimativaFaseTransienteProperty());
 
 		janelaParametros.getButtonSalvar().addActionListener(this);
 		janelaParametros.getButtonCancelar().addActionListener(this);
@@ -118,6 +114,9 @@ public class ControladorParametros implements ActionListener {
 						.getCheckBoxFixarSeedInicial().isSelected() + "");
 				parametros.setProperty("SeedInicial", janelaParametros
 						.getTextFieldSeedInicial().getText());
+				parametros.setProperty("EstimativaFaseTransiente",
+						janelaParametros.getTextFieldEstimativaFaseTransiente()
+								.getText());
 
 				parametros.salvar();
 

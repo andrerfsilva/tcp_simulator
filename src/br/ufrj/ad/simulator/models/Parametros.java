@@ -117,6 +117,14 @@ public class Parametros extends Properties {
 		return getProperty("FixarSeedInicial", "false");
 	}
 
+	public String getEstimativaFaseTransienteProperty() {
+		return getProperty("EstimativaFaseTransiente", "0");
+	}
+
+	public int getEstimativaFaseTransiente() {
+		return Integer.parseInt(getEstimativaFaseTransienteProperty());
+	}
+
 	public long getSeedInicial() {
 		return Long.parseLong(getSeedInicialProperty());
 	}
