@@ -7,6 +7,7 @@ package br.ufrj.ad.simulator.statistics;
  * @author André Ramos
  * 
  */
+@SuppressWarnings("serial")
 public class Random extends java.util.Random {
 
 	/**
@@ -29,6 +30,7 @@ public class Random extends java.util.Random {
 	 * Instancia um Random com o seed passado como parâmetro.
 	 * 
 	 * @param seed
+	 *            Seed inicial.
 	 */
 	public Random(long seed) {
 		super(seed);
@@ -38,7 +40,7 @@ public class Random extends java.util.Random {
 	/**
 	 * Retorna o seed inicial.
 	 * 
-	 * @return seed inicial
+	 * @return Seed inicial.
 	 */
 	public long getSeed() {
 		return seed;
@@ -59,8 +61,8 @@ public class Random extends java.util.Random {
 	 * é feito através da inversa da c.d.f. da distribuição exponencial.
 	 * 
 	 * @param rate
-	 *            a taxa média do número de ocorrências por unidade de tempo
-	 * @return número exponencialmente distribuído com taxa = {@code rate}
+	 *            A taxa média do número de ocorrências por unidade de tempo.
+	 * @return Amostra de uma v.a. exponencial com taxa = {@code rate}.
 	 */
 	public double nextExponential(double rate) {
 		double sample;
@@ -74,12 +76,12 @@ public class Random extends java.util.Random {
 
 	/**
 	 * Gera uma amostra da variável aleatória geométrica N com probabilidade de
-	 * obter o primeiro sucesso de Bernoulli = p e conjunto de suporte = {1, 2,
-	 * 3, ...}, ou seja, P(N=k) = (1-p)^(k-1) * p, k>=1.
+	 * obter sucesso = p e conjunto de suporte = {1, 2, 3, ...}, ou seja, P(N=k)
+	 * = (1-p)^(k-1) * p, k>=1.
 	 * 
 	 * @param p
-	 *            probabilidade de sucesso num teste de Bernoulli
-	 * @return um número maior ou igual a 1 geometricamente distribuído
+	 *            Probabilidade de sucesso.
+	 * @return Amostra de uma v.a. geométrica, N >= 1.
 	 * 
 	 */
 	public double nextGeometric(double p) {

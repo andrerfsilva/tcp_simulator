@@ -5,17 +5,18 @@ import umontreal.iro.lecuyer.probdist.StudentDist;
 /**
  * Essa classe será responsável por receber um conjunto de amostras e calcular
  * medidas estatísticas como média, variância, intervalo de confiança (IC), etc
- * a partir das amostras. Cada conjunto de amostras deve instanciar seu próprio
- * Estimador. Esse Estimador otimiza o uso de memória estimando a média e a
- * variância de forma incremental, ou seja, sem a necessidade de armazenar todas
- * as amotras colhidas na memória.
+ * a partir das amostras.
+ * 
+ * Esse Estimador otimiza o uso de memória estimando a média e a variância de
+ * forma incremental, ou seja, sem a necessidade de armazenar todas as amotras
+ * colhidas na memória.
  * 
  * Para o cálculo do IC, o percentil da t-student é escolhido em função da
  * confiança e do número de amostras colhidas até então. Independentemente do
  * número de amostras o percentil é calculado numericamente a partir da i.c.d.f
  * da t-student, ou seja, não usamos valores assintóticos para N<30.
  * 
- * Importante: as amostras devem ser independentes e identicamente distribuídas.
+ * Importante: cada conjunto de amostras deve instanciar seu próprio Estimador.
  * 
  * @author André Ramos
  * 
@@ -34,8 +35,7 @@ public class Estimador {
 
 	/**
 	 * Informa ao Estimador o valor de uma nova amostra da variável aleatória de
-	 * interesse. Importante: amostras precisam ser independentes e
-	 * identicamente distribuídas.
+	 * interesse.
 	 * 
 	 * @param amostra
 	 *            Uma amostra da v.a. de interesse.
@@ -62,7 +62,7 @@ public class Estimador {
 	 * das amostras fornecidas pelo método coletarAmostras(). O estimador da
 	 * variância é calculado de forma incremental para economizar memória.
 	 * 
-	 * @return estimador da variância
+	 * @return Eestimativa da variância.
 	 */
 	public double getVariancia() {
 		if (numeroAmostras > 1) {
@@ -89,7 +89,7 @@ public class Estimador {
 	 * 
 	 * @param confianca
 	 *            Probabilidade da média real estar entre U(α) e L(α).
-	 * @return U(α)
+	 * @return U(α).
 	 */
 	public double getMaxICMedia(double confianca) {
 		return getMedia() + getDistanciaICMedia(confianca);
@@ -100,7 +100,7 @@ public class Estimador {
 	 * 
 	 * @param confianca
 	 *            Probabilidade da média real estar entre U(α) e L(α).
-	 * @return L(α)
+	 * @return L(α).
 	 */
 	public double getInfICMedia(double confianca) {
 		return getMedia() - getDistanciaICMedia(confianca);
@@ -127,6 +127,11 @@ public class Estimador {
 		}
 	}
 
+	/**
+	 * Número de amostras colhidas com o método coletarAmostra().
+	 * 
+	 * @return Número de amostras.
+	 */
 	public int getNumeroAmostras() {
 		return numeroAmostras;
 	}
