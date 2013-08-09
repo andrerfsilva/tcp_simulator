@@ -13,6 +13,11 @@ public class FilaEventos {
 	}
 
 	public Evento poll() {
+		
+		if(this.eventos.size() == 0){
+			return null;
+		}
+		
 		Evento e = this.eventos.get(0);
 
 		this.eventos.remove(0);
@@ -21,6 +26,9 @@ public class FilaEventos {
 	}
 
 	public Evento peek() {
+		if(this.eventos.size() == 0){
+			return null;
+		}
 		
 		return this.eventos.get(0);
 
@@ -33,7 +41,7 @@ public class FilaEventos {
 	}
 
 	public void remove(Evento e) {
-		if(this.eventos.size() == 0){
+		if(this.eventos.size() == 0 || e == null){
 			return;
 		}
 		
