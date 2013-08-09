@@ -1,4 +1,4 @@
-package br.ufrj.ad.simulator.models;
+package br.ufrj.ad.simulator.exceptions;
 
 /**
  * Exceção lançada quando não há mais eventos na lista de eventos.

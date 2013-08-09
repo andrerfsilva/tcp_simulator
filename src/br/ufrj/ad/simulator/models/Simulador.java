@@ -11,6 +11,7 @@ import br.ufrj.ad.simulator.events.EventoRoteadorTerminaEnvio;
 import br.ufrj.ad.simulator.events.EventoTimeOut;
 import br.ufrj.ad.simulator.events.EventoTxTCPRecebeSACK;
 import br.ufrj.ad.simulator.events.EventoTxTCPTerminaTransmissao;
+import br.ufrj.ad.simulator.exceptions.EndOfTheWorldException;
 import br.ufrj.ad.simulator.exceptions.EventOutOfOrderException;
 import br.ufrj.ad.simulator.exceptions.TxTCPNotReadyToSendException;
 import br.ufrj.ad.simulator.statistics.Estimador;
