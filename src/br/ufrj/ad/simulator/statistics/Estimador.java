@@ -6,9 +6,14 @@ import umontreal.iro.lecuyer.probdist.StudentDist;
  * Essa classe será responsável por receber um conjunto de amostras e calcular
  * medidas estatísticas como média, variância, intervalo de confiança (IC), etc
  * a partir das amostras. Cada conjunto de amostras deve instanciar seu próprio
- * Estimador. Esse Estimador otimiza o uso de memória estimando os parâmetros de
- * interesse de forma incremental, ou seja, sem a necessidade de armazenar todas
+ * Estimador. Esse Estimador otimiza o uso de memória estimando a média e a
+ * variância de forma incremental, ou seja, sem a necessidade de armazenar todas
  * as amotras colhidas na memória.
+ * 
+ * Para o cálculo do IC, o percentil da t-student é escolhido em função da
+ * confiança e do número de amostras colhidas até então. Independentemente do
+ * número de amostras o percentil é calculado numericamente a partir da i.c.d.f
+ * da t-student, ou seja, não usamos valores assintóticos para N<30.
  * 
  * Importante: as amostras devem ser independentes e identicamente distribuídas.
  * 
@@ -33,12 +38,9 @@ public class Estimador {
 	 * identicamente distribuídas.
 	 * 
 	 * @param amostra
-	 *            uma amostra da v.a. de interesse
+	 *            Uma amostra da v.a. de interesse.
 	 */
 	public void coletarAmostra(double amostra) {
-		// TODO: Para um número de amostras muito grande dá overflow! Com
-		// 100.000 amostras usando a distribuição exponencial ou a geométrica já
-		// pode ocorrer esse problema. Pensar em um algoritmo melhor.
 		somaAmostras += amostra;
 		somaQuadradoAmostras += amostra * amostra;
 		numeroAmostras++;
@@ -46,9 +48,10 @@ public class Estimador {
 
 	/**
 	 * Estimador não-tendencioso e consistente da média calculado a partir das
-	 * amostras fornecidas pelo método coletarAmostras().
+	 * amostras fornecidas pelo método coletarAmostras(). O estimador da média é
+	 * calculado de forma incremental para economizar memória.
 	 * 
-	 * @return estimador da média
+	 * @return Estimativa da média.
 	 */
 	public double getMedia() {
 		return somaAmostras / numeroAmostras;
@@ -56,7 +59,8 @@ public class Estimador {
 
 	/**
 	 * Estimador não-tendencioso e consistente da variância calculado a partir
-	 * das amostras fornecidas pelo método coletarAmostras().
+	 * das amostras fornecidas pelo método coletarAmostras(). O estimador da
+	 * variância é calculado de forma incremental para economizar memória.
 	 * 
 	 * @return estimador da variância
 	 */
@@ -71,9 +75,10 @@ public class Estimador {
 
 	/**
 	 * Estimador do desvio padrão, ou seja, simplesmente a raiz quadrada da
-	 * variância.
+	 * variância. O estimador do desvio padrão é calculado de forma incremental
+	 * para economizar memória.
 	 * 
-	 * @return estimador do desvio padrão
+	 * @return Estimador do desvio padrão.
 	 */
 	public double getDesvioPadrao() {
 		return Math.sqrt(getVariancia());
@@ -83,7 +88,7 @@ public class Estimador {
 	 * Calcula U(α) o limite superior do IC para a dada confiança.
 	 * 
 	 * @param confianca
-	 *            probabilidade da média real estar entre U(α) e L(α)
+	 *            Probabilidade da média real estar entre U(α) e L(α).
 	 * @return U(α)
 	 */
 	public double getMaxICMedia(double confianca) {
@@ -94,7 +99,7 @@ public class Estimador {
 	 * Calcula L(α) o limite superior do IC para a dada confiança.
 	 * 
 	 * @param confianca
-	 *            probabilidade da média real estar entre U(α) e L(α)
+	 *            Probabilidade da média real estar entre U(α) e L(α).
 	 * @return L(α)
 	 */
 	public double getInfICMedia(double confianca) {
@@ -106,9 +111,9 @@ public class Estimador {
 	 * superiores do IC.
 	 * 
 	 * @param confianca
-	 *            probabilidade da média real estar entre U(α) e L(α)
-	 * @return distância entre a média amostral e U(α) = distância entre média
-	 *         amostal e L(α), ou NaN se existir apenas uma amostra
+	 *            Probabilidade da média real estar entre U(α) e L(α).
+	 * @return Distância entre a média amostral e U(α) = distância entre média
+	 *         amostal e L(α), ou NaN se existir apenas uma amostra.
 	 */
 	public double getDistanciaICMedia(double confianca) {
 		if (numeroAmostras > 1) {
@@ -127,8 +132,8 @@ public class Estimador {
 	}
 
 	/**
-	 * Exemplo de uso de um Estimador em conjunto com nosso gerador
-	 * pseudo-aleatório Random extended edition.
+	 * Exemplo de uso de um Estimador em conjunto com nosso gerador de números
+	 * aleatórios Random extended edition.
 	 * 
 	 * @param args
 	 */
