@@ -80,9 +80,15 @@ public class Simulador {
 	 *            parametros de entrada da simulação
 	 */
 	private void inicializarParametrosDoSimulador(Parametros parametros) {
-		numeroEventosPorRodada = parametros.getNumeroEventosPorRodada();
-		geradorNumerosAleatorios = new Random();
+
 		this.parametros = parametros;
+
+		numeroEventosPorRodada = parametros.getNumeroEventosPorRodada();
+		if (parametros.getFixarSeedInicial()) {
+			geradorNumerosAleatorios = new Random(parametros.getSeedInicial());
+		} else {
+			geradorNumerosAleatorios = new Random();
+		}
 
 		/* Inicializa estimadores */
 		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()

@@ -59,6 +59,12 @@ public class ControladorParametros implements ActionListener {
 		janelaParametros.getTextFieldNumeroAmostrasCwndGrafico().setText(
 				parametros.getNumeroAmostrasCwndGraficoProperty());
 
+		janelaParametros.getCheckBoxFixarSeedInicial().setSelected(
+				parametros.getFixarSeedInicial());
+
+		janelaParametros.getTextFieldSeedInicial().setText(
+				parametros.getSeedInicialProperty());
+
 		janelaParametros.getButtonSalvar().addActionListener(this);
 		janelaParametros.getButtonCancelar().addActionListener(this);
 
@@ -108,6 +114,10 @@ public class ControladorParametros implements ActionListener {
 						janelaParametros
 								.getTextFieldNumeroAmostrasCwndGrafico()
 								.getText());
+				parametros.setProperty("FixarSeedInicial", janelaParametros
+						.getCheckBoxFixarSeedInicial().isSelected() + "");
+				parametros.setProperty("SeedInicial", janelaParametros
+						.getTextFieldSeedInicial().getText());
 
 				parametros.salvar();
 

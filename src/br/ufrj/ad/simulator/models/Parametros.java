@@ -13,6 +13,7 @@ import java.util.Properties;
  * @author André Ramos
  * 
  */
+@SuppressWarnings("serial")
 public class Parametros extends Properties {
 
 	/**
@@ -106,6 +107,22 @@ public class Parametros extends Properties {
 
 	public String getTPACK2Property() {
 		return getProperty("TPACK2", "50");
+	}
+
+	public String getSeedInicialProperty() {
+		return getProperty("SeedInicial", "0");
+	}
+
+	public String getFixarSeedInicialProperty() {
+		return getProperty("FixarSeedInicial", "false");
+	}
+
+	public long getSeedInicial() {
+		return Long.parseLong(getSeedInicialProperty());
+	}
+
+	public boolean getFixarSeedInicial() {
+		return Boolean.parseBoolean(getFixarSeedInicialProperty());
 	}
 
 	/**

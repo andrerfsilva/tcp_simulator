@@ -34,7 +34,9 @@ public class JanelaParametros extends JFrame {
 	private JTextField textFieldTempoMedioEntreRajadas;
 	private JTextField textFieldNumeroEventosPorRodada;
 	private JTextField textFieldNumeroAmostrasCwndGrafico;
+	private JTextField textFieldSeedInicial;
 	private JCheckBox checkBoxTrafegoFundo;
+	private JCheckBox checkBoxFixarSeedInicial;
 	private JButton buttonSalvar;
 	private JButton buttonCancelar;
 
@@ -102,7 +104,6 @@ public class JanelaParametros extends JFrame {
 		this.add(textFieldTempoMedioEntreRajadas);
 
 		this.add(new JLabel());
-
 		this.checkBoxTrafegoFundo = new JCheckBox("Habilitar Tráfego de Fundo");
 		this.add(checkBoxTrafegoFundo);
 
@@ -113,6 +114,14 @@ public class JanelaParametros extends JFrame {
 		this.add(new JLabel("Número de Amostras de cwnd no Gráfico:"));
 		this.textFieldNumeroAmostrasCwndGrafico = new JTextField();
 		this.add(textFieldNumeroAmostrasCwndGrafico);
+
+		this.add(new JLabel());
+		this.checkBoxFixarSeedInicial = new JCheckBox("Fixar Seed Inicial");
+		this.add(checkBoxFixarSeedInicial);
+
+		this.add(new JLabel("Seed Inicial:"));
+		this.textFieldSeedInicial = new JTextField();
+		this.add(textFieldSeedInicial);
 
 		buttonSalvar = new JButton("Salvar");
 		buttonSalvar.setActionCommand("Salvar");
@@ -134,6 +143,14 @@ public class JanelaParametros extends JFrame {
 		Toolkit.getDefaultToolkit().getSystemEventQueue()
 				.postEvent(winClosingEvent);
 
+	}
+
+	public JTextField getTextFieldSeedInicial() {
+		return textFieldSeedInicial;
+	}
+
+	public JCheckBox getCheckBoxFixarSeedInicial() {
+		return checkBoxFixarSeedInicial;
 	}
 
 	public JTextField getTextFieldNumeroAmostrasCwndGrafico() {
