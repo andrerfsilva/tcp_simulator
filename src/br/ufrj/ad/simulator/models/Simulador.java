@@ -42,7 +42,7 @@ public class Simulador {
 	/**
 	 * Fila de eventos ordenados no tempo.
 	 */
-	private PriorityQueue<Evento> filaEventos;
+	private FilaEventos filaEventos;
 
 	/**
 	 * Tempo atual simulado (em milisegundos).
@@ -109,7 +109,7 @@ public class Simulador {
 	 * replicativo, esse método deve ser chamado no início de cada rodada.
 	 */
 	private void setarEstadoInicialDeSimulacao() {
-		filaEventos = new PriorityQueue<Evento>();
+		filaEventos = new FilaEventos();
 
 		tempoAtualSimulado = 0;
 
@@ -607,7 +607,7 @@ public class Simulador {
 		}
 	}
 
-	public PriorityQueue<Evento> getFilaEventos() {
+	public FilaEventos getFilaEventos() {
 		return filaEventos;
 	}
 
