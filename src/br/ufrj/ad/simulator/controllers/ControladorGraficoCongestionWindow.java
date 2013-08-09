@@ -21,7 +21,7 @@ public class ControladorGraficoCongestionWindow {
 	public ControladorGraficoCongestionWindow() throws IOException {
 		this.simulador = new Simulador();
 		janelaGraficoCongestionWindow = new JanelaGraficoCongestionWindow(
-				simulador.getAmostrasCwndPorMSSxTempo());
+				simulador.getAmostrasCwndPorMSSxTempo(), simulador.getSeed());
 	}
 
 	public JanelaGraficoCongestionWindow getJanelaGraficoCongestionWindow() {

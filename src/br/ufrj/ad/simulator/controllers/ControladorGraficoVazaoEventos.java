@@ -15,7 +15,7 @@ public class ControladorGraficoVazaoEventos {
 	public ControladorGraficoVazaoEventos() throws IOException {
 		this.simulador = new Simulador();
 		janelaGraficoVazaoEventos = new JanelaGraficoVazaoEventos(
-				simulador.getAmostrasVazaoxTempo());
+				simulador.getAmostrasVazaoxTempo(), simulador.getSeed());
 	}
 
 	public static void main(String[] args) throws IOException {

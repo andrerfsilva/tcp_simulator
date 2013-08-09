@@ -10,6 +10,12 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
 
+/**
+ * Exibe o gráfico da cwnd/MSS ao longo do tempo simulado.
+ * 
+ * @author André Ramos, Felipe Teixeira
+ * 
+ */
 public class JanelaGraficoCongestionWindow extends JFrame {
 
 	/**
@@ -19,12 +25,9 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 	JFreeChart grafico;
 	DefaultXYDataset ds;
 
-	/*
-	 * *
-	 */
-	public JanelaGraficoCongestionWindow(double[][] tempoXbit) {
-		
-		super("Gráfico cwnd/MSS x Tempo");
+	public JanelaGraficoCongestionWindow(double[][] tempoXbit, long seed) {
+
+		super("Gráfico: cwnd/MSS x Tempo (seed=" + seed + ")");
 
 		this.setPreferredSize(new Dimension(600, 400));
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -33,8 +36,8 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 
 		this.ds.addSeries("Cwnd/MSS Tx0", tempoXbit);
 
-		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x tempo",
-				"tempo (ms)", "cwnd/MSS (pacotes)", ds,
+		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x Tempo",
+				"Tempo (ms)", "cwnd/MSS (pacotes)", ds,
 				PlotOrientation.VERTICAL, true, true, false);
 
 		ChartPanel cp = new ChartPanel(this.grafico);
@@ -82,7 +85,8 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 				tempoXbits[0][9] = 900;
 				tempoXbits[1][9] = 400;
 
-				JFrame frame = new JanelaGraficoCongestionWindow(tempoXbits);
+				JFrame frame = new JanelaGraficoCongestionWindow(tempoXbits,
+						93428423L);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			}
 		});

@@ -797,6 +797,8 @@ public class Simulador {
 
 		ret += "<h1>VAZÃO MÉDIA POR CONEXÃO</h1>\n";
 
+		ret += "seed=" + getSeed() + "\n\n";
+
 		ret += "<table border = \"1\">\n";
 
 		DecimalFormat resultado = new DecimalFormat("#.##");
@@ -859,5 +861,15 @@ public class Simulador {
 				+ "</h3>";
 
 		return ret;
+	}
+
+	/**
+	 * Retorna o seed inicial usado pelo gerador de número aleatórios do
+	 * simulador para facilitar debug e reconstrução de casos atípicos.
+	 * 
+	 * @return Seed inicial do gerador de números aleatórios do simulador.
+	 */
+	public long getSeed() {
+		return geradorNumerosAleatorios.getSeed();
 	}
 }

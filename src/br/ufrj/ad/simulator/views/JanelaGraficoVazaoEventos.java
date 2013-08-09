@@ -22,9 +22,9 @@ public class JanelaGraficoVazaoEventos extends JFrame {
 	/*
 	 * *
 	 */
-	public JanelaGraficoVazaoEventos(double[][] tempoXbps) {
+	public JanelaGraficoVazaoEventos(double[][] tempoXbps, long seed) {
 
-		super("Gráfico Vazão Média x Número de Eventos");
+		super("Gráfico: Vazão Média x Número de Eventos (seed=" + seed + ")");
 
 		this.setPreferredSize(new Dimension(800, 600));
 		this.setExtendedState(MAXIMIZED_BOTH);
@@ -83,7 +83,8 @@ public class JanelaGraficoVazaoEventos extends JFrame {
 				tempoXbps[0][9] = 900;
 				tempoXbps[1][9] = 400;
 
-				JFrame frame = new JanelaGraficoVazaoEventos(tempoXbps);
+				JFrame frame = new JanelaGraficoVazaoEventos(tempoXbps,
+						19238091L);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			}
 		});
