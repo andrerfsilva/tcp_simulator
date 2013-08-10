@@ -42,7 +42,7 @@ public class Simulador {
 	/**
 	 * Fila de eventos ordenados no tempo.
 	 */
-	private FilaEventos filaEventos;
+	private PriorityQueue<Evento> filaEventos;
 
 	/**
 	 * Tempo atual simulado (em milisegundos).
@@ -109,7 +109,7 @@ public class Simulador {
 	 * replicativo, esse método deve ser chamado no início de cada rodada.
 	 */
 	private void setarEstadoInicialDeSimulacao() {
-		filaEventos = new FilaEventos();
+		filaEventos = new PriorityQueue<Evento>();
 
 		tempoAtualSimulado = 0;
 
@@ -398,9 +398,7 @@ public class Simulador {
 
 		tx.receberSACK(esack.getSACK(), tempoAtualSimulado);
 
-		boolean prontoParaTransmitirDepoisDoSACK = tx.prontoParaTransmitir();
-
-		if (!tx.isTransmitindo() && prontoParaTransmitirDepoisDoSACK) {
+		if (!tx.isTransmitindo() && tx.prontoParaTransmitir()) {
 
 			agendarProximoEnvioTxTCP(tx);
 		}
@@ -607,7 +605,7 @@ public class Simulador {
 		}
 	}
 
-	public FilaEventos getFilaEventos() {
+	public PriorityQueue<Evento> getFilaEventos() {
 		return filaEventos;
 	}
 

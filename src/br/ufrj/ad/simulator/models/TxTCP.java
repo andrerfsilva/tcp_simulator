@@ -140,8 +140,12 @@ public class TxTCP {
 	public void receberSACK(SACK sack, double tempoDeRecebimento) {
 
 		/*
-		 * A primeira coisa a ser feita (independentemente do estado do TxTCP) é
-		 * atualizar a lista de sequências recebidas corretamente com as
+		 * Atualiza estimativa do RTO.
+		 */
+		estimarRTT(sack.getTempoDeEnvioPacoteOriginal(), tempoDeRecebimento);
+
+		/*
+		 * Atualiza a lista de sequências recebidas corretamente com as
 		 * informações do SACK mais recente.
 		 */
 		sequenciasRecebidasCorretamente = sack
@@ -173,7 +177,7 @@ public class TxTCP {
 				}
 			}
 
-			if (sack.getProximoByteEsperado() <= pacoteMaisAntigoSemACK) {
+			if (sack.getProximoByteEsperado() == pacoteMaisAntigoSemACK) {
 
 				/*
 				 * Recebemos um SACK duplicado. Devemos checar o contador de
@@ -200,16 +204,18 @@ public class TxTCP {
 									.getSequenciasRecebidasCorretamente()[sack
 									.getSequenciasRecebidasCorretamente().length - 1][1];
 						} else {
-							retransmitwnd = sack.getProximoByteEsperado();
+							retransmitwnd = proximoPacoteAEnviar;
 						}
 
-						proximoPacoteAEnviar = sack.getProximoByteEsperado();
+						proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 					}
+
 				} else {
 					ultimoACKDuplicado = sack.getProximoByteEsperado();
 					contadorACKsDuplicados = 1;
 				}
-			} else {
+
+			} else if (sack.getProximoByteEsperado() > pacoteMaisAntigoSemACK) {
 				/*
 				 * O SACK não é suplicado, logo atualizamos o ponteiro de pacote
 				 * mais antigo sem ACK normalmente.
@@ -219,12 +225,6 @@ public class TxTCP {
 				if (pacoteMaisAntigoSemACK > proximoPacoteAEnviar) {
 					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 				}
-
-				/*
-				 * Atualiza estimativa do RTO.
-				 */
-				estimarRTT(sack.getTempoDeEnvioPacoteOriginal(),
-						tempoDeRecebimento);
 			}
 
 		} else {
@@ -244,16 +244,11 @@ public class TxTCP {
 					proximoPacoteAEnviar = pacoteMaisAntigoSemACK;
 				}
 
-				/*
-				 * Atualiza estimativa de RTO.
-				 */
-				estimarRTT(sack.getTempoDeEnvioPacoteOriginal(),
-						tempoDeRecebimento);
 			}
 
 			/*
 			 * Confere se todos os pacotes da janela de recuperação foram
-			 * recebidos corretametne no RxTCP.
+			 * recebidos corretamente no RxTCP.
 			 */
 			if (sack.getProximoByteEsperado() >= retransmitwnd) {
 				isFastRetransmit = false;
@@ -343,13 +338,14 @@ public class TxTCP {
 			p.setByteInicialEFinal(proximoPacoteAEnviar, proximoPacoteAEnviar
 					+ Parametros.mss - 1);
 			proximoPacoteAEnviar += Parametros.mss;
+			return p;
 
 		} else {
 			/*
 			 * Se o vetor de sequências tiver elementos, então temos que tomar
 			 * cuidado para não retransmitir pacotes desnecessários.
 			 */
-			if (sequenciasRecebidasCorretamente[sequenciasRecebidasCorretamente.length - 1][1] < proximoPacoteAEnviar) {
+			if (sequenciasRecebidasCorretamente[sequenciasRecebidasCorretamente.length - 1][1] <= proximoPacoteAEnviar) {
 				/*
 				 * Nesse caso estamos não estamos retransmitindo, portanto
 				 * podemos criar o pacote normalmente.
@@ -357,6 +353,7 @@ public class TxTCP {
 				p.setByteInicialEFinal(proximoPacoteAEnviar,
 						proximoPacoteAEnviar + Parametros.mss - 1);
 				proximoPacoteAEnviar += Parametros.mss;
+				return p;
 			} else {
 				/*
 				 * Estamos retransmitindo. Todo cuidado nessa hora para
@@ -367,19 +364,24 @@ public class TxTCP {
 					 * Testa se o próximo pacote está antes da i-ésima
 					 * sequência.
 					 */
-					if (proximoPacoteAEnviar < sequenciasRecebidasCorretamente[i][0]) {
+					if (proximoPacoteAEnviar >= sequenciasRecebidasCorretamente[i][0]
+							&& proximoPacoteAEnviar <= sequenciasRecebidasCorretamente[i][1]) {
+						proximoPacoteAEnviar = sequenciasRecebidasCorretamente[i][1];
 						p.setByteInicialEFinal(proximoPacoteAEnviar,
 								proximoPacoteAEnviar + Parametros.mss - 1);
 						proximoPacoteAEnviar += Parametros.mss;
-						if (proximoPacoteAEnviar == sequenciasRecebidasCorretamente[i][0]) {
-							proximoPacoteAEnviar = sequenciasRecebidasCorretamente[i][1];
-						}
+						return p;
 					}
+
 				}
+
+				p.setByteInicialEFinal(proximoPacoteAEnviar,
+						proximoPacoteAEnviar + Parametros.mss - 1);
+				proximoPacoteAEnviar += Parametros.mss;
+
+				return p;
 			}
 		}
-
-		return p;
 	}
 
 	public Pacote enviarPacote() throws TxTCPNotReadyToSendException {
