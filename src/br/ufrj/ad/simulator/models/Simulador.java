@@ -253,7 +253,7 @@ public class Simulador {
 			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms.
 			 */
-			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
 
 			/*
 			 * Cria os eventos e insere na fila de eventos.
@@ -778,12 +778,13 @@ public class Simulador {
 
 	public String resultadoSimulacao() {
 
-		String ret = "";
+		long tempoInicioSimulacao = System.nanoTime();
 		simular();
+		long tempoSimulacao = System.nanoTime() - tempoInicioSimulacao;
+
+		String ret = "";
 
 		ret += "<h1>VAZÃO MÉDIA POR CONEXÃO</h1>\n";
-
-		ret += "seed=" + getSeed() + "\n\n";
 
 		ret += "<table border = \"1\">\n";
 
@@ -841,10 +842,15 @@ public class Simulador {
 				+ resultado.format(estimadorVazaoMediaGrupo2
 						.getDistanciaICMedia(0.9)) + "</td>\n";
 
-		ret += "</table>\n";
+		ret += "</table><br/>\n";
 
-		ret += "<h3>Rodadas = " + estimadoresDeVazaoTCP[0].getNumeroAmostras()
-				+ "</h3>";
+		ret += "<b>Rodadas = " + estimadoresDeVazaoTCP[0].getNumeroAmostras()
+				+ "</b><br/>\n";
+
+		ret += "<b>Tempo = " + tempoSimulacao / (1E9 * 60.0)
+				+ " minutos</b><br/>\n";
+
+		ret += "<b>Seed = " + getSeed() + "</b>\n\n";
 
 		return ret;
 	}
