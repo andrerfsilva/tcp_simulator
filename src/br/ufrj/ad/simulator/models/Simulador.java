@@ -19,18 +19,17 @@ import br.ufrj.ad.simulator.statistics.Random;
 
 /**
  * Essa classe gerencia os eventos, as atualizações no modelo do sistema
- * simulado e a coleta de estatísticas de interesse da simulação. Esse simulador
- * usa abordagem integrada para coletar estatísticas e usa o modo Replicativo
+ * simulado e a coleta de estatísticas da simulação. Esse simulador usa
+ * abordagem integrada para coletar estatísticas e usa o método replicativo
  * considerando múltiplas rodadas.
  * 
- * @author André Ramos, Welligton Mascena featuring Vitor Maia
+ * @author André Ramos, Felipe Teixeira, Wellington Mascena featuring Vitor Maia
  * 
  */
 public class Simulador {
 
 	/**
-	 * Gerador de números aleatórios usado para calcular as variáveis aleatórias
-	 * da simulação.
+	 * Gerador de números aleatórios.
 	 */
 	private Random geradorNumerosAleatorios;
 
@@ -40,19 +39,15 @@ public class Simulador {
 	private Rede rede;
 
 	/**
-	 * Fila de eventos ordenados no tempo.
+	 * Fila de eventos ordenados em função do tempo de ocorrência no tempo
+	 * simulado.
 	 */
 	private PriorityQueue<Evento> filaEventos;
 
 	/**
-	 * Tempo atual simulado (em milisegundos).
+	 * Tempo atual simulado (em milissegundos).
 	 */
 	private double tempoAtualSimulado;
-
-	/**
-	 * Número de eventos por rodada de simulação.
-	 */
-	private int numeroEventosPorRodada;
 
 	/**
 	 * Armazena todos os parâmetros de entrada da simulação.
@@ -60,38 +55,60 @@ public class Simulador {
 	private Parametros parametros;
 
 	/**
-	 * Estimadores da vazão TCP para cada conexão.
+	 * Estimadores da vazão para cada conexão TCP.
 	 */
 	private Estimador[] estimadoresDeVazaoTCP;
 
+	/**
+	 * Instancia um simulador com os parâmetros salvos no arquivo de
+	 * parametros.txt. Se o arquivo não existir, cria um arquivo novo com os
+	 * valores default.
+	 * 
+	 * @throws IOException
+	 */
 	public Simulador() throws IOException {
 
 		inicializarParametrosDoSimulador(new Parametros());
 	}
 
+	/**
+	 * Instancia um simulador com os parâmetros de simulação informados pelo
+	 * objeto.
+	 * 
+	 * @param parametros
+	 *            Parâmetros de entrada do simulador.
+	 */
 	public Simulador(Parametros parametros) {
 
 		inicializarParametrosDoSimulador(parametros);
 	}
 
 	/**
-	 * O construtor chama esse método auxiliar para inicializar suas variáveis.
+	 * O construtor chama esse método auxiliar para inicializar suas variáveis
+	 * de estado em função do objeto Parametros.
 	 * 
 	 * @param parametros
-	 *            parametros de entrada da simulação
+	 *            Parametros de entrada do simulador.
 	 */
 	private void inicializarParametrosDoSimulador(Parametros parametros) {
 
 		this.parametros = parametros;
 
-		numeroEventosPorRodada = parametros.getNumeroEventosPorRodada();
+		/*
+		 * Se o seed inicial for passado como parâmetro, então instancia o
+		 * gerador de números aleatórios com o seed dado. Usado em casos de
+		 * degub.
+		 */
 		if (parametros.getFixarSeedInicial()) {
 			geradorNumerosAleatorios = new Random(parametros.getSeedInicial());
 		} else {
 			geradorNumerosAleatorios = new Random();
 		}
 
-		/* Inicializa estimadores */
+		/*
+		 * Inicializa estimadores de vazão. Cada conezão TCP tem seu próprio
+		 * estimador.
+		 */
 		estimadoresDeVazaoTCP = new Estimador[parametros.getEstacoesGrupo1()
 				+ parametros.getEstacoesGrupo2()];
 
@@ -99,7 +116,9 @@ public class Simulador {
 			estimadoresDeVazaoTCP[i] = new Estimador();
 		}
 
-		/* Estado inicial de simulação */
+		/*
+		 * Estado inicial de simulação.
+		 */
 		setarEstadoInicialDeSimulacao();
 	}
 
@@ -117,12 +136,12 @@ public class Simulador {
 	}
 
 	/**
-	 * Inicia o loop principal da simulação e retorna as estatísticas para todos
-	 * os cenários do trabalho. Usa abordagem integrada para coleta de
-	 * estatísticas e simulação usando método Replicativo.
+	 * Inicia o loop principal da simulação e fornece amostras para os
+	 * estimadores de vazão TCP ao fim de cada rodada. A simulação é feita
+	 * usando método replicativo.
 	 * 
 	 * @throws EventOutOfOrderException
-	 *             Quando a lista de eventos retornar um evento cujo tempo de
+	 *             Se a lista de eventos retornar um evento cujo tempo de
 	 *             ocorrência seja menor que o tempo atual simulado, ou seja,
 	 *             mostra que um evento deveria ter sido tratado antes, portanto
 	 *             há uma inconsistência nos dados e a simulação deve ser
@@ -133,11 +152,17 @@ public class Simulador {
 		/*
 		 * Cada rodada nesse loop representa uma rodada no plano de controle,
 		 * com esboçado no esqueleto nos slides de simulação. O número de
-		 * rodadas N será calculado em função do intervalo de confiança para as
-		 * estatísticas de interesse.
+		 * rodadas N será calculado em função do intervalo de confiança para a
+		 * vazão média. A simulação só termina quando o tamanho do IC de TODAS
+		 * as conexões forem menor que 10% o estimador da vazão média.
 		 */
 		while (!estatisticasSatisfatorias()) {
 
+			/*
+			 * Reinicia as variáveis de estado, e agenda os eventos iniciais. É
+			 * necessário fazer isso a cada rodada, pois estamos usando método
+			 * replicativo.
+			 */
 			setarEstadoInicialDeSimulacao();
 			agendarEventosIniciais();
 
@@ -160,18 +185,19 @@ public class Simulador {
 			}
 
 			double tempoFimFaseTransiente = tempoAtualSimulado;
-			long[] proximoByteEsperadoFimFaseTransiente = new long[rede
+			long[] bytesRecebidosNaFaseTransiente = new long[rede
 					.getReceptores().length];
-			for (int i = 0; i < proximoByteEsperadoFimFaseTransiente.length; i++) {
-				proximoByteEsperadoFimFaseTransiente[i] = rede.getReceptores()[i]
+			for (int i = 0; i < bytesRecebidosNaFaseTransiente.length; i++) {
+				bytesRecebidosNaFaseTransiente[i] = rede.getReceptores()[i]
 						.getProximoByteEsperado();
 			}
 
 			/*
-			 * Os dados da fase transiente serão desconsiderados nas
-			 * estatísticas finais.
+			 * Terminada a fase transiente, deixa o sistem executar durante uma
+			 * quantidade de eventos fixa (passada por parâmetro). Ao final da
+			 * rodada colheremos amostras da vazão de cada sessão TCP.
 			 */
-			for (int i = 0; i < numeroEventosPorRodada; i++) {
+			for (int i = 0; i < parametros.getNumeroEventosPorRodada(); i++) {
 				tratarProximoEvento();
 
 				if (filaEventos.size() == 0) {
@@ -186,7 +212,7 @@ public class Simulador {
 			 */
 			for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
 				double vazaoEmBps = ((rede.getReceptores()[i]
-						.getProximoByteEsperado() - proximoByteEsperadoFimFaseTransiente[i]) * 8)
+						.getProximoByteEsperado() - bytesRecebidosNaFaseTransiente[i]) * 8)
 						/ ((tempoAtualSimulado - tempoFimFaseTransiente) * 1E-3);
 				estimadoresDeVazaoTCP[i].coletarAmostra(vazaoEmBps);
 			}
@@ -227,7 +253,6 @@ public class Simulador {
 		 * Agenda a primeira chegada de tráfego de fundo se o parâmetro estiver
 		 * habilitado.
 		 */
-
 		if (parametros.getHabilitarTrafegoFundo()) {
 			Evento primeiraChegadaTrafegoFundo = new EventoRoteadorRecebeTrafegoDeFundo(
 					geradorNumerosAleatorios.nextExponential(1 / parametros
@@ -242,7 +267,8 @@ public class Simulador {
 
 			/*
 			 * Calcula o tempo de propagação e transmissão baseado nos
-			 * parâmetros de entrada.
+			 * parâmetros de entrada. Cada grupo tem seu tempo de propagação
+			 * diferente.
 			 */
 			double tempoTransmissao = Parametros.mss / parametros.getCs();
 			double tempoPropagacao = (rede.getTransmissores()[i].getGrupo() == 1 ? parametros
@@ -251,12 +277,13 @@ public class Simulador {
 			/*
 			 * Para que as conexões iniciem de forma assíncrona, o início da
 			 * primeira transmissão será uma variável aleatória uniforme (0,
-			 * 100) ms.
+			 * 100) ms para os cenários 1 e 2, e (0, 1000) ms para o cenário 3.
 			 */
 			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
 
 			/*
-			 * Cria os eventos e insere na fila de eventos.
+			 * Cria os eventos de transmissão, chenada no roteador, os timeouts
+			 * dos primeiros pacotese insere na fila de eventos.
 			 */
 
 			Evento primeiraTransmissao = new EventoTxTCPTerminaTransmissao(
@@ -280,25 +307,18 @@ public class Simulador {
 	/**
 	 * Número de eventos por rodada de simulação.
 	 * 
-	 * @return número de eventos por rodada de simulação
+	 * @return Número de eventos por rodada.
 	 */
 	public int getNumeroEventosPorRodada() {
-		return numeroEventosPorRodada;
+		return parametros.getNumeroEventosPorRodada();
 	}
 
 	/**
-	 * Número de eventos por rodada de simulação.
+	 * Avalia se intervalo de confiança é aceitável, ou seja, se a largura do IC
+	 * é menor que 10% da vazão media estimada.
 	 * 
-	 * @param numeroEventosPorRodada
-	 */
-	public void setNumeroEventosPorRodada(int numeroEventosPorRodada) {
-		this.numeroEventosPorRodada = numeroEventosPorRodada;
-	}
-
-	/**
-	 * Avalia se intervalo de confiança é aceitável.
-	 * 
-	 * @return true se intervalo de confiança é aceitável, false caso contrário
+	 * @return True se IC de todas as sessões TCP forem aceitáveis, false caso
+	 *         contrário.
 	 */
 	private boolean estatisticasSatisfatorias() {
 
@@ -319,7 +339,7 @@ public class Simulador {
 	 * Cada evento é tratado de forma diferente dependendo do seu tipo.
 	 * 
 	 * @param e
-	 *            próximo evento da fila de eventos
+	 *            Próximo evento da fila de eventos.
 	 */
 	private void tratarEvento(Evento e) {
 
@@ -359,10 +379,11 @@ public class Simulador {
 	}
 
 	/**
-	 * Faz o TxTCP entrar no estado de reação a time-out e agenda o primeiro
-	 * reenvio de pacotes.
+	 * Faz o TxTCP entrar no estado de reação a time-out e agenda o reenvio de
+	 * pacotes.
 	 * 
 	 * @param e
+	 *            Evento do tipo TimeOut.
 	 */
 	private void tratarEventoTimeOut(Evento e) {
 
@@ -389,7 +410,7 @@ public class Simulador {
 	 * correspondente a esse pacote.
 	 * 
 	 * @param e
-	 *            evento de recebimento de SACK
+	 *            Evento de recebimento de SACK.
 	 */
 	private void tratarEventoTxRecebeSACK(Evento e) {
 
@@ -425,10 +446,7 @@ public class Simulador {
 	 * congestionamento), então agendamos a próxima chega TCP.
 	 * 
 	 * @param e
-	 *            evento de origem
-	 */
-	/**
-	 * @param e
+	 *            Evento do tipo RoteadorRecebePacoteTxTCP.
 	 */
 	private void tratarEventoRoteadorRecebePacoteTxTCP(Evento e) {
 
@@ -461,7 +479,7 @@ public class Simulador {
 	 * correspondente.
 	 * 
 	 * @param tx
-	 *            Referência para o TxTCP que originou o evento.
+	 *            TxTCP que originou o evento.
 	 * 
 	 * @throws TxTCPNotReadyToSendException
 	 *             Se esse método for chamando quando o TxTCP não puder
