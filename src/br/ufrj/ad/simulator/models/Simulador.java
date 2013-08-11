@@ -618,14 +618,13 @@ public class Simulador {
 	}
 
 	/**
-	 * Coleta N amostras da variação de cwnd/MSS em função do tempo e retorna
-	 * uma matriz M[2][N] onde M[0][i] é o tempo da amostra i, e M[1][i] é a
+	 * Coleta N amostras da variação de cwnd/MSS em função do tempo e retorna um
+	 * array m double[2][N] onde N é o número de amostras (passado como
+	 * parâmetro de simulação), m[0][i] é o tempo da amostra i, e m[1][i] é a
 	 * cwnd/MSS da amostra i.
 	 * 
-	 * @param numeroDeAmostras
-	 *            número de N amostras de cwnd/MSS
-	 * @return matriz de amostras M[2][N] onde M[0][i] é o tempo da amostra i, e
-	 *         M[1][i] é a cwnd/MSS da amostra i
+	 * @return Matriz 2xN onde m[0][i] é o tempo da amostra i, e m[1][i] é a
+	 *         cwnd/MSS da amostra i.
 	 * @throws EndOfTheWorldException
 	 *             Se em algum momento não existir mais eventos, então temos um
 	 *             erro de modelagem e tratamento de eventos.
@@ -641,14 +640,10 @@ public class Simulador {
 		TxTCP tx = this.rede.getTransmissores()[0];
 		double[][] dados = new double[2][numeroDeAmostras];
 
-		long ultimoCwndPorMss = tx.getCwnd() / Parametros.mss;
-
 		dados[0][0] = 0;
-		dados[1][0] = ultimoCwndPorMss;
+		dados[1][0] = tx.getCwnd() / Parametros.mss;
 
-		int i = 1;
-
-		while (i < numeroDeAmostras) {
+		for (int i = 0; i < numeroDeAmostras; i++) {
 
 			tratarProximoEvento();
 
@@ -656,31 +651,29 @@ public class Simulador {
 				throw new EndOfTheWorldException();
 			}
 
-			if (ultimoCwndPorMss != (tx.getCwnd() / Parametros.mss)) {
-				ultimoCwndPorMss = (tx.getCwnd() / Parametros.mss);
-				dados[0][i] = tempoAtualSimulado;
-				dados[1][i] = ultimoCwndPorMss;
-
-				i++;
-			}
+			dados[0][i] = tempoAtualSimulado;
+			dados[1][i] = tx.getCwnd() / Parametros.mss;
 		}
 
 		return dados;
 	}
 
 	/**
-	 * Coleta N amostras da média da vazão em relação ao tempo simulado. Esses
-	 * dados serão usados para plotar o gráfico da vazão média no tempo e
-	 * estimar o fim da fase transiente graficamente. O número de amostras é o
-	 * número de eventos por rodada/1000.
+	 * Coleta N amostras da média da vazão em função do número de eventos
+	 * tratados desde o início de uma rodada. Esses dados serão usados para
+	 * plotar o gráfico da vazão média no tempo e estimar o fim da fase
+	 * transiente graficamente (em número de eventos). O número de amostras N é
+	 * o parâmetro "número de eventos por rodada"/10000.
 	 * 
-	 * @return matriz M[2][N] onde M[0][i] é o tempo da amostra i e M[1][i] é a
-	 *         vazão média
+	 * @return Matriz 2xN onde m[0][i] é o número de eventos tradados desde o
+	 *         início da radada da amostra i e m[1][i] é a vazão média da
+	 *         amostra i.
 	 * @throws EndOfTheWorldException
 	 *             Se em algum momento não existir mais eventos, então temos um
 	 *             erro de modelagem e tratamento de eventos.
 	 */
-	public double[][] getAmostrasVazaoxTempo() throws EndOfTheWorldException {
+	public double[][] getAmostrasVazaoXNumeroEventos()
+			throws EndOfTheWorldException {
 
 		int eventosPorAmostra = 10000;
 		int numeroDeAmostras = parametros.getNumeroEventosPorRodada()
