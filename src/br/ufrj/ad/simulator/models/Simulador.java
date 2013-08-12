@@ -1,6 +1,7 @@
 package br.ufrj.ad.simulator.models;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 import br.ufrj.ad.simulator.events.Evento;
@@ -646,19 +647,24 @@ public class Simulador {
 	 *             Se em algum momento não existir mais eventos, então temos um
 	 *             erro de modelagem e tratamento de eventos.
 	 */
-	public double[][] getAmostrasCwndPorMSSxTempo()
+	public ArrayList<double[][]> getAmostrasCwndPorMSSxTempo()
 			throws EndOfTheWorldException {
+
+		ArrayList<double[][]> amostrasCwnd = new ArrayList<double[][]>();
 
 		int numeroDeAmostras = parametros.getNumeroAmostrasCwndGrafico();
 
 		setarEstadoInicialDeSimulacao();
 		agendarEventosIniciais();
 
-		TxTCP tx = this.rede.getTransmissores()[0];
-		double[][] dados = new double[2][numeroDeAmostras];
+		for (int i = 0; i < this.rede.getTransmissores().length; i++) {
+			amostrasCwnd.add(new double[2][numeroDeAmostras]);
 
-		dados[0][0] = 0;
-		dados[1][0] = tx.getCwnd() / Parametros.mss;
+			amostrasCwnd.get(i)[0][0] = 0;
+			amostrasCwnd.get(i)[1][0] = this.rede.getTransmissores()[i]
+					.getCwnd() / Parametros.mss;
+		}
+
 
 		for (int i = 0; i < numeroDeAmostras; i++) {
 
@@ -668,11 +674,14 @@ public class Simulador {
 				throw new EndOfTheWorldException();
 			}
 
-			dados[0][i] = tempoAtualSimulado;
-			dados[1][i] = tx.getCwnd() / Parametros.mss;
+			for (int j = 0; j < this.rede.getTransmissores().length; j++) {
+				amostrasCwnd.get(j)[0][i] = tempoAtualSimulado;
+				amostrasCwnd.get(j)[1][i] = this.rede.getTransmissores()[j]
+						.getCwnd() / Parametros.mss;
+			}
 		}
 
-		return dados;
+		return amostrasCwnd;
 	}
 
 	/**
