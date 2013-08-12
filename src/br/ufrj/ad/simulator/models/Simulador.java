@@ -278,7 +278,7 @@ public class Simulador {
 			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms para os cenários 1 e 2, e (0, 1000) ms para o cenário 3.
 			 */
-			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
 
 			/*
 			 * Cria os eventos de transmissão, chenada no roteador, os timeouts
@@ -834,7 +834,7 @@ public class Simulador {
 		}
 		ret += "<td>"
 				+ Math.round(estimadorVazaoMediaGrupo1.getMedia())
-				+ "±"
+				+ " ± "
 				+ Math.round(estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9))
 				+ "</td>\n";
 
