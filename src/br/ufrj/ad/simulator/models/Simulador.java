@@ -1,7 +1,6 @@
 package br.ufrj.ad.simulator.models;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.PriorityQueue;
 
 import br.ufrj.ad.simulator.events.Evento;
@@ -279,7 +278,7 @@ public class Simulador {
 			 * primeira transmissão será uma variável aleatória uniforme (0,
 			 * 100) ms para os cenários 1 e 2, e (0, 1000) ms para o cenário 3.
 			 */
-			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 1000;
+			double inicioAssincrono = geradorNumerosAleatorios.nextDouble() * 100;
 
 			/*
 			 * Cria os eventos de transmissão, chenada no roteador, os timeouts
@@ -799,16 +798,14 @@ public class Simulador {
 
 		ret += "<table border = \"1\">\n";
 
-		DecimalFormat resultado = new DecimalFormat("#.##");
-
 		for (int i = 0; i < estimadoresDeVazaoTCP.length; i++) {
 
 			ret += "<tr>\n";
 			ret += "<th>Tx" + i + "</th> ";
 			ret += " <td>"
-					+ resultado.format(estimadoresDeVazaoTCP[i].getMedia())
+					+ Math.round(estimadoresDeVazaoTCP[i].getMedia())
 					+ " ± "
-					+ resultado.format(estimadoresDeVazaoTCP[i]
+					+ Math.round(estimadoresDeVazaoTCP[i]
 							.getDistanciaICMedia(0.9)) + "" + "</td>\n";
 			ret += "</tr>";
 		}
@@ -836,10 +833,10 @@ public class Simulador {
 			i++;
 		}
 		ret += "<td>"
-				+ resultado.format(estimadorVazaoMediaGrupo1.getMedia())
+				+ Math.round(estimadorVazaoMediaGrupo1.getMedia())
 				+ "±"
-				+ resultado.format(estimadorVazaoMediaGrupo1
-						.getDistanciaICMedia(0.9)) + "</td>\n";
+				+ Math.round(estimadorVazaoMediaGrupo1.getDistanciaICMedia(0.9))
+				+ "</td>\n";
 
 		Estimador estimadorVazaoMediaGrupo2 = new Estimador();
 		while (i < rede.getTransmissores().length) {
@@ -848,10 +845,10 @@ public class Simulador {
 			i++;
 		}
 		ret += "<td>"
-				+ resultado.format(estimadorVazaoMediaGrupo2.getMedia())
+				+ Math.round(estimadorVazaoMediaGrupo2.getMedia())
 				+ " ± "
-				+ resultado.format(estimadorVazaoMediaGrupo2
-						.getDistanciaICMedia(0.9)) + "</td>\n";
+				+ Math.round(estimadorVazaoMediaGrupo2.getDistanciaICMedia(0.9))
+				+ "</td>\n";
 
 		ret += "</table><br/>\n";
 
