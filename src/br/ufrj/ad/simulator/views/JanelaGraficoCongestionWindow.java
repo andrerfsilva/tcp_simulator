@@ -1,6 +1,7 @@
 package br.ufrj.ad.simulator.views;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
@@ -25,7 +26,8 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 	JFreeChart grafico;
 	DefaultXYDataset ds;
 
-	public JanelaGraficoCongestionWindow(double[][] tempoXbit, long seed) {
+	public JanelaGraficoCongestionWindow(ArrayList<double[][]> tempoXpacotes,
+			long seed) {
 
 		super("Gráfico: cwnd/MSS x Tempo (seed=" + seed + ")");
 
@@ -34,7 +36,9 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 
 		this.ds = new DefaultXYDataset();
 
-		this.ds.addSeries("Cwnd/MSS Tx0", tempoXbit);
+		for (int i = 0; i < tempoXpacotes.size(); i++) {
+			this.ds.addSeries("Cwnd/MSS Tx" + i, tempoXpacotes.get(i));
+		}
 
 		this.grafico = ChartFactory.createXYLineChart("cwnd/MSS x Tempo",
 				"Tempo (ms)", "cwnd/MSS (pacotes)", ds,
@@ -53,39 +57,76 @@ public class JanelaGraficoCongestionWindow extends JFrame {
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				double[][] tempoXbits = new double[2][10];
+				double[][] tempoXbits1 = new double[2][10];
 
-				tempoXbits[0][0] = 0;
-				tempoXbits[1][0] = 1500;
+				tempoXbits1[0][0] = 0;
+				tempoXbits1[1][0] = 1500;
 
-				tempoXbits[0][1] = 100;
-				tempoXbits[1][1] = 3000;
+				tempoXbits1[0][1] = 100;
+				tempoXbits1[1][1] = 3000;
 
-				tempoXbits[0][2] = 200;
-				tempoXbits[1][2] = 2450;
+				tempoXbits1[0][2] = 200;
+				tempoXbits1[1][2] = 2450;
 
-				tempoXbits[0][3] = 300;
-				tempoXbits[1][3] = 3500;
+				tempoXbits1[0][3] = 300;
+				tempoXbits1[1][3] = 3500;
 
-				tempoXbits[0][4] = 400;
-				tempoXbits[1][4] = 2200;
+				tempoXbits1[0][4] = 400;
+				tempoXbits1[1][4] = 2200;
 
-				tempoXbits[0][5] = 500;
-				tempoXbits[1][5] = 10000;
+				tempoXbits1[0][5] = 500;
+				tempoXbits1[1][5] = 10000;
 
-				tempoXbits[0][6] = 600;
-				tempoXbits[1][6] = 7000;
+				tempoXbits1[0][6] = 600;
+				tempoXbits1[1][6] = 7000;
 
-				tempoXbits[0][7] = 700;
-				tempoXbits[1][7] = 500;
+				tempoXbits1[0][7] = 700;
+				tempoXbits1[1][7] = 500;
 
-				tempoXbits[0][8] = 800;
-				tempoXbits[1][8] = 12000;
+				tempoXbits1[0][8] = 800;
+				tempoXbits1[1][8] = 12000;
 
-				tempoXbits[0][9] = 900;
-				tempoXbits[1][9] = 400;
+				tempoXbits1[0][9] = 900;
+				tempoXbits1[1][9] = 400;
 
-				JFrame frame = new JanelaGraficoCongestionWindow(tempoXbits,
+				ArrayList<double[][]> amostras = new ArrayList<double[][]>();
+				
+				double[][] tempoXbits2 = new double[2][10];
+
+				tempoXbits2[0][0] = 0;
+				tempoXbits2[1][0] = 1200;
+
+				tempoXbits2[0][1] = 100;
+				tempoXbits2[1][1] = 2500;
+
+				tempoXbits2[0][2] = 200;
+				tempoXbits2[1][2] = 2500;
+
+				tempoXbits2[0][3] = 300;
+				tempoXbits2[1][3] = 4000;
+
+				tempoXbits2[0][4] = 400;
+				tempoXbits2[1][4] = 2000;
+
+				tempoXbits2[0][5] = 500;
+				tempoXbits2[1][5] = 9000;
+
+				tempoXbits2[0][6] = 600;
+				tempoXbits2[1][6] = 8000;
+
+				tempoXbits2[0][7] = 700;
+				tempoXbits2[1][7] = 7500;
+
+				tempoXbits2[0][8] = 800;
+				tempoXbits2[1][8] = 800;
+
+				tempoXbits2[0][9] = 900;
+				tempoXbits2[1][9] = 200;
+
+				amostras.add(tempoXbits1);
+				amostras.add(tempoXbits2);
+
+				JFrame frame = new JanelaGraficoCongestionWindow(amostras,
 						93428423L);
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			}
