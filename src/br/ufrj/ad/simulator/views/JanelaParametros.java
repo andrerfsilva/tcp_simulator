@@ -59,9 +59,10 @@ public class JanelaParametros extends JFrame {
 		this.add(textFieldTamanhoBufferRoteador);
 
 		this.add(new JLabel("Disciplina do Roteador:"));
-		String[] roteadores = new String[2];
+		String[] roteadores = new String[3];
 		roteadores[0] = "FIFO";
 		roteadores[1] = "RED";
+		roteadores[2] = "WFQ";
 		this.comboBoxDisciplinaRoteador = new JComboBox<String>(roteadores);
 		this.add(comboBoxDisciplinaRoteador);
 

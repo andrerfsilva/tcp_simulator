@@ -52,8 +52,10 @@ public class Rede {
 
 		if (disciplinaRoteador.equals("FIFO")) {
 			roteador = new RoteadorFIFO();
-		} else {
+		} else if (disciplinaRoteador.equals("RED")) {
 			roteador = new RoteadorRED();
+		} else {
+			roteador = new RoteadorWFQ();
 		}
 
 		roteador.setTamanhoBuffer(parametros.getTamanhoBufferRoteador());
