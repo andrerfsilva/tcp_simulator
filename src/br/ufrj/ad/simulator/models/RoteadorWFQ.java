@@ -32,15 +32,8 @@ public class RoteadorWFQ extends Roteador {
 	 */
 	@Override
 	public boolean receberPacote(Pacote p, double tempoAtualSimulado) {
-		int somatorioDePacotes = 0;
-
-		for (int i = 0; i < this.filasDeEntrada.size(); i++) {
-			somatorioDePacotes += this.filasDeEntrada.get(i).size();
-		}
-
-		somatorioDePacotes += buffer.size();
-
-		if (somatorioDePacotes < getTamanhoBuffer()) {
+		
+		if (this.getNumeroPacotes() < getTamanhoBuffer()) {
 			return this.receberPacoteFilaDeEntrada(p);
 		}
 
@@ -158,6 +151,19 @@ public class RoteadorWFQ extends Roteador {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public int getNumeroPacotes() {
+		int somatorioDePacotes = 0;
+
+		for (int i = 0; i < this.filasDeEntrada.size(); i++) {
+			somatorioDePacotes += this.filasDeEntrada.get(i).size();
+		}
+
+		somatorioDePacotes += buffer.size();
+		
+		return somatorioDePacotes;
 	}
 
 	public ArrayList<ArrayList<Pacote>> getFilasDeEntrada() {
